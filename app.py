@@ -4,7 +4,7 @@ import streamlit as st
 from PIL import Image
 
 # Configuración de la interfaz
-st.set_page_config(page_title="BEID", layout="wide")
+st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
 # --- ANIMACIÓN CSS (Para dar el efecto de movimiento) ---
@@ -15,6 +15,8 @@ st.markdown("""
         animation: zoomFade 2s ease-in-out forwards;
         border-radius: 10px;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+        max-height: 80vh;
+        object-fit: contain;
     }
     @keyframes zoomFade {
         0% { opacity: 0.2; transform: scale(0.95); }
@@ -87,12 +89,10 @@ if archivos:
     if st.session_state.foto_index >= len(archivos):
         st.session_state.foto_index = 0
 
-    # Mostrar la foto centrada en tamaño destacado
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col2:
-        ruta_img = os.path.join(CARPETA_FOTOS, archivos[st.session_state.foto_index])
-        img = Image.open(ruta_img)
-        st.image(img, use_container_width=True)
+    # Mostrar la foto completa sin recortar
+    ruta_img = os.path.join(CARPETA_FOTOS, archivos[st.session_state.foto_index])
+    img = Image.open(ruta_img)
+    st.image(img, use_container_width=True)
 
     # LÓGICA DE REPRODUCCIÓN AUTOMÁTICA (Invisible y siempre activa)
     time.sleep(2) # Pausa por 2 segundos
