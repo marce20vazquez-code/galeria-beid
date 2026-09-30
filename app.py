@@ -1,10 +1,28 @@
 import os
+import time
 import streamlit as st
 from PIL import Image
 
 # Configuración de la interfaz
 st.set_page_config(page_title="BEID", layout="wide")
 st.title("📸 BEID")
+
+# --- ANIMACIÓN CSS (Para dar el efecto de movimiento) ---
+st.markdown("""
+    <style>
+    div[data-testid="stImage"] img {
+        /* Efecto de aparición y zoom lento de 2 segundos */
+        animation: zoomFade 2s ease-in-out forwards;
+        border-radius: 10px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+    }
+    @keyframes zoomFade {
+        0% { opacity: 0.2; transform: scale(0.95); }
+        20% { opacity: 1; }
+        100% { opacity: 1; transform: scale(1.05); }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
 CLAVE_ADMIN = "Marcelino"
@@ -55,7 +73,7 @@ if es_admin:
         else:
             st.sidebar.error("Selecciona al menos una foto antes de guardar.")
 
-# --- GALERÍA PÚBLICA (Visor una por una) ---
+# --- GALERÍA PÚBLICA (Visor una por una con Auto-Play) ---
 st.subheader("🖼️ Galería BEID")
 
 archivos = [f for f in os.listdir(CARPETA_FOTOS) if f.lower().endswith(('png', 'jpg', 'jpeg', 'webp'))]
@@ -82,6 +100,10 @@ if archivos:
             f"<h4 style='text-align: center; margin: 0;'>Foto {st.session_state.foto_index + 1} de {len(archivos)}</h4>", 
             unsafe_allow_html=True
         )
+        
+        # Botón para activar/desactivar la reproducción automática
+        st.write("") # Espaciador
+        auto_play = st.toggle("▶️ Reproducción Automática (2s)", value=False)
 
     with col_next:
         if st.button("Siguiente ➡️", use_container_width=True):
@@ -96,5 +118,12 @@ if archivos:
         ruta_img = os.path.join(CARPETA_FOTOS, archivos[st.session_state.foto_index])
         img = Image.open(ruta_img)
         st.image(img, use_container_width=True)
+
+    # LÓGICA DE REPRODUCCIÓN AUTOMÁTICA
+    if auto_play:
+        time.sleep(2) # Pausa por 2 segundos
+        # Avanzar al siguiente índice
+        st.session_state.foto_index = (st.session_state.foto_index + 1) % len(archivos)
+        st.rerun() # Recarga la página para mostrar la nueva foto
 else:
     st.info("No hay fotos registradas todavía.")
