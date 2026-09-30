@@ -98,7 +98,3 @@ if archivos:
         st.image(img, use_container_width=True)
 else:
     st.info("No hay fotos registradas todavía.")
-            img = Image.open(ruta_img)
-            st.image(img, use_container_width=True)
-else:
-    st.info("No hay fotos registradas todavía.")
