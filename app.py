@@ -3,14 +3,14 @@ import streamlit as st
 from PIL import Image
 
 # Configuración de la interfaz
-st.set_page_config(page_title="Galería de Fotos", layout="wide")
-st.title("📸 Galería de Fotos")
+st.set_page_config(page_title="BEID", layout="wide")
+st.title("📸 BEID")
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
 CLAVE_ADMIN = "Marcelino"
 
-# Crear carpeta de almacenamiento si no existe
-CARPETA_FOTOS = "fotos_personas"
+# Crear carpeta de almacenamiento con el nombre BEID si no existe
+CARPETA_FOTOS = "BEID"
 if not os.path.exists(CARPETA_FOTOS):
     os.makedirs(CARPETA_FOTOS)
 
@@ -28,32 +28,35 @@ if not es_admin:
     elif clave_ingresada != "":
         st.sidebar.error("Contraseña incorrecta.")
 
-# --- SECCIÓN DE SUBIDA (Solo visible para el Administrador) ---
+# --- SECCIÓN DE SUBIDA MÚLTIPLE (Solo visible para el Administrador) ---
 if es_admin:
     st.sidebar.markdown("---")
-    st.sidebar.header("📤 Subir Nueva Foto")
-    nombre_persona = st.sidebar.text_input("Nombre de la persona:")
-    foto_subida = st.sidebar.file_uploader("Selecciona la foto", type=["jpg", "jpeg", "png", "webp"])
+    st.sidebar.header("📤 Subir Fotos")
+    
+    fotos_subidas = st.sidebar.file_uploader(
+        "Selecciona la(s) foto(s)", 
+        type=["jpg", "jpeg", "png", "webp"], 
+        accept_multiple_files=True
+    )
 
-    if st.sidebar.button("Guardar Foto"):
-        if nombre_persona.strip() != "" and foto_subida is not None:
-            # Formatear el nombre de archivo
-            ext = foto_subida.name.split(".")[-1]
-            nombre_limpio = nombre_persona.strip().replace(" ", "_")
-            nombre_archivo = f"{nombre_limpio}.{ext}"
-            ruta_destino = os.path.join(CARPETA_FOTOS, nombre_archivo)
-            
-            # Guardar archivo en disco
-            with open(ruta_destino, "wb") as f:
-                f.write(foto_subida.getbuffer())
+    if st.sidebar.button("Guardar Fotos"):
+        if fotos_subidas:
+            cant_guardadas = 0
+            for foto in fotos_subidas:
+                ruta_destino = os.path.join(CARPETA_FOTOS, foto.name)
                 
-            st.sidebar.success(f"¡Foto de **{nombre_persona}** guardada correctamente!")
+                # Guardar en disco
+                with open(ruta_destino, "wb") as f:
+                    f.write(foto.getbuffer())
+                cant_guardadas += 1
+                
+            st.sidebar.success(f"¡Se guardaron {cant_guardadas} foto(s) correctamente!")
             st.rerun()
         else:
-            st.sidebar.error("Escribe un nombre y selecciona una imagen antes de guardar.")
+            st.sidebar.error("Selecciona al menos una foto antes de guardar.")
 
 # --- GALERÍA PÚBLICA (Visible para todos) ---
-st.subheader("🖼️ Personas Registradas")
+st.subheader("🖼️ Galería BEID")
 
 archivos = [f for f in os.listdir(CARPETA_FOTOS) if f.lower().endswith(('png', 'jpg', 'jpeg', 'webp'))]
 
@@ -61,11 +64,9 @@ if archivos:
     cols = st.columns(4)  # Mostrar en 4 columnas
     for idx, archivo in enumerate(archivos):
         ruta_img = os.path.join(CARPETA_FOTOS, archivo)
-        nombre_mostrar = os.path.splitext(archivo)[0].replace("_", " ")
         
         with cols[idx % 4]:
             img = Image.open(ruta_img)
             st.image(img, use_container_width=True)
-            st.caption(f"👤 **{nombre_mostrar}**")
 else:
     st.info("No hay fotos registradas todavía.")
