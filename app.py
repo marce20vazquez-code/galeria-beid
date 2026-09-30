@@ -1,130 +1,72 @@
-import base64
-import time
-from PIL import Image
+import os
 import streamlit as st
+from PIL import Image
 
-st.set_page_config(
-    page_title="Para mi persona favorita ❤️", page_icon="💖", layout="centered"
-)
+# Configuración de la interfaz
+st.set_page_config(page_title="Galería de Fotos", layout="wide")
+st.title("📸 Galería de Fotos")
 
-# Estilos CSS
-st.markdown(
-    """
-    <style>
-    .stApp { background-color: #fff0f3; }
-    @keyframes floatHearts {
-        0% { transform: translateY(0px) scale(0.8); opacity: 1; }
-        50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
-        100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
-    }
-    .heart-bg {
-        font-size: 30px;
-        animation: floatHearts 3s infinite ease-in-out;
-        display: inline-block;
-    }
-    .title-text {
-        color: #ff4b4b;
-        text-align: center;
-        font-family: 'Comic Sans MS', cursive, sans-serif;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
-)
+# --- CONFIGURACIÓN DE SEGURIDAD ---
+# Cambia 'mi_clave_secreta_123' por la contraseña que quieras usar
+CLAVE_ADMIN = "mi_clave_secreta_123"
 
+# Crear carpeta de almacenamiento si no existe
+CARPETA_FOTOS = "fotos_personas"
+if not os.path.exists(CARPETA_FOTOS):
+    os.makedirs(CARPETA_FOTOS)
 
-def lanzar_confeti_y_globos():
-  st.components.v1.html(
-      """
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-        <script>
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#ff4b4b', '#ff758f', '#ffb3c1', '#ffffff', '#ffd166']
-            });
-        </script>
-    """,
-      height=0,
-  )
+# Comprobar si se ingresó la clave vía parámetro en el enlace (?admin=clave)
+es_admin = st.query_params.get("admin") == CLAVE_ADMIN
 
+# Barra lateral: Autenticación de administrador
+st.sidebar.header("🔐 Acceso Administrador")
 
-# Título principal
-st.markdown(
-    "<h1 class='title-text'>❤️ Nuestra Galería de Momentos Especiales</h1>",
-    unsafe_allow_html=True,
-)
+if not es_admin:
+    clave_ingresada = st.sidebar.text_input("Contraseña de admin", type="password")
+    if clave_ingresada == CLAVE_ADMIN:
+        es_admin = True
+        st.sidebar.success("¡Modo Administrador activado!")
+    elif clave_ingresada != "":
+        st.sidebar.error("Contraseña incorrecta.")
 
-# --- REPRODUCTOR DE PLAYLIST DE SPOTIFY ---
-st.markdown("### 🎶 Nuestra Playlist Especial")
-st.components.v1.iframe(
-    src="https://open.spotify.com/embed/playlist/0dVqL0H1SBSo0w3FJ72pIP?utm_source=generator",
-    height=380,
-)
+# --- SECCIÓN DE SUBIDA (Solo visible para el Administrador) ---
+if es_admin:
+    st.sidebar.markdown("---")
+    st.sidebar.header("📤 Subir Nueva Foto")
+    nombre_persona = st.sidebar.text_input("Nombre de la persona:")
+    foto_subida = st.sidebar.file_uploader("Selecciona la foto", type=["jpg", "jpeg", "png", "webp"])
 
-st.write(
-    "<p style='text-align: center; color: #555;'>Sube tus fotos para revivir"
-    " momentos juntos ✨</p>",
-    unsafe_allow_html=True,
-)
+    if st.sidebar.button("Guardar Foto"):
+        if nombre_persona.strip() != "" and foto_subida is not None:
+            # Formatear el nombre de archivo
+            ext = foto_subida.name.split(".")[-1]
+            nombre_limpio = nombre_persona.strip().replace(" ", "_")
+            nombre_archivo = f"{nombre_limpio}.{ext}"
+            ruta_destino = os.path.join(CARPETA_FOTOS, nombre_archivo)
+            
+            # Guardar archivo en disco
+            with open(ruta_destino, "wb") as f:
+                f.write(foto_subida.getbuffer())
+                
+            st.sidebar.success(f"¡Foto de **{nombre_persona}** guardada correctamente!")
+            st.rerun()
+        else:
+            st.sidebar.error("Escribe un nombre y selecciona una imagen antes de guardar.")
 
-# Cargar imágenes
-archivos_subidos = st.file_uploader(
-    "📸 Selecciona las fotos que quieras mostrar:",
-    type=["jpg", "jpeg", "png", "webp"],
-    accept_multiple_files=True,
-)
+# --- GALERÍA PÚBLICA (Visible para todos) ---
+st.subheader("🖼️ Personas Registradas")
 
-if archivos_subidos:
-  if "foto_index" not in st.session_state:
-    st.session_state["foto_index"] = 0
+archivos = [f for f in os.listdir(CARPETA_FOTOS) if f.lower().endswith(('png', 'jpg', 'jpeg', 'webp'))]
 
-  total_fotos = len(archivos_subidos)
-
-  st.markdown("---")
-  st.markdown(
-      "<div style='text-align: center;'>"
-      "<span class='heart-bg'>🎈</span>"
-      "<span class='heart-bg'>💖</span>"
-      "<span class='heart-bg'>🎈</span>"
-      "<span class='heart-bg'>💕</span>"
-      "<span class='heart-bg'>🎈</span>"
-      "</div>",
-      unsafe_allow_html=True,
-  )
-
-  idx_actual = st.session_state["foto_index"]
-  foto_actual = archivos_subidos[idx_actual]
-  imagen = Image.open(foto_actual)
-
-  st.image(
-      imagen,
-      caption=f"Foto {idx_actual + 1} de {total_fotos} ❤️",
-      use_container_width=True,
-  )
-  lanzar_confeti_y_globos()
-
-  col_prev, col_info, col_next = st.columns([1, 2, 1])
-
-  with col_prev:
-    if st.button("⬅️️ Anterior", use_container_width=True):
-      if st.session_state["foto_index"] > 0:
-        st.session_state["foto_index"] -= 1
-        st.rerun()
-
-  with col_info:
-    st.markdown(
-        f"<h4 style='text-align: center; color: #d62828;'>{idx_actual + 1} /"
-        f" {total_fotos}</h4>",
-        unsafe_allow_html=True,
-    )
-
-  with col_next:
-    if st.button("Siguiente ➡", use_container_width=True, type="primary"):
-      if st.session_state["foto_index"] < total_fotos - 1:
-        st.session_state["foto_index"] += 1
-        st.rerun()
-      else:
-        st.balloons()
-        st.success("¡Llegaron al final de sus momentos juntos! 🥰❤️")
+if archivos:
+    cols = st.columns(4)  # Mostrar en 4 columnas
+    for idx, archivo in enumerate(archivos):
+        ruta_img = os.path.join(CARPETA_FOTOS, archivo)
+        nombre_mostrar = os.path.splitext(archivo)[0].replace("_", " ")
+        
+        with cols[idx % 4]:
+            img = Image.open(ruta_img)
+            st.image(img, use_container_width=True)
+            st.caption(f"👤 **{nombre_mostrar}**")
+else:
+    st.info("No hay fotos registradas todavía.")
