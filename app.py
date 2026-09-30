@@ -3,12 +3,11 @@ import time
 from PIL import Image
 import streamlit as st
 
-# Configuración de página
 st.set_page_config(
     page_title="Para mi persona favorita ❤️", page_icon="💖", layout="centered"
 )
 
-# Estilos visuales
+# Estilos CSS
 st.markdown(
     """
     <style>
@@ -51,16 +50,26 @@ def lanzar_confeti_y_globos():
   )
 
 
+# Título principal
 st.markdown(
     "<h1 class='title-text'>❤️ Nuestra Galería de Momentos Especiales</h1>",
     unsafe_allow_html=True,
 )
+
+# --- REPRODUCTOR DE PLAYLIST DE SPOTIFY ---
+st.markdown("### 🎶 Nuestra Playlist Especial")
+st.components.v1.iframe(
+    src="https://open.spotify.com/embed/playlist/0dVqL0H1SBSo0w3FJ72pIP?utm_source=generator",
+    height=380,
+)
+
 st.write(
     "<p style='text-align: center; color: #555;'>Sube tus fotos para revivir"
     " momentos juntos ✨</p>",
     unsafe_allow_html=True,
 )
 
+# Cargar imágenes
 archivos_subidos = st.file_uploader(
     "📸 Selecciona las fotos que quieras mostrar:",
     type=["jpg", "jpeg", "png", "webp"],
@@ -99,7 +108,7 @@ if archivos_subidos:
   col_prev, col_info, col_next = st.columns([1, 2, 1])
 
   with col_prev:
-    if st.button("⬅️ Anterior", use_container_width=True):
+    if st.button("⬅️️ Anterior", use_container_width=True):
       if st.session_state["foto_index"] > 0:
         st.session_state["foto_index"] -= 1
         st.rerun()
