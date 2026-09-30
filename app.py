@@ -7,8 +7,7 @@ st.set_page_config(page_title="Galería de Fotos", layout="wide")
 st.title("📸 Galería de Fotos")
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
-# Cambia 'mi_clave_secreta_123' por la contraseña que quieras usar
-CLAVE_ADMIN = "mi_clave_secreta_123"
+CLAVE_ADMIN = "Marcelino"
 
 # Crear carpeta de almacenamiento si no existe
 CARPETA_FOTOS = "fotos_personas"
