@@ -73,7 +73,7 @@ if es_admin:
         else:
             st.sidebar.error("Selecciona al menos una foto antes de guardar.")
 
-# --- GALERÍA PÚBLICA (Visor una por una con Auto-Play) ---
+# --- GALERÍA PÚBLICA AUTOMÁTICA ---
 st.subheader("🖼️ Galería BEID")
 
 archivos = [f for f in os.listdir(CARPETA_FOTOS) if f.lower().endswith(('png', 'jpg', 'jpeg', 'webp'))]
@@ -87,31 +87,6 @@ if archivos:
     if st.session_state.foto_index >= len(archivos):
         st.session_state.foto_index = 0
 
-    # Botones de navegación arriba de la imagen
-    col_prev, col_info, col_next = st.columns([1, 2, 1])
-    
-    with col_prev:
-        if st.button("⬅️ Anterior", use_container_width=True):
-            st.session_state.foto_index = (st.session_state.foto_index - 1) % len(archivos)
-            st.rerun()
-
-    with col_info:
-        st.markdown(
-            f"<h4 style='text-align: center; margin: 0;'>Foto {st.session_state.foto_index + 1} de {len(archivos)}</h4>", 
-            unsafe_allow_html=True
-        )
-        
-        # Botón para activar/desactivar la reproducción automática
-        st.write("") # Espaciador
-        auto_play = st.toggle("▶️ Reproducción Automática (2s)", value=False)
-
-    with col_next:
-        if st.button("Siguiente ➡️", use_container_width=True):
-            st.session_state.foto_index = (st.session_state.foto_index + 1) % len(archivos)
-            st.rerun()
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
     # Mostrar la foto centrada en tamaño destacado
     col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
@@ -119,11 +94,10 @@ if archivos:
         img = Image.open(ruta_img)
         st.image(img, use_container_width=True)
 
-    # LÓGICA DE REPRODUCCIÓN AUTOMÁTICA
-    if auto_play:
-        time.sleep(2) # Pausa por 2 segundos
-        # Avanzar al siguiente índice
-        st.session_state.foto_index = (st.session_state.foto_index + 1) % len(archivos)
-        st.rerun() # Recarga la página para mostrar la nueva foto
+    # LÓGICA DE REPRODUCCIÓN AUTOMÁTICA (Invisible y siempre activa)
+    time.sleep(2) # Pausa por 2 segundos
+    # Avanzar al siguiente índice
+    st.session_state.foto_index = (st.session_state.foto_index + 1) % len(archivos)
+    st.rerun() # Recarga la página para mostrar la nueva foto
 else:
     st.info("No hay fotos registradas todavía.")
