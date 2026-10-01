@@ -5,8 +5,8 @@ from PIL import Image, ImageOps
 import gdown
 
 # Configuración de la página
-st.set_page_config(page_title="BEID", layout="wide")
-st.title("📸 BEID")
+st.set_page_config(page_title="RECUERDO", layout="wide")
+st.title("RECUERDO")
 
 # --- LISTA DE FRASES DE AMOR ---
 FRASES_DE_AMOR = [
@@ -65,7 +65,7 @@ div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorDorado 3s ease-in-out infinite alternate 1.2s;
 }
 
-/* Foto 3 (Derecha) - Resplandor Púrpura / Turquesa Neón */
+/* Foto 3 (Derecha) - Resplandor Púrpura Neón */
 div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     border: 4px solid #a855f7;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
@@ -224,7 +224,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️✨"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA (3 FOTOS A LA VEZ CON GIRO Y RESPLANDOR DE COLOR) ---
+# --- REPRODUCCIÓN AUTOMÁTICA ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
