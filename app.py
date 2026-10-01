@@ -5,36 +5,71 @@ from PIL import Image, ImageOps
 import gdown
 
 # Configuración de la página
-st.set_page_config(page_title="RECUERDO", layout="wide")
-st.title("RECUERDO")
-
-# --- LISTA DE FRASES DE AMOR ---
-FRASES_DE_AMOR = [
-    "Eres mi lugar favorito en el mundo. ❤️✨",
-    "Cada día a tu lado es un regalo hermoso. 💖🌙",
-    "Gracias por hacer mi vida más bonita. 💕⭐",
-    "Tú y yo, mi momento preferido del día. 💗🌟",
-    "Contigo todo es infinitamente mejor. 💘✨",
-    "Mi sonrisa favorita es la que tú me sacas. ✨🌙",
-    "El mejor recuerdo siempre es el que construyo a tu lado. 🥰⭐",
-    "Simplemente gracias por existir y estar en mi vida. 🌹🌟",
-    "Juntos es mi lugar favorito. ❤️✨",
-    "Si pudiera elegir un momento, elegiría cualquier instante contigo. 💫🌙",
-    "Eres la historia más bonita que el destino escribió en mi vida. 📖✨",
-    "Mi felicidad tiene tu nombre y tu sonrisa. 🥰⭐",
-    "Amarte es la decisión más fácil y hermosa que he tomado. 💖🌟",
-    "En tus ojos encontré mi hogar y en tu abrazo mi paz. 💓🌙",
-    "Cada segundo a tu lado vale por mil recuerdos. ⏳❤️✨",
-    "No necesito el mundo entero, solo tu mano en la mía. 🤝💕⭐",
-    "Le das color, luz y sentido a todos mis días. ☀️💗🌟",
-    "Coincidir contigo es lo mejor que me ha pasado. 🌸✨🌙",
-    "Eres mi presente, mi futuro y mi pensamiento favorito de cada día. 💖⭐",
-    "Haces que lo ordinario se vuelva extraordinario. 💘🌟"
-]
+st.set_page_config(page_title="RECUERDOS", layout="wide")
 
 # --- ANIMACIONES Y ESTILOS CSS ---
 st.markdown("""
 <style>
+/* --- TÍTULO 3D, MULTICOLOR, ANIMADO Y CON BRILLO --- */
+.titulo-container {
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 30px;
+    perspective: 800deg;
+}
+
+.titulo-3d {
+    font-family: 'Montserrat', 'Arial Black', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    display: inline-block;
+    
+    /* Texto con gradiente de colores en movimiento */
+    background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7, #ff007f);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Animaciones combinadas: Giro 3D, Gradiente y Resplandor */
+    animation: 
+        animGiro3D 4s ease-in-out infinite alternate,
+        moverColores 5s linear infinite,
+        brilloNeon 2.5s ease-in-out infinite alternate;
+        
+    filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.5));
+}
+
+/* Movimiento 3D y flotación del título */
+@keyframes animGiro3D {
+    0% {
+        transform: rotateX(15deg) rotateY(-12deg) translateY(0px) scale(0.98);
+    }
+    50% {
+        transform: rotateX(0deg) rotateY(10deg) translateY(-8px) scale(1.02);
+    }
+    100% {
+        transform: rotateX(-15deg) rotateY(-8deg) translateY(-15px) scale(1.05);
+    }
+}
+
+/* Desplazamiento continuo de los colores del gradiente */
+@keyframes moverColores {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Efecto de resplandor y brillo multicolor */
+@keyframes brilloNeon {
+    0% {
+        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.6)) drop-shadow(0px 0px 20px rgba(255, 215, 0, 0.4));
+    }
+    100% {
+        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 35px rgba(168, 85, 247, 0.8));
+    }
+}
+
 /* Centrado de imágenes en columnas */
 div[data-testid="stImage"] {
     display: flex;
@@ -71,7 +106,7 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
 }
 
-/* Animaciones de Giro 3D y Efecto Pulsante de Colores */
+/* Animaciones de Giro 3D y Efecto Pulsante de Colores para las fotos */
 @keyframes girarFoto {
     0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
     100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
@@ -191,6 +226,11 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
 }
 </style>
 
+<!-- RENDERIZADO DEL TÍTULO 3D MULTICOLOR -->
+<div class="titulo-container">
+    <h1 class="titulo-3d">RECUERDOS</h1>
+</div>
+
 <div class="sky-container">
     <div class="sky-item" style="left: 6%; font-size: 48px; animation-delay: 0s; animation-duration: 4s;">🌙</div>
     <div class="sky-item" style="left: 38%; font-size: 54px; animation-delay: 1.5s; animation-duration: 4.5s;">🌕</div>
@@ -206,6 +246,30 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     <div class="sky-item" style="left: 78%; font-size: 42px; animation-delay: 0.7s; animation-duration: 3.5s;">💕</div>
 </div>
 """, unsafe_allow_html=True)
+
+# --- LISTA DE FRASES DE AMOR ---
+FRASES_DE_AMOR = [
+    "Eres mi lugar favorito en el mundo. ❤️✨",
+    "Cada día a tu lado es un regalo hermoso. 💖🌙",
+    "Gracias por hacer mi vida más bonita. 💕⭐",
+    "Tú y yo, mi momento preferido del día. 💗🌟",
+    "Contigo todo es infinitamente mejor. 💘✨",
+    "Mi sonrisa favorita es la que tú me sacas. ✨🌙",
+    "El mejor recuerdo siempre es el que construyo a tu lado. 🥰⭐",
+    "Simplemente gracias por existir y estar en mi vida. 🌹🌟",
+    "Juntos es mi lugar favorito. ❤️✨",
+    "Si pudiera elegir un momento, elegiría cualquier instante contigo. 💫🌙",
+    "Eres la historia más bonita que el destino escribió en mi vida. 📖✨",
+    "Mi felicidad tiene tu nombre y tu sonrisa. 🥰⭐",
+    "Amarte es la decisión más fácil y hermosa que he tomado. 💖🌟",
+    "En tus ojos encontré mi hogar y en tu abrazo mi paz. 💓🌙",
+    "Cada segundo a tu lado vale por mil recuerdos. ⏳❤️✨",
+    "No necesito el mundo entero, solo tu mano en la mía. 🤝💕⭐",
+    "Le das color, luz y sentido a todos mis días. ☀️💗🌟",
+    "Coincidir contigo es lo mejor que me ha pasado. 🌸✨🌙",
+    "Eres mi presente, mi futuro y mi pensamiento favorito de cada día. 💖⭐",
+    "Haces que lo ordinario se vuelva extraordinario. 💘🌟"
+]
 
 # --- CONEXIÓN A GOOGLE DRIVE ---
 URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
