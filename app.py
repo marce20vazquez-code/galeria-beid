@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 import gdown
 
 # Configuración de la página
-st.set_page_config(page_title="BEID", layout="centered")
+st.set_page_config(page_title="BEID", layout="wide")
 st.title("📸 BEID")
 
 # --- LISTA DE FRASES DE AMOR ---
@@ -35,44 +35,51 @@ FRASES_DE_AMOR = [
 # --- ANIMACIONES Y ESTILOS CSS ---
 st.markdown("""
 <style>
-/* Centrado de la imagen */
+/* Centrado de imágenes en columnas */
 div[data-testid="stImage"] {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Movimiento suave estilo Ken Burns a la foto */
+/* Animación de Giro 3D al aparecer las fotos de 3 en 3 */
 div[data-testid="stImage"] img {
-    border-radius: 20px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
-    max-height: 70vh;
-    object-fit: contain;
-    animation: kenBurns 6s ease-in-out infinite alternate;
+    border-radius: 18px;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+    max-height: 52vh;
+    width: 100%;
+    object-fit: cover;
+    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, balanceoSuave 4s ease-in-out infinite alternate 1.2s;
+    transform-style: preserve-3d;
 }
 
-@keyframes kenBurns {
-    0% { transform: scale(1) translateY(0px); opacity: 0.88; }
-    50% { transform: scale(1.05) translateY(-6px); opacity: 1; }
-    100% { transform: scale(1.08) translateY(6px); opacity: 0.95; }
+@keyframes girarFoto {
+    0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
+    100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
+}
+
+@keyframes balanceoSuave {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(1.2deg); }
+    100% { transform: translateY(6px) rotate(-1.2deg); }
 }
 
 /* Estilo base de la caja de las frases */
 .frase-amor {
     text-align: center;
-    font-size: 25px;
+    font-size: 26px;
     font-weight: 600;
     color: #ff3366;
     font-family: 'Georgia', serif;
-    margin-top: 18px;
+    margin-top: 25px;
     margin-bottom: 20px;
-    padding: 14px 22px;
+    padding: 16px 24px;
     background: rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
+    border-radius: 20px;
     border: 1px solid rgba(255, 215, 0, 0.4);
     box-shadow: 0px 8px 25px rgba(255, 51, 102, 0.3);
     backdrop-filter: blur(8px);
-    min-height: 80px;
+    min-height: 85px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -189,7 +196,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️✨"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA ---
+# --- REPRODUCCIÓN AUTOMÁTICA (3 FOTOS A LA VEZ CON GIRO 3D) ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -201,18 +208,32 @@ if os.path.exists(CARPETA_FOTOS):
     if archivos_completos:
         archivos_completos.sort()
         
-        contenedor_foto = st.empty()
+        # Agrupar la lista de fotos en tríos
+        grupos_de_tres = [archivos_completos[i:i + 3] for i in range(0, len(archivos_completos), 3)]
+        
+        # Crear 3 columnas en la interfaz
+        col1, col2, col3 = st.columns(3)
+        p1, p2, p3 = col1.empty(), col2.empty(), col3.empty()
+        placeholders = [p1, p2, p3]
+        
         contenedor_frase = st.empty()
         
         while True:
-            for idx, ruta in enumerate(archivos_completos):
-                frase_actual = FRASES_DE_AMOR[idx % len(FRASES_DE_AMOR)]
-                estilo_anim = f"anim-estilo-{idx % 4}"
+            for g_idx, trio in enumerate(grupos_de_tres):
+                frase_actual = FRASES_DE_AMOR[g_idx % len(FRASES_DE_AMOR)]
+                estilo_anim = f"anim-estilo-{g_idx % 4}"
                 
-                img = Image.open(ruta)
-                img = ImageOps.exif_transpose(img)
-                contenedor_foto.image(img, use_container_width=True)
+                # Limpiar contenedores antes de cargar el nuevo trío
+                for p in placeholders:
+                    p.empty()
                 
+                # Mostrar hasta 3 imágenes simultáneamente
+                for i, ruta in enumerate(trio):
+                    img = Image.open(ruta)
+                    img = ImageOps.exif_transpose(img)
+                    placeholders[i].image(img, use_container_width=True)
+                
+                # Efecto Máquina de Escribir para la frase
                 texto_parcial = ""
                 velocidad_letra = 0.035
                 
@@ -224,13 +245,15 @@ if os.path.exists(CARPETA_FOTOS):
                     )
                     time.sleep(velocidad_letra)
                 
+                # Mantener frase completa
                 contenedor_frase.markdown(
                     f'<div class="frase-amor {estilo_anim}">{frase_actual}</div>',
                     unsafe_allow_html=True
                 )
                 
+                # Tiempo de permanencia antes del siguiente trío
                 tiempo_escritura = len(frase_actual) * velocidad_letra
-                tiempo_restante = max(1.5, 5.5 - tiempo_escritura)
+                tiempo_restante = max(2.0, 6.0 - tiempo_escritura)
                 time.sleep(tiempo_restante)
     else:
-        st.warning("No se encontraron fotos. Asegúrate de haber subido imágenes a tu carpeta de Drive.")
+        st.warning("No se encontraron fotos en la carpeta de Drive.")
