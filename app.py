@@ -10,13 +10,12 @@ st.set_page_config(page_title="RECUERDOS", layout="wide")
 # --- ANIMACIONES Y ESTILOS CSS ---
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap');
-
-/* --- TÍTULO RECUERDOS --- */
+/* --- TÍTULO 3D, MULTICOLOR, ANIMADO Y CON BRILLO --- */
 .titulo-container {
     text-align: center;
     margin-top: -10px;
     margin-bottom: 30px;
+    perspective: 800deg;
 }
 
 .titulo-3d {
@@ -26,53 +25,59 @@ st.markdown("""
     letter-spacing: 6px;
     display: inline-block;
     
-    /* Gradiente multicolor */
+    /* Texto con gradiente de colores en movimiento */
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7, #ff007f);
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    /* Animación de movimiento de Izquierda a Derecha, colores y brillo */
+    /* Animaciones combinadas: Giro 3D, Gradiente y Resplandor */
     animation: 
-        moverIzquierdaDerecha 4s ease-in-out infinite alternate,
+        animGiro3D 4s ease-in-out infinite alternate,
         moverColores 5s linear infinite,
         brilloNeon 2.5s ease-in-out infinite alternate;
+        
+    filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.5));
 }
 
-/* Animación exclusiva de Izquierda a Derecha */
-@keyframes moverIzquierdaDerecha {
+/* Movimiento 3D y flotación del título */
+@keyframes animGiro3D {
     0% {
-        transform: translateX(-40px);
+        transform: rotateX(15deg) rotateY(-12deg) translateY(0px) scale(0.98);
+    }
+    50% {
+        transform: rotateX(0deg) rotateY(10deg) translateY(-8px) scale(1.02);
     }
     100% {
-        transform: translateX(40px);
+        transform: rotateX(-15deg) rotateY(-8deg) translateY(-15px) scale(1.05);
     }
 }
 
-/* Movimiento de los colores del gradiente */
+/* Desplazamiento continuo de los colores del gradiente */
 @keyframes moverColores {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
-/* Resplandor neón */
+/* Efecto de resplandor y brillo multicolor */
 @keyframes brilloNeon {
     0% {
-        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.7)) drop-shadow(0px 0px 18px rgba(255, 215, 0, 0.5));
+        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.6)) drop-shadow(0px 0px 20px rgba(255, 215, 0, 0.4));
     }
     100% {
-        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 32px rgba(168, 85, 247, 0.8));
+        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 35px rgba(168, 85, 247, 0.8));
     }
 }
 
-/* Centrado e imágenes */
+/* Centrado de imágenes en columnas */
 div[data-testid="stImage"] {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* Base de imágenes */
 div[data-testid="stImage"] img {
     border-radius: 20px;
     max-height: 52vh;
@@ -81,85 +86,74 @@ div[data-testid="stImage"] img {
     transform-style: preserve-3d;
 }
 
-/* Marcos de fotos con resplandor */
+/* --- MARCOS DE COLORES INDIVIDUALES Y RESPLANDOR PARA CADA FOTO --- */
+
+/* Foto 1 (Izquierda) - Resplandor Rosa Neón */
 div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] img {
     border: 4px solid #ff2a75;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorRosa 3s ease-in-out infinite alternate 1.2s;
 }
 
+/* Foto 2 (Centro) - Resplandor Dorado Neón */
 div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
     border: 4px solid #ffd700;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorDorado 3s ease-in-out infinite alternate 1.2s;
 }
 
+/* Foto 3 (Derecha) - Resplandor Púrpura Neón */
 div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     border: 4px solid #a855f7;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
 }
 
+/* Animaciones de Giro 3D y Efecto Pulsante de Colores para las fotos */
 @keyframes girarFoto {
     0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
     100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
 }
 
 @keyframes resplandorRosa {
-    0% { box-shadow: 0px 0px 15px rgba(255, 42, 117, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(255, 42, 117, 1); }
+    0% { box-shadow: 0px 0px 15px rgba(255, 42, 117, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(255, 42, 117, 1), 0px 0px 15px #ff2a75; transform: translateY(-8px); }
 }
 
 @keyframes resplandorDorado {
-    0% { box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(255, 215, 0, 1); }
+    0% { box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(255, 215, 0, 1), 0px 0px 15px #ffd700; transform: translateY(-8px); }
 }
 
 @keyframes resplandorPurpura {
-    0% { box-shadow: 0px 0px 15px rgba(168, 85, 247, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(168, 85, 247, 1); }
+    0% { box-shadow: 0px 0px 15px rgba(168, 85, 247, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(168, 85, 247, 1), 0px 0px 15px #a855f7; transform: translateY(-8px); }
 }
 
-/* --- FRASES: SIN CAJA, SOLO LETRAS QUE SE MUEVEN DE IZQUIERDA A DERECHA --- */
-.frase-amor-container {
+/* Estilo base de la caja de las frases */
+.frase-amor {
     text-align: center;
-    margin-top: 20px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #ff3366;
+    font-family: 'Georgia', serif;
+    margin-top: 25px;
     margin-bottom: 20px;
-    padding: 0px;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    min-height: 70px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    box-shadow: 0px 8px 25px rgba(255, 51, 102, 0.3);
+    backdrop-filter: blur(8px);
+    min-height: 85px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.frase-texto-3d {
-    font-family: 'Montserrat', 'Arial Black', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    display: inline-block;
-    
-    background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7, #ff007f);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    /* Movimiento de izquierda a derecha, gradiente continuo y resplandor neón */
-    animation: 
-        moverIzquierdaDerecha 3.5s ease-in-out infinite alternate,
-        moverColores 5s linear infinite,
-        brilloNeon 2.5s ease-in-out infinite alternate;
-}
-
-/* Cursor de tipeo */
+/* Cursor parpadeante */
 .cursor-tipeo {
-    font-size: 1.9rem;
-    font-weight: 900;
-    color: #00ffff;
-    margin-left: 4px;
+    font-weight: 300;
+    color: #ffd700;
+    margin-left: 3px;
     animation: parpadeo 0.6s infinite;
-    text-shadow: 0 0 10px #00ffff;
 }
 
 @keyframes parpadeo {
@@ -167,7 +161,50 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     50% { opacity: 0; }
 }
 
-/* Elementos flotantes de fondo (estrellas, luna, corazones) */
+/* Animaciones para las frases */
+.anim-estilo-0 {
+    animation: entradaRebote 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), flotarSuave 3s ease-in-out infinite alternate 0.8s;
+}
+@keyframes entradaRebote {
+    0% { opacity: 0; transform: scale(0.3) translateY(30px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.anim-estilo-1 {
+    animation: entradaSubir 0.9s ease-out, brilloResplandor 2.5s ease-in-out infinite alternate 0.9s;
+}
+@keyframes entradaSubir {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.anim-estilo-2 {
+    animation: entradaGiro3D 1s ease-out, flotarSuave 3.2s ease-in-out infinite alternate 1s;
+}
+@keyframes entradaGiro3D {
+    0% { opacity: 0; transform: perspective(400deg) rotateX(-80deg); }
+    100% { opacity: 1; transform: perspective(400deg) rotateX(0deg); }
+}
+
+.anim-estilo-3 {
+    animation: entradaIzquierda 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55), flotarSuave 2.8s ease-in-out infinite alternate 0.9s;
+}
+@keyframes entradaIzquierda {
+    0% { opacity: 0; transform: translateX(-50px) scale(0.9); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes flotarSuave {
+    0% { transform: translateY(0px); text-shadow: 0px 2px 10px rgba(255, 51, 102, 0.4); }
+    100% { transform: translateY(-8px); text-shadow: 0px 6px 20px rgba(255, 215, 0, 0.8); }
+}
+
+@keyframes brilloResplandor {
+    0% { transform: translateY(0px); text-shadow: 0px 2px 8px rgba(255, 51, 102, 0.4); }
+    100% { transform: translateY(-6px); text-shadow: 0px 0px 22px rgba(255, 255, 255, 0.9), 0px 0px 30px rgba(255, 215, 0, 1); }
+}
+
+/* Lluvia de lunas, estrellas y corazones */
 .sky-container {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -189,7 +226,7 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
 }
 </style>
 
-<!-- TÍTULO -->
+<!-- RENDERIZADO DEL TÍTULO 3D MULTICOLOR -->
 <div class="titulo-container">
     <h1 class="titulo-3d">RECUERDOS</h1>
 </div>
@@ -205,12 +242,12 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     <div class="sky-item" style="left: 84%; font-size: 46px; animation-delay: 1.1s; animation-duration: 3.6s;">⭐</div>
     <div class="sky-item" style="left: 94%; font-size: 38px; animation-delay: 0.4s; animation-duration: 3.1s;">🌟</div>
     <div class="sky-item" style="left: 20%; font-size: 45px; animation-delay: 1s; animation-duration: 3.7s;">💖</div>
-    <div class="sky-item" style="left: 44%; font-size: 48px; animation-delay: 2s; animation-duration: 4s;">❤️️</div>
+    <div class="sky-item" style="left: 44%; font-size: 48px; animation-delay: 2s; animation-duration: 4s;">❤️</div>
     <div class="sky-item" style="left: 78%; font-size: 42px; animation-delay: 0.7s; animation-duration: 3.5s;">💕</div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- LISTA DE FRASES ---
+# --- LISTA DE FRASES DE AMOR ---
 FRASES_DE_AMOR = [
     "Eres mi lugar favorito en el mundo. ❤️✨",
     "Cada día a tu lado es un regalo hermoso. 💖🌙",
@@ -234,7 +271,7 @@ FRASES_DE_AMOR = [
     "Haces que lo ordinario se vuelva extraordinario. 💘🌟"
 ]
 
-# --- DRIVE ---
+# --- CONEXIÓN A GOOGLE DRIVE ---
 URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
 CARPETA_FOTOS = "fotos_drive"
 
@@ -251,7 +288,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️✨"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN ---
+# --- REPRODUCCIÓN AUTOMÁTICA ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -262,6 +299,7 @@ if os.path.exists(CARPETA_FOTOS):
     
     if archivos_completos:
         archivos_completos.sort()
+        
         grupos_de_tres = [archivos_completos[i:i + 3] for i in range(0, len(archivos_completos), 3)]
         
         col1, col2, col3 = st.columns(3)
@@ -273,6 +311,7 @@ if os.path.exists(CARPETA_FOTOS):
         while True:
             for g_idx, trio in enumerate(grupos_de_tres):
                 frase_actual = FRASES_DE_AMOR[g_idx % len(FRASES_DE_AMOR)]
+                estilo_anim = f"anim-estilo-{g_idx % 4}"
                 
                 for p in placeholders:
                     p.empty()
@@ -288,22 +327,13 @@ if os.path.exists(CARPETA_FOTOS):
                 for letra in frase_actual:
                     texto_parcial += letra
                     contenedor_frase.markdown(
-                        f'''
-                        <div class="frase-amor-container">
-                            <span class="frase-texto-3d">{texto_parcial}</span>
-                            <span class="cursor-tipeo">|</span>
-                        </div>
-                        ''',
+                        f'<div class="frase-amor {estilo_anim}">{texto_parcial}<span class="cursor-tipeo">|</span></div>',
                         unsafe_allow_html=True
                     )
                     time.sleep(velocidad_letra)
                 
                 contenedor_frase.markdown(
-                    f'''
-                    <div class="frase-amor-container">
-                        <span class="frase-texto-3d">{frase_actual}</span>
-                    </div>
-                    ''',
+                    f'<div class="frase-amor {estilo_anim}">{frase_actual}</div>',
                     unsafe_allow_html=True
                 )
                 
