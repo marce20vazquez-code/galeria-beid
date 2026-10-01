@@ -7,15 +7,15 @@ from PIL import Image
 st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
-# --- ANIMACIÓN CSS (Para dar el efecto de movimiento) ---
+# --- ANIMACIÓN CSS Y LLUVIA DE CORAZONES ---
 st.markdown("""
     <style>
+    /* Efecto de la foto (zoom y movimiento) */
     div[data-testid="stImage"] img {
-        /* Efecto de aparición y zoom lento de 2 segundos */
         animation: zoomFade 2s ease-in-out forwards;
-        border-radius: 10px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
-        max-height: 80vh;
+        border-radius: 15px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
+        max-height: 75vh;
         object-fit: contain;
     }
     @keyframes zoomFade {
@@ -23,7 +23,49 @@ st.markdown("""
         20% { opacity: 1; }
         100% { opacity: 1; transform: scale(1.05); }
     }
+
+    /* Contenedor de la lluvia de corazones de fondo */
+    .heart-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 99999;
+    }
+
+    .heart {
+        position: absolute;
+        bottom: -20px;
+        color: #ff3366;
+        font-size: 24px;
+        animation: floatUp 4s linear infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
     </style>
+
+    <!-- Script para generar corazones flotantes continuos en pantalla -->
+    <div class="heart-container">
+        <div class="heart" style="left: 10%; animation-delay: 0s; animation-duration: 3.5s;">❤️</div>
+        <div class="heart" style="left: 25%; animation-delay: 1.2s; animation-duration: 4s;">💖</div>
+        <div class="heart" style="left: 40%; animation-delay: 0.5s; animation-duration: 3s;">💗</div>
+        <div class="heart" style="left: 60%; animation-delay: 2s; animation-duration: 4.5s;">❤️</div>
+        <div class="heart" style="left: 75%; animation-delay: 0.8s; animation-duration: 3.8s;">💘</div>
+        <div class="heart" style="left: 90%; animation-delay: 1.5s; animation-duration: 4.2s;">💖</div>
+    </div>
 """, unsafe_allow_html=True)
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
