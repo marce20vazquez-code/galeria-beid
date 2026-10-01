@@ -16,7 +16,7 @@ st.markdown("""
 .titulo-container {
     text-align: center;
     margin-top: -10px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .titulo-3d {
@@ -26,138 +26,114 @@ st.markdown("""
     letter-spacing: 6px;
     display: inline-block;
     
-    /* Gradiente multicolor */
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7, #ff007f);
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    /* Animación de movimiento de Izquierda a Derecha, colores y brillo */
     animation: 
         moverIzquierdaDerecha 4s ease-in-out infinite alternate,
         moverColores 5s linear infinite,
         brilloNeon 2.5s ease-in-out infinite alternate;
 }
 
-/* Animación exclusiva de Izquierda a Derecha */
 @keyframes moverIzquierdaDerecha {
-    0% {
-        transform: translateX(-35px);
-    }
-    100% {
-        transform: translateX(35px);
-    }
+    0% { transform: translateX(-35px); }
+    100% { transform: translateX(35px); }
 }
 
-/* Movimiento de los colores del gradiente */
 @keyframes moverColores {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
-/* Resplandor neón */
 @keyframes brilloNeon {
-    0% {
-        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.7)) drop-shadow(0px 0px 18px rgba(255, 215, 0, 0.5));
-    }
-    100% {
-        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 32px rgba(168, 85, 247, 0.8));
-    }
+    0% { filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.7)) drop-shadow(0px 0px 18px rgba(255, 215, 0, 0.5)); }
+    100% { filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 32px rgba(168, 85, 247, 0.8)); }
 }
 
-/* Centrado e imágenes */
+/* --- ESTILO TARJETAS POLAROID / GALERÍA DE FOTOS --- */
+
+/* Contenedor general de la imagen */
 div[data-testid="stImage"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+/* Pin de Corazón en la parte superior de cada foto */
+div[data-testid="stImage"]::before {
+    content: "💖";
+    position: absolute;
+    top: -14px;
+    font-size: 24px;
+    z-index: 10;
+    filter: drop-shadow(0px 2px 6px rgba(255, 0, 127, 0.8));
 }
 
 div[data-testid="stImage"] img {
-    border-radius: 22px;
-    max-height: 50vh;
+    border-radius: 16px;
+    max-height: 48vh;
     width: 100%;
     object-fit: cover;
-    transform-style: preserve-3d;
 }
 
-/* --- CONTORNOS Y FOCOS DE AMOR PARA LAS FOTOS --- */
-
-/* Foto 1: Focos de Amor en Rojo Pasión */
-div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] img {
-    border: 5px solid #ff0055;
-    outline: 2px dashed #ff75a0;
-    outline-offset: 4px;
-    animation: 
-        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
-        focosRojos 1.8s ease-in-out infinite alternate 1.2s;
+/* FOTO 1 (Izquierda): Inclinada a la izquierda */
+div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] {
+    border: 3px solid rgba(255, 0, 127, 0.6);
+    box-shadow: 0 10px 30px rgba(255, 0, 127, 0.3);
+    transform: rotate(-3deg);
+    animation: flotarIzq 4s ease-in-out infinite alternate;
 }
 
-/* Foto 2: Focos de Amor en Dorado y Rosa Neón */
-div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
-    border: 5px solid #ff2a75;
-    outline: 2px dashed #ffd700;
-    outline-offset: 4px;
-    animation: 
-        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
-        focosDoradoRosa 1.8s ease-in-out infinite alternate 1.2s;
+/* FOTO 2 (Centro): Recta y ligeramente más al frente */
+div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] {
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.35);
+    transform: scale(1.03);
+    animation: flotarCentro 4.5s ease-in-out infinite alternate;
 }
 
-/* Foto 3: Focos de Amor en Púrpura y Magentafuego */
-div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
-    border: 5px solid #ff00ab;
-    outline: 2px dashed #c084fc;
-    outline-offset: 4px;
-    animation: 
-        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
-        focosPurpuraRosa 1.8s ease-in-out infinite alternate 1.2s;
+/* FOTO 3 (Derecha): Inclinada a la derecha */
+div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] {
+    border: 3px solid rgba(168, 85, 247, 0.6);
+    box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+    transform: rotate(3deg);
+    animation: flotarDer 4s ease-in-out infinite alternate 0.5s;
 }
 
-/* Animación de entrada con giro */
-@keyframes girarFoto {
-    0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
-    100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
+/* Animaciones de flotación suave */
+@keyframes flotarIzq {
+    0% { transform: rotate(-3deg) translateY(0px); }
+    100% { transform: rotate(-1.5deg) translateY(-10px); }
 }
 
-/* Efectos de luz/focos vibrantes de amor */
-@keyframes focosRojos {
-    0% { 
-        box-shadow: 0px 0px 12px #ff0055, 0px 0px 25px rgba(255, 0, 85, 0.6), inset 0px 0px 10px #ff0055; 
-    }
-    100% { 
-        box-shadow: 0px 0px 25px #ff0055, 0px 0px 50px #ff007f, 0px 0px 70px #ff1493, inset 0px 0px 20px #ff007f; 
-    }
+@keyframes flotarCentro {
+    0% { transform: scale(1.03) translateY(0px); }
+    100% { transform: scale(1.05) translateY(-12px); }
 }
 
-@keyframes focosDoradoRosa {
-    0% { 
-        box-shadow: 0px 0px 12px #ff2a75, 0px 0px 25px rgba(255, 215, 0, 0.6), inset 0px 0px 10px #ffd700; 
-    }
-    100% { 
-        box-shadow: 0px 0px 25px #ff2a75, 0px 0px 50px #ffd700, 0px 0px 70px #ff2a75, inset 0px 0px 20px #ffd700; 
-    }
+@keyframes flotarDer {
+    0% { transform: rotate(3deg) translateY(0px); }
+    100% { transform: rotate(1.5deg) translateY(-10px); }
 }
 
-@keyframes focosPurpuraRosa {
-    0% { 
-        box-shadow: 0px 0px 12px #ff00ab, 0px 0px 25px rgba(168, 85, 247, 0.6), inset 0px 0px 10px #ff00ab; 
-    }
-    100% { 
-        box-shadow: 0px 0px 25px #ff00ab, 0px 0px 50px #a855f7, 0px 0px 70px #ff00ab, inset 0px 0px 20px #a855f7; 
-    }
-}
-
-/* --- FRASES EN LA PARTE INFERIOR: SOLO LETRAS CON MOVIMIENTO IZQ-DER --- */
+/* --- FRASES EN LA PARTE INFERIOR --- */
 .frase-amor-container {
     text-align: center;
-    margin-top: 35px;
+    margin-top: 40px;
     margin-bottom: 25px;
     padding: 0px;
     background: transparent !important;
     border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
     min-height: 80px;
     display: flex;
     align-items: center;
@@ -166,7 +142,7 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
 
 .frase-texto-3d {
     font-family: 'Montserrat', 'Arial Black', sans-serif;
-    font-size: 2rem;
+    font-size: 2.1rem;
     font-weight: 900;
     letter-spacing: 2px;
     display: inline-block;
@@ -176,7 +152,6 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    /* Movimiento de izquierda a derecha, gradiente continuo y resplandor neón */
     animation: 
         moverIzquierdaDerecha 3.5s ease-in-out infinite alternate,
         moverColores 5s linear infinite,
@@ -185,7 +160,7 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
 
 /* Cursor de tipeo */
 .cursor-tipeo {
-    font-size: 2rem;
+    font-size: 2.1rem;
     font-weight: 900;
     color: #00ffff;
     margin-left: 4px;
@@ -198,7 +173,7 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     50% { opacity: 0; }
 }
 
-/* Elementos flotantes de fondo (estrellas, luna, corazones) */
+/* Elementos flotantes de fondo */
 .sky-container {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -317,7 +292,7 @@ if os.path.exists(CARPETA_FOTOS):
                     img = ImageOps.exif_transpose(img)
                     placeholders[i].image(img, use_container_width=True)
                 
-                # Efecto de máquina de escribir para la frase en la parte de abajo
+                # Efecto de máquina de escribir para la frase
                 texto_parcial = ""
                 velocidad_letra = 0.04
                 
@@ -343,7 +318,7 @@ if os.path.exists(CARPETA_FOTOS):
                     unsafe_allow_html=True
                 )
                 
-                # DURACIÓN DUPLICADA: Permanece 12 segundos visibles en pantalla por cada grupo
+                # Duración de 12 segundos por trío
                 tiempo_escritura = len(frase_actual) * velocidad_letra
                 tiempo_restante = max(6.0, 12.0 - tiempo_escritura)
                 time.sleep(tiempo_restante)
