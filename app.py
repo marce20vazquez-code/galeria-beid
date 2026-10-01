@@ -42,26 +42,54 @@ div[data-testid="stImage"] {
     align-items: center;
 }
 
-/* Animación de Giro 3D al aparecer las fotos de 3 en 3 */
+/* Base de imágenes */
 div[data-testid="stImage"] img {
-    border-radius: 18px;
-    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
     max-height: 52vh;
     width: 100%;
     object-fit: cover;
-    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, balanceoSuave 4s ease-in-out infinite alternate 1.2s;
     transform-style: preserve-3d;
 }
 
+/* --- MARCOS DE COLORES INDIVIDUALES Y RESPLANDOR PARA CADA FOTO --- */
+
+/* Foto 1 (Izquierda) - Resplandor Rosa Neón */
+div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] img {
+    border: 4px solid #ff2a75;
+    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorRosa 3s ease-in-out infinite alternate 1.2s;
+}
+
+/* Foto 2 (Centro) - Resplandor Dorado Neón */
+div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
+    border: 4px solid #ffd700;
+    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorDorado 3s ease-in-out infinite alternate 1.2s;
+}
+
+/* Foto 3 (Derecha) - Resplandor Púrpura / Turquesa Neón */
+div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
+    border: 4px solid #a855f7;
+    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
+}
+
+/* Animaciones de Giro 3D y Efecto Pulsante de Colores */
 @keyframes girarFoto {
     0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
     100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
 }
 
-@keyframes balanceoSuave {
-    0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-6px) rotate(1.2deg); }
-    100% { transform: translateY(6px) rotate(-1.2deg); }
+@keyframes resplandorRosa {
+    0% { box-shadow: 0px 0px 15px rgba(255, 42, 117, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(255, 42, 117, 1), 0px 0px 15px #ff2a75; transform: translateY(-8px); }
+}
+
+@keyframes resplandorDorado {
+    0% { box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(255, 215, 0, 1), 0px 0px 15px #ffd700; transform: translateY(-8px); }
+}
+
+@keyframes resplandorPurpura {
+    0% { box-shadow: 0px 0px 15px rgba(168, 85, 247, 0.5); transform: translateY(0px); }
+    100% { box-shadow: 0px 0px 35px rgba(168, 85, 247, 1), 0px 0px 15px #a855f7; transform: translateY(-8px); }
 }
 
 /* Estilo base de la caja de las frases */
@@ -196,7 +224,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️✨"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA (3 FOTOS A LA VEZ CON GIRO 3D) ---
+# --- REPRODUCCIÓN AUTOMÁTICA (3 FOTOS A LA VEZ CON GIRO Y RESPLANDOR DE COLOR) ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -208,10 +236,8 @@ if os.path.exists(CARPETA_FOTOS):
     if archivos_completos:
         archivos_completos.sort()
         
-        # Agrupar la lista de fotos en tríos
         grupos_de_tres = [archivos_completos[i:i + 3] for i in range(0, len(archivos_completos), 3)]
         
-        # Crear 3 columnas en la interfaz
         col1, col2, col3 = st.columns(3)
         p1, p2, p3 = col1.empty(), col2.empty(), col3.empty()
         placeholders = [p1, p2, p3]
@@ -223,17 +249,14 @@ if os.path.exists(CARPETA_FOTOS):
                 frase_actual = FRASES_DE_AMOR[g_idx % len(FRASES_DE_AMOR)]
                 estilo_anim = f"anim-estilo-{g_idx % 4}"
                 
-                # Limpiar contenedores antes de cargar el nuevo trío
                 for p in placeholders:
                     p.empty()
                 
-                # Mostrar hasta 3 imágenes simultáneamente
                 for i, ruta in enumerate(trio):
                     img = Image.open(ruta)
                     img = ImageOps.exif_transpose(img)
                     placeholders[i].image(img, use_container_width=True)
                 
-                # Efecto Máquina de Escribir para la frase
                 texto_parcial = ""
                 velocidad_letra = 0.035
                 
@@ -245,13 +268,11 @@ if os.path.exists(CARPETA_FOTOS):
                     )
                     time.sleep(velocidad_letra)
                 
-                # Mantener frase completa
                 contenedor_frase.markdown(
                     f'<div class="frase-amor {estilo_anim}">{frase_actual}</div>',
                     unsafe_allow_html=True
                 )
                 
-                # Tiempo de permanencia antes del siguiente trío
                 tiempo_escritura = len(frase_actual) * velocidad_letra
                 tiempo_restante = max(2.0, 6.0 - tiempo_escritura)
                 time.sleep(tiempo_restante)
