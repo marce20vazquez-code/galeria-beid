@@ -8,7 +8,7 @@ import gdown
 st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
-# --- LISTA AMPLIADA DE FRASES DE AMOR ---
+# --- LISTA DE FRASES DE AMOR ---
 FRASES_DE_AMOR = [
     "Eres mi lugar favorito en el mundo. ❤️",
     "Cada día a tu lado es un regalo hermoso. 💖",
@@ -57,7 +57,7 @@ st.markdown("""
         100% { transform: scale(1.08) translateY(6px); opacity: 0.95; }
     }
 
-    /* Estilo para el texto de las frases de amor */
+    /* Estilo y movimiento continuo para las frases de amor */
     .frase-amor {
         text-align: center;
         font-size: 26px;
@@ -68,14 +68,21 @@ st.markdown("""
         margin-bottom: 20px;
         padding: 12px 18px;
         background: rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        text-shadow: 0px 2px 8px rgba(255, 51, 102, 0.3);
-        animation: fadeIn 1.5s ease-in-out;
+        border-radius: 15px;
+        text-shadow: 0px 2px 12px rgba(255, 51, 102, 0.4);
+        animation: entrarFrase 1s ease-out, flotarFrase 3s ease-in-out infinite alternate;
     }
 
-    @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
+    /* Animación de entrada de la frase */
+    @keyframes entrarFrase {
+        0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+        100% { opacity: 1; transform: translateY(0px) scale(1); }
+    }
+
+    /* Movimiento continuo de flotación suave */
+    @keyframes flotarFrase {
+        0% { transform: translateY(0px); text-shadow: 0px 2px 10px rgba(255, 51, 102, 0.3); }
+        100% { transform: translateY(-6px); text-shadow: 0px 4px 18px rgba(255, 51, 102, 0.7); }
     }
 
     /* Fondo con lluvia intensa de corazones grandes */
@@ -130,7 +137,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA CON FOTOS Y FRASES ---
+# --- REPRODUCCIÓN AUTOMÁTICA CON FOTOS Y FRASES ANIMADAS ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
