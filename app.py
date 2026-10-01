@@ -4,55 +4,38 @@ import streamlit as st
 from PIL import Image
 import gdown
 
-# Configuración de la página
+# Configuración de la interfaz
 st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
-# --- ANIMACIONES CSS (Movimiento Ken Burns a la foto + Corazones) ---
+# --- ANIMACIÓN CSS (Corazones flotantes) ---
 st.markdown("""
     <style>
-    /* Efecto Ken Burns: Zoom suave y ligero desplazamiento en las fotos */
     div[data-testid="stImage"] img {
-        border-radius: 20px;
-        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+        animation: zoomFade 1.5s ease-in-out forwards;
+        border-radius: 15px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
         max-height: 75vh;
         object-fit: contain;
-        animation: kenBurns 6s ease-in-out infinite alternate;
     }
-
-    @keyframes kenBurns {
-        0% {
-            transform: scale(1) translateY(0px);
-            opacity: 0.85;
-        }
-        50% {
-            transform: scale(1.05) translateY(-6px);
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.08) translateY(6px);
-            opacity: 0.95;
-        }
+    @keyframes zoomFade {
+        0% { opacity: 0.5; transform: scale(0.98); }
+        100% { opacity: 1; transform: scale(1); }
     }
-
-    /* Fondo con lluvia continua de corazones */
     .heart-container {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
         pointer-events: none; overflow: hidden; z-index: 99999;
     }
-
     .heart {
         position: absolute; bottom: -20px; color: #ff3366; font-size: 24px;
         animation: floatUp 4s linear infinite; opacity: 0.8;
     }
-
     @keyframes floatUp {
         0% { transform: translateY(0) rotate(0deg); opacity: 1; }
         100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
     </style>
-
     <div class="heart-container">
         <div class="heart" style="left: 10%; animation-delay: 0s; animation-duration: 3.5s;">❤️</div>
         <div class="heart" style="left: 25%; animation-delay: 1.2s; animation-duration: 4s;">💖</div>
@@ -77,10 +60,10 @@ def descargar_fotos_de_drive():
         except Exception as e:
             st.error(f"Ocurrió un error al conectar con Drive: {e}")
 
-with st.spinner("Descargando fotos desde Google Drive... ❤️"):
+with st.spinner("Descargando fotos desde Google Drive... (esto puede tardar un poco la primera vez) ❤️"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA CON MOVIMIENTO ---
+# --- MOSTRAR GALERÍA AUTOMÁTICA ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -92,14 +75,16 @@ if os.path.exists(CARPETA_FOTOS):
     if archivos_completos:
         archivos_completos.sort()
         
+        # Creamos un contenedor vacío donde las fotos se irán reemplazando
         contenedor_foto = st.empty()
         
-        # Bucle continuo de la galería
+        # Bucle infinito para que la presentación nunca se detenga
         while True:
             for ruta in archivos_completos:
                 img = Image.open(ruta)
+                # Mostramos la foto en el contenedor
                 contenedor_foto.image(img, use_container_width=True)
-                # Duración de 6 segundos por foto para permitir apreciar el movimiento
-                time.sleep(6)
+                # Pausa de 4 segundos antes de mostrar la siguiente foto
+                time.sleep(4)
     else:
         st.warning("No se encontraron fotos. Asegúrate de haber subido imágenes a tu carpeta de Drive.")
