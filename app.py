@@ -8,7 +8,31 @@ import gdown
 st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
-# --- ANIMACIONES CSS (Más corazones grandes + Movimiento Ken Burns) ---
+# --- LISTA AMPLIADA DE FRASES DE AMOR ---
+FRASES_DE_AMOR = [
+    "Eres mi lugar favorito en el mundo. ❤️",
+    "Cada día a tu lado es un regalo hermoso. 💖",
+    "Gracias por hacer mi vida más bonita. 💕",
+    "Tú y yo, mi momento preferido del día. 💗",
+    "Contigo todo es infinitamente mejor. 💘",
+    "Mi sonrisa favorita es la que tú me sacas. ✨",
+    "El mejor recuerdo siempre es el que construyo a tu lado. 🥰",
+    "Simplemente gracias por existir y estar en mi vida. 🌹",
+    "Juntos es mi lugar favorito. ❤️",
+    "Si pudiera elegir un momento, elegiría cualquier instante contigo. 💫",
+    "Eres la historia más bonita que el destino escribió en mi vida. 📖✨",
+    "Mi felicidad tiene tu nombre y tu sonrisa. 🥰",
+    "Amarte es la decisión más fácil y hermosa que he tomado. 💖",
+    "En tus ojos encontré mi hogar y en tu abrazo mi paz. 💓",
+    "Cada segundo a tu lado vale por mil recuerdos. ⏳❤️",
+    "No necesito el mundo entero, solo tu mano en la mía. 🤝💕",
+    "Le das color, luz y sentido a todos mis días. ☀️💗",
+    "Coincidir contigo es lo mejor que me ha pasado. 🌸✨",
+    "Eres mi presente, mi futuro y mi pensamiento favorito de cada día. 💖",
+    "Haces que lo ordinario se vuelva extraordinario. 💘"
+]
+
+# --- ANIMACIONES Y ESTILOS CSS ---
 st.markdown("""
     <style>
     /* Centrado de la imagen */
@@ -18,28 +42,40 @@ st.markdown("""
         align-items: center;
     }
     
-    /* Movimiento suave estilo Ken Burns */
+    /* Movimiento suave estilo Ken Burns a la foto */
     div[data-testid="stImage"] img {
         border-radius: 20px;
         box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
-        max-height: 75vh;
+        max-height: 70vh;
         object-fit: contain;
         animation: kenBurns 6s ease-in-out infinite alternate;
     }
 
     @keyframes kenBurns {
-        0% {
-            transform: scale(1) translateY(0px);
-            opacity: 0.85;
-        }
-        50% {
-            transform: scale(1.05) translateY(-6px);
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.08) translateY(6px);
-            opacity: 0.95;
-        }
+        0% { transform: scale(1) translateY(0px); opacity: 0.85; }
+        50% { transform: scale(1.05) translateY(-6px); opacity: 1; }
+        100% { transform: scale(1.08) translateY(6px); opacity: 0.95; }
+    }
+
+    /* Estilo para el texto de las frases de amor */
+    .frase-amor {
+        text-align: center;
+        font-size: 26px;
+        font-weight: 600;
+        color: #ff3366;
+        font-family: 'Georgia', serif;
+        margin-top: 18px;
+        margin-bottom: 20px;
+        padding: 12px 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        text-shadow: 0px 2px 8px rgba(255, 51, 102, 0.3);
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     /* Fondo con lluvia intensa de corazones grandes */
@@ -94,7 +130,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA ---
+# --- REPRODUCCIÓN AUTOMÁTICA CON FOTOS Y FRASES ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -107,12 +143,18 @@ if os.path.exists(CARPETA_FOTOS):
         archivos_completos.sort()
         
         contenedor_foto = st.empty()
+        contenedor_frase = st.empty()
         
         while True:
-            for ruta in archivos_completos:
+            for idx, ruta in enumerate(archivos_completos):
+                frase_actual = FRASES_DE_AMOR[idx % len(FRASES_DE_AMOR)]
+                
                 img = Image.open(ruta)
-                img = ImageOps.exif_transpose(img)  # Corrige orientación automática
+                img = ImageOps.exif_transpose(img)
+                
                 contenedor_foto.image(img, use_container_width=True)
+                contenedor_frase.markdown(f'<div class="frase-amor">{frase_actual}</div>', unsafe_allow_html=True)
+                
                 time.sleep(6)
     else:
         st.warning("No se encontraron fotos. Asegúrate de haber subido imágenes a tu carpeta de Drive.")
