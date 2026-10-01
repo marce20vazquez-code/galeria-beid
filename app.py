@@ -10,12 +10,15 @@ st.set_page_config(page_title="RECUERDOS", layout="wide")
 # --- ANIMACIONES Y ESTILOS CSS ---
 st.markdown("""
 <style>
+/* Importar tipografía Montserrat para el estilo 3D */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap');
+
 /* --- TÍTULO 3D, MULTICOLOR, ANIMADO Y CON BRILLO --- */
 .titulo-container {
     text-align: center;
     margin-top: -10px;
     margin-bottom: 30px;
-    perspective: 800deg;
+    perspective: 800px;
 }
 
 .titulo-3d {
@@ -40,7 +43,7 @@ st.markdown("""
     filter: drop-shadow(0px 10px 15px rgba(0, 0, 0, 0.5));
 }
 
-/* Movimiento 3D y flotación del título */
+/* Movimiento 3D y flotación */
 @keyframes animGiro3D {
     0% {
         transform: rotateX(15deg) rotateY(-12deg) translateY(0px) scale(0.98);
@@ -63,10 +66,10 @@ st.markdown("""
 /* Efecto de resplandor y brillo multicolor */
 @keyframes brilloNeon {
     0% {
-        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.6)) drop-shadow(0px 0px 20px rgba(255, 215, 0, 0.4));
+        filter: drop-shadow(0px 0px 8px rgba(255, 0, 127, 0.7)) drop-shadow(0px 0px 18px rgba(255, 215, 0, 0.5));
     }
     100% {
-        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 35px rgba(168, 85, 247, 0.8));
+        filter: drop-shadow(0px 0px 20px rgba(0, 255, 255, 0.9)) drop-shadow(0px 0px 32px rgba(168, 85, 247, 0.8));
     }
 }
 
@@ -87,26 +90,21 @@ div[data-testid="stImage"] img {
 }
 
 /* --- MARCOS DE COLORES INDIVIDUALES Y RESPLANDOR PARA CADA FOTO --- */
-
-/* Foto 1 (Izquierda) - Resplandor Rosa Neón */
 div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] img {
     border: 4px solid #ff2a75;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorRosa 3s ease-in-out infinite alternate 1.2s;
 }
 
-/* Foto 2 (Centro) - Resplandor Dorado Neón */
 div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
     border: 4px solid #ffd700;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorDorado 3s ease-in-out infinite alternate 1.2s;
 }
 
-/* Foto 3 (Derecha) - Resplandor Púrpura Neón */
 div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     border: 4px solid #a855f7;
     animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
 }
 
-/* Animaciones de Giro 3D y Efecto Pulsante de Colores para las fotos */
 @keyframes girarFoto {
     0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
     100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
@@ -127,81 +125,57 @@ div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
     100% { box-shadow: 0px 0px 35px rgba(168, 85, 247, 1), 0px 0px 15px #a855f7; transform: translateY(-8px); }
 }
 
-/* Estilo base de la caja de las frases */
-.frase-amor {
+/* --- FRASES CON ESTILO IDÉNTICO AL TÍTULO (3D, GRADIENTE Y BRILLO) --- */
+.frase-amor-container {
     text-align: center;
-    font-size: 26px;
-    font-weight: 600;
-    color: #ff3366;
-    font-family: 'Georgia', serif;
     margin-top: 25px;
     margin-bottom: 20px;
-    padding: 16px 24px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    box-shadow: 0px 8px 25px rgba(255, 51, 102, 0.3);
-    backdrop-filter: blur(8px);
-    min-height: 85px;
+    padding: 18px 25px;
+    background: rgba(15, 15, 25, 0.45);
+    border-radius: 22px;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+    min-height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
+    perspective: 800px;
+}
+
+.frase-texto-3d {
+    font-family: 'Montserrat', 'Arial Black', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    display: inline-block;
+    
+    /* Mismo gradiente multicolor que el título */
+    background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7, #ff007f);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Mismo movimiento de colores y resplandor neón */
+    animation: 
+        moverColores 5s linear infinite,
+        brilloNeon 2.5s ease-in-out infinite alternate,
+        animGiro3D 4s ease-in-out infinite alternate;
 }
 
 /* Cursor parpadeante */
 .cursor-tipeo {
-    font-weight: 300;
-    color: #ffd700;
-    margin-left: 3px;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #00ffff;
+    margin-left: 4px;
     animation: parpadeo 0.6s infinite;
+    text-shadow: 0 0 10px #00ffff;
 }
 
 @keyframes parpadeo {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-}
-
-/* Animaciones para las frases */
-.anim-estilo-0 {
-    animation: entradaRebote 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), flotarSuave 3s ease-in-out infinite alternate 0.8s;
-}
-@keyframes entradaRebote {
-    0% { opacity: 0; transform: scale(0.3) translateY(30px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.anim-estilo-1 {
-    animation: entradaSubir 0.9s ease-out, brilloResplandor 2.5s ease-in-out infinite alternate 0.9s;
-}
-@keyframes entradaSubir {
-    0% { opacity: 0; transform: translateY(40px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-.anim-estilo-2 {
-    animation: entradaGiro3D 1s ease-out, flotarSuave 3.2s ease-in-out infinite alternate 1s;
-}
-@keyframes entradaGiro3D {
-    0% { opacity: 0; transform: perspective(400deg) rotateX(-80deg); }
-    100% { opacity: 1; transform: perspective(400deg) rotateX(0deg); }
-}
-
-.anim-estilo-3 {
-    animation: entradaIzquierda 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55), flotarSuave 2.8s ease-in-out infinite alternate 0.9s;
-}
-@keyframes entradaIzquierda {
-    0% { opacity: 0; transform: translateX(-50px) scale(0.9); }
-    100% { opacity: 1; transform: translateX(0) scale(1); }
-}
-
-@keyframes flotarSuave {
-    0% { transform: translateY(0px); text-shadow: 0px 2px 10px rgba(255, 51, 102, 0.4); }
-    100% { transform: translateY(-8px); text-shadow: 0px 6px 20px rgba(255, 215, 0, 0.8); }
-}
-
-@keyframes brilloResplandor {
-    0% { transform: translateY(0px); text-shadow: 0px 2px 8px rgba(255, 51, 102, 0.4); }
-    100% { transform: translateY(-6px); text-shadow: 0px 0px 22px rgba(255, 255, 255, 0.9), 0px 0px 30px rgba(255, 215, 0, 1); }
 }
 
 /* Lluvia de lunas, estrellas y corazones */
@@ -311,7 +285,6 @@ if os.path.exists(CARPETA_FOTOS):
         while True:
             for g_idx, trio in enumerate(grupos_de_tres):
                 frase_actual = FRASES_DE_AMOR[g_idx % len(FRASES_DE_AMOR)]
-                estilo_anim = f"anim-estilo-{g_idx % 4}"
                 
                 for p in placeholders:
                     p.empty()
@@ -327,13 +300,22 @@ if os.path.exists(CARPETA_FOTOS):
                 for letra in frase_actual:
                     texto_parcial += letra
                     contenedor_frase.markdown(
-                        f'<div class="frase-amor {estilo_anim}">{texto_parcial}<span class="cursor-tipeo">|</span></div>',
+                        f'''
+                        <div class="frase-amor-container">
+                            <span class="frase-texto-3d">{texto_parcial}</span>
+                            <span class="cursor-tipeo">|</span>
+                        </div>
+                        ''',
                         unsafe_allow_html=True
                     )
                     time.sleep(velocidad_letra)
                 
                 contenedor_frase.markdown(
-                    f'<div class="frase-amor {estilo_anim}">{frase_actual}</div>',
+                    f'''
+                    <div class="frase-amor-container">
+                        <span class="frase-texto-3d">{frase_actual}</span>
+                    </div>
+                    ''',
                     unsafe_allow_html=True
                 )
                 
