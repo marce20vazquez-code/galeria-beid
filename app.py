@@ -8,7 +8,7 @@ import gdown
 st.set_page_config(page_title="BEID", layout="centered")
 st.title("📸 BEID")
 
-# --- ANIMACIONES CSS (Centrado + Movimiento Ken Burns + Corazones) ---
+# --- ANIMACIONES CSS (Más corazones grandes + Movimiento Ken Burns) ---
 st.markdown("""
     <style>
     /* Centrado de la imagen */
@@ -42,7 +42,7 @@ st.markdown("""
         }
     }
 
-    /* Fondo con lluvia continua de corazones */
+    /* Fondo con lluvia intensa de corazones grandes */
     .heart-container {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -50,23 +50,30 @@ st.markdown("""
     }
 
     .heart {
-        position: absolute; bottom: -20px; color: #ff3366; font-size: 24px;
-        animation: floatUp 4s linear infinite; opacity: 0.8;
+        position: absolute; 
+        bottom: -50px; 
+        color: #ff3366;
+        animation: floatUp 3.2s linear infinite; 
+        opacity: 0.85;
     }
 
     @keyframes floatUp {
         0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        100% { transform: translateY(-105vh) rotate(360deg); opacity: 0; }
     }
     </style>
 
     <div class="heart-container">
-        <div class="heart" style="left: 10%; animation-delay: 0s; animation-duration: 3.5s;">❤️</div>
-        <div class="heart" style="left: 25%; animation-delay: 1.2s; animation-duration: 4s;">💖</div>
-        <div class="heart" style="left: 40%; animation-delay: 0.5s; animation-duration: 3s;">💗</div>
-        <div class="heart" style="left: 60%; animation-delay: 2s; animation-duration: 4.5s;">❤️</div>
-        <div class="heart" style="left: 75%; animation-delay: 0.8s; animation-duration: 3.8s;">💘</div>
-        <div class="heart" style="left: 90%; animation-delay: 1.5s; animation-duration: 4.2s;">💖</div>
+        <div class="heart" style="left: 5%; font-size: 42px; animation-delay: 0s; animation-duration: 3s;">❤️</div>
+        <div class="heart" style="left: 15%; font-size: 58px; animation-delay: 1s; animation-duration: 3.8s;">💖</div>
+        <div class="heart" style="left: 25%; font-size: 38px; animation-delay: 0.4s; animation-duration: 3.1s;">💗</div>
+        <div class="heart" style="left: 35%; font-size: 62px; animation-delay: 1.8s; animation-duration: 4.2s;">❤️</div>
+        <div class="heart" style="left: 45%; font-size: 48px; animation-delay: 0.2s; animation-duration: 3.4s;">💕</div>
+        <div class="heart" style="left: 55%; font-size: 54px; animation-delay: 2.1s; animation-duration: 3.9s;">💖</div>
+        <div class="heart" style="left: 65%; font-size: 40px; animation-delay: 0.7s; animation-duration: 3.2s;">💗</div>
+        <div class="heart" style="left: 75%; font-size: 60px; animation-delay: 1.4s; animation-duration: 4.1s;">❤️</div>
+        <div class="heart" style="left: 85%; font-size: 45px; animation-delay: 0.5s; animation-duration: 3.3s;">💘</div>
+        <div class="heart" style="left: 95%; font-size: 52px; animation-delay: 1.9s; animation-duration: 3.6s;">💖</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -87,7 +94,7 @@ def descargar_fotos_de_drive():
 with st.spinner("Descargando fotos desde Google Drive... ❤️"):
     descargar_fotos_de_drive()
 
-# --- REPRODUCCIÓN AUTOMÁTICA CON CORRECCIÓN DE ROTACIÓN ---
+# --- REPRODUCCIÓN AUTOMÁTICA ---
 if os.path.exists(CARPETA_FOTOS):
     archivos_completos = []
     
@@ -104,7 +111,7 @@ if os.path.exists(CARPETA_FOTOS):
         while True:
             for ruta in archivos_completos:
                 img = Image.open(ruta)
-                img = ImageOps.exif_transpose(img)  # Corrige la orientación automática
+                img = ImageOps.exif_transpose(img)  # Corrige orientación automática
                 contenedor_foto.image(img, use_container_width=True)
                 time.sleep(6)
     else:
