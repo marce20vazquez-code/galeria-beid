@@ -71,50 +71,81 @@ div[data-testid="stImage"] {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px;
 }
 
 div[data-testid="stImage"] img {
-    border-radius: 20px;
+    border-radius: 22px;
     max-height: 50vh;
     width: 100%;
     object-fit: cover;
     transform-style: preserve-3d;
 }
 
-/* Marcos de fotos con resplandor */
+/* --- CONTORNOS Y FOCOS DE AMOR PARA LAS FOTOS --- */
+
+/* Foto 1: Focos de Amor en Rojo Pasión */
 div[data-testid="column"]:nth-child(1) div[data-testid="stImage"] img {
-    border: 4px solid #ff2a75;
-    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorRosa 3s ease-in-out infinite alternate 1.2s;
+    border: 5px solid #ff0055;
+    outline: 2px dashed #ff75a0;
+    outline-offset: 4px;
+    animation: 
+        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+        focosRojos 1.8s ease-in-out infinite alternate 1.2s;
 }
 
+/* Foto 2: Focos de Amor en Dorado y Rosa Neón */
 div[data-testid="column"]:nth-child(2) div[data-testid="stImage"] img {
-    border: 4px solid #ffd700;
-    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorDorado 3s ease-in-out infinite alternate 1.2s;
+    border: 5px solid #ff2a75;
+    outline: 2px dashed #ffd700;
+    outline-offset: 4px;
+    animation: 
+        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+        focosDoradoRosa 1.8s ease-in-out infinite alternate 1.2s;
 }
 
+/* Foto 3: Focos de Amor en Púrpura y Magentafuego */
 div[data-testid="column"]:nth-child(3) div[data-testid="stImage"] img {
-    border: 4px solid #a855f7;
-    animation: girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, resplandorPurpura 3s ease-in-out infinite alternate 1.2s;
+    border: 5px solid #ff00ab;
+    outline: 2px dashed #c084fc;
+    outline-offset: 4px;
+    animation: 
+        girarFoto 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+        focosPurpuraRosa 1.8s ease-in-out infinite alternate 1.2s;
 }
 
+/* Animación de entrada con giro */
 @keyframes girarFoto {
     0% { transform: perspective(800deg) rotateY(-180deg) scale(0.3); opacity: 0; }
     100% { transform: perspective(800deg) rotateY(0deg) scale(1); opacity: 1; }
 }
 
-@keyframes resplandorRosa {
-    0% { box-shadow: 0px 0px 15px rgba(255, 42, 117, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(255, 42, 117, 1); }
+/* Efectos de luz/focos vibrantes de amor */
+@keyframes focosRojos {
+    0% { 
+        box-shadow: 0px 0px 12px #ff0055, 0px 0px 25px rgba(255, 0, 85, 0.6), inset 0px 0px 10px #ff0055; 
+    }
+    100% { 
+        box-shadow: 0px 0px 25px #ff0055, 0px 0px 50px #ff007f, 0px 0px 70px #ff1493, inset 0px 0px 20px #ff007f; 
+    }
 }
 
-@keyframes resplandorDorado {
-    0% { box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(255, 215, 0, 1); }
+@keyframes focosDoradoRosa {
+    0% { 
+        box-shadow: 0px 0px 12px #ff2a75, 0px 0px 25px rgba(255, 215, 0, 0.6), inset 0px 0px 10px #ffd700; 
+    }
+    100% { 
+        box-shadow: 0px 0px 25px #ff2a75, 0px 0px 50px #ffd700, 0px 0px 70px #ff2a75, inset 0px 0px 20px #ffd700; 
+    }
 }
 
-@keyframes resplandorPurpura {
-    0% { box-shadow: 0px 0px 15px rgba(168, 85, 247, 0.5); }
-    100% { box-shadow: 0px 0px 35px rgba(168, 85, 247, 1); }
+@keyframes focosPurpuraRosa {
+    0% { 
+        box-shadow: 0px 0px 12px #ff00ab, 0px 0px 25px rgba(168, 85, 247, 0.6), inset 0px 0px 10px #ff00ab; 
+    }
+    100% { 
+        box-shadow: 0px 0px 25px #ff00ab, 0px 0px 50px #a855f7, 0px 0px 70px #ff00ab, inset 0px 0px 20px #a855f7; 
+    }
 }
 
 /* --- FRASES EN LA PARTE INFERIOR: SOLO LETRAS CON MOVIMIENTO IZQ-DER --- */
