@@ -24,6 +24,41 @@
             position: relative;
         }
 
+        /* Pantalla de inicio para activar audio y pantalla completa */
+        #overlay-inicio {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(8, 0, 20, 0.95);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(15px);
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #overlay-inicio h2 {
+            font-size: 2.2rem;
+            color: #fff;
+            text-shadow: 0 0 20px #ff007f;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        #overlay-inicio p {
+            font-size: 1.2rem;
+            color: #00ffff;
+            animation: latir 1.5s infinite;
+        }
+
+        @keyframes latir {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
         #contenedor-corazones {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -105,7 +140,7 @@
 
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        .polaroid img { width: 206px; height: 235px; object-fit: cover; border-radius: 3px; }
+        .polaroid img { width: 206px; height: 235px; object-fit: cover; border-radius: 3px; display: block; }
 
         .texto-polaroid {
             font-family: 'Caveat', cursive; font-size: 1.35rem; color: #1a1a1a;
@@ -120,10 +155,16 @@
 </head>
 <body>
 
+<div id="overlay-inicio" onclick="iniciarExperiencia()">
+    <h2>Nuestra Galería de Recuerdos 💖</h2>
+    <p>✨ Toca la pantalla para entrar ✨</p>
+</div>
+
 <div id="contenedor-corazones"></div>
 <audio id="musicaFondo" loop></audio>
 
 <div class="top-controls">
+    <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
     <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
 </div>
 
@@ -132,7 +173,7 @@
 <div class="galeria-caja">
     <div class="cuerda"></div>
     <div class="riel-desplazamiento" id="riel-fotos">
-        <!-- Las fotos se cargarán automáticamente -->
+        <!-- Fotos dinámicas -->
     </div>
 </div>
 
@@ -151,19 +192,21 @@ const LISTA_DE_FRASES = [
 ];
 
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
+const audio = document.getElementById('musicaFondo');
+const btnMusica = document.getElementById('btnMusica');
 
 async function cargarArchivosAutomaticos() {
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
         const dataFotos = await resFotos.json();
         const fotos = Array.isArray(dataFotos) 
-            ? dataFotos.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i)).map(f => f.path)
+            ? dataFotos.filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)).map(f => f.download_url)
             : [];
 
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
         const dataMusica = await resMusica.json();
         const canciones = Array.isArray(dataMusica) 
-            ? dataMusica.filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i)).map(f => f.path)
+            ? dataMusica.filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i)).map(f => f.download_url)
             : [];
 
         inicializarGaleria(fotos, canciones);
@@ -174,21 +217,22 @@ async function cargarArchivosAutomaticos() {
 
 function inicializarGaleria(fotos, canciones) {
     const riel = document.getElementById('riel-fotos');
-    const audio = document.getElementById('musicaFondo');
     
+    // Selección aleatoria de canción
     if (canciones.length > 0) {
-        audio.src = canciones[0];
+        const indiceAleatorio = Math.floor(Math.random() * canciones.length);
+        audio.src = canciones[indiceAleatorio];
     }
 
     if (fotos.length > 0) {
         const fotosTotales = [...fotos, ...fotos];
         let htmlFotos = "";
-        fotosTotales.forEach((foto, idx) => {
+        fotosTotales.forEach((fotoUrl, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
             htmlFotos += `
             <div class="item-cuerda">
                 <div class="polaroid">
-                    <img src="${foto}" alt="Recuerdo" />
+                    <img src="${fotoUrl}" alt="Recuerdo" />
                     <p class="texto-polaroid">${frase}</p>
                 </div>
             </div>`;
@@ -197,8 +241,17 @@ function inicializarGaleria(fotos, canciones) {
     }
 }
 
-const audio = document.getElementById('musicaFondo');
-const btnMusica = document.getElementById('btnMusica');
+function iniciarExperiencia() {
+    const overlay = document.getElementById('overlay-inicio');
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
+
+    if (audio.src) {
+        audio.play().then(() => {
+            btnMusica.innerHTML = '🎶 Música: ON';
+        }).catch(err => console.log("Autoplay prevenido por navegador", err));
+    }
+}
 
 function toggleMusica() {
     if (audio.paused) {
@@ -207,6 +260,18 @@ function toggleMusica() {
     } else {
         audio.pause();
         btnMusica.innerHTML = '🎵 Música: OFF';
+    }
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error intentando activar pantalla completa: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
     }
 }
 
