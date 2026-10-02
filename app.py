@@ -38,14 +38,15 @@ st.markdown(
         }
         
         iframe {
-            width: 100vw !important;
+            width: 100% !important;
             height: 100vh !important;
             border: none !important;
         }
         
         body {
             background-color: #080014 !important;
-            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
         }
     </style>
 """,
@@ -168,7 +169,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA HTML Y JS SIN PROBLEMAS DE ESCAPE ---
+# --- ESTRUCTURA HTML Y JS ---
 html_template = """
 <!DOCTYPE html>
 <html>
@@ -580,9 +581,9 @@ setInterval(crearCorazon, 400);
 </html>
 """
 
-# Reemplazamos los comodines para evitar fallos de formato
 html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-components.html(html_completo)
+# Se especifica la altura explícita para que el iframe de Streamlit muestre el contenido
+components.html(html_completo, height=800, scrolling=False)
