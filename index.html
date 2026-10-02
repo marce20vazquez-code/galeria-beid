@@ -100,23 +100,54 @@
             100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
         }
 
-        .titulo-3d {
-            font-size: 2.2rem;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: moverColores 5s infinite, flotarYLatir 3.5s infinite;
-            margin-top: 65px;
+        /* TÍTULO 3D LETRA POR LETRA */
+        .titulo-3d-container {
+            margin-top: 60px;
             z-index: 2;
             text-align: center;
             padding: 0 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            min-height: 55px;
         }
 
-        @keyframes moverColores { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-        @keyframes flotarYLatir { 0%, 100% {transform: translateY(0) scale(1);} 50% {transform: translateY(-8px) scale(1.03);} }
+        .letra-3d {
+            display: inline-block;
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: #ffffff;
+            /* Efecto de volumen 3D con sombras multicapa y neón */
+            text-shadow: 
+                1px 1px 0 #ff007f, 
+                2px 2px 0 #e60073, 
+                3px 3px 0 #cc0066, 
+                4px 4px 0 #99004d, 
+                5px 5px 12px rgba(0, 0, 0, 0.9),
+                0 0 15px rgba(0, 255, 255, 0.8);
+            opacity: 0;
+            transform: translateY(-25px) scale(0.5) rotateX(45deg);
+            transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: flotarLatir 3.5s ease-in-out infinite alternate;
+        }
+
+        .letra-3d.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotateX(0deg);
+        }
+
+        .letra-3d.desaparecer {
+            opacity: 0;
+            transform: translateY(25px) scale(0.7);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        @keyframes flotarLatir {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-8px) scale(1.05); }
+        }
 
         .galeria-caja {
             width: 100%;
@@ -152,7 +183,6 @@
 
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        /* Marco contenedor para indicador de carga */
         .contenedor-foto {
             position: relative;
             width: 196px;
@@ -199,7 +229,8 @@
         }
 
         @media (min-width: 768px) {
-            .titulo-3d { font-size: 3.5rem; margin-top: 70px; letter-spacing: 5px; }
+            .titulo-3d-container { margin-top: 65px; gap: 6px; }
+            .letra-3d { font-size: 3.5rem; }
             .btn-control { font-size: 0.85rem; padding: 10px 20px; }
             .top-controls { top: 20px; right: 25px; gap: 12px; }
             .polaroid { width: 240px; }
@@ -223,7 +254,8 @@
     <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
 </div>
 
-<h1 class="titulo-3d">RECUERDOS</h1>
+<!-- Título 3D dinámico -->
+<div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
     <div class="cuerda"></div>
@@ -249,6 +281,48 @@ const LISTA_DE_FRASES = [
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
+
+// ANIMACIÓN DE TÍTULO 3D LETRA POR LETRA Y CICLO DE 30 SEGUNDOS
+function iniciarAnimacionTitulo() {
+    const container = document.getElementById('titulo3D');
+    const texto = "RECUERDOS";
+    container.innerHTML = "";
+    
+    const spans = [];
+    for (let i = 0; i < texto.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'letra-3d';
+        span.textContent = texto[i];
+        container.appendChild(span);
+        spans.push(span);
+    }
+
+    function ejecutarCiclo() {
+        // Resetear clases
+        spans.forEach(span => {
+            span.classList.remove('visible', 'desaparecer');
+        });
+
+        // 1. Aparecer letra por letra (180ms de desfase por letra)
+        spans.forEach((span, index) => {
+            setTimeout(() => {
+                span.classList.add('visible');
+            }, index * 180);
+        });
+
+        // 2. A los 25 segundos, desaparece suavemente
+        setTimeout(() => {
+            spans.forEach(span => {
+                span.classList.remove('visible');
+                span.classList.add('desaparecer');
+            });
+        }, 25000);
+    }
+
+    ejecutarCiclo();
+    // Repetir ciclo cada 30 segundos
+    setInterval(ejecutarCiclo, 30000);
+}
 
 async function cargarArchivosAutomaticos() {
     try {
@@ -378,6 +452,7 @@ function crearCorazon() {
 }
 setInterval(crearCorazon, 450);
 
+iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
 </script>
 </body>
