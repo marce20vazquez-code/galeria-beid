@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GALERÍA DE RECUERDOS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1b003a 0%, #080014 100%);
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        #contenedor-corazones {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+
+        .top-controls {
+            position: fixed; top: 20px; right: 25px; z-index: 1000; display: flex; gap: 12px;
+        }
+
+        .btn-control {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem; font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-control:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.4); }
+
+        .corazon-flotante {
+            position: absolute; bottom: -40px;
+            animation: flotarHaciaArriba linear forwards;
+        }
+
+        @keyframes flotarHaciaArriba {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        .titulo-3d {
+            font-size: 3rem; font-weight: 900; letter-spacing: 5px;
+            background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: moverColores 5s infinite, flotarYLatir 3.5s infinite;
+            margin-top: 20px; z-index: 2; text-align: center;
+        }
+
+        @keyframes moverColores { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        @keyframes flotarYLatir { 0%, 100% {transform: translateY(0) scale(1);} 50% {transform: translateY(-10px) scale(1.04);} }
+
+        .galeria-caja {
+            width: 100%; overflow: hidden; position: relative;
+            padding: 60px 0 50px 0;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+        }
+
+        .cuerda {
+            position: absolute; top: 75px; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
+        }
+
+        .riel-desplazamiento {
+            display: flex; width: max-content;
+            animation: desplazar 120s linear infinite;
+        }
+
+        @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .item-cuerda { display: flex; flex-direction: column; align-items: center; margin: 0 32px; position: relative; }
+
+        .polaroid {
+            background: #ffffff; padding: 12px 12px 18px 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            border-radius: 6px; width: 230px;
+            transform-origin: top center;
+            animation: balanceoFoto 3.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
+
+        .polaroid img { width: 206px; height: 235px; object-fit: cover; border-radius: 3px; }
+
+        .texto-polaroid {
+            font-family: 'Caveat', cursive; font-size: 1.35rem; color: #1a1a1a;
+            text-align: center; margin: 12px 0 0 0; font-weight: 600;
+        }
+
+        .frase-bottom {
+            text-align: center; margin-bottom: 25px; font-size: 1.5rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+<div id="contenedor-corazones"></div>
+<audio id="musicaFondo" loop></audio>
+
+<div class="top-controls">
+    <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
+</div>
+
+<h1 class="titulo-3d">RECUERDOS</h1>
+
+<div class="galeria-caja">
+    <div class="cuerda"></div>
+    <div class="riel-desplazamiento" id="riel-fotos">
+        <!-- Las fotos se cargarán automáticamente -->
+    </div>
+</div>
+
+<div class="frase-bottom">Nuestra historia en imágenes 💖 ✨ 🌙</div>
+
+<script>
+const LISTA_DE_FRASES = [
+    "Tú y yo, mi momento preferido del día. 💖✨",
+    "Contigo cada instante se vuelve inolvidable. 🌙✨",
+    "Mi lugar favorito en el mundo siempre es a tu lado. 🌹",
+    "Cada foto guarda una sonrisa que me sacaste. 📸❤",
+    "El mejor capítulo de mi vida lo escribo contigo. 📖💖",
+    "Gracias por iluminar mis días con tu existencia. ✨💫",
+    "Un recuerdo más de todos los que nos faltan por vivir. 🥰",
+    "Amor del bueno, del que hace bien al alma. 💘"
+];
+
+const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
+
+async function cargarArchivosAutomaticos() {
+    try {
+        // Cargar fotos de la carpeta automaticamente
+        const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
+        const dataFotos = await resFotos.json();
+        const fotos = Array.isArray(dataFotos) 
+            ? dataFotos.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i)).map(f => f.path)
+            : [];
+
+        // Cargar canciones de la carpeta automaticamente
+        const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
+        const dataMusica = await resMusica.json();
+        const canciones = Array.isArray(dataMusica) 
+            ? dataMusica.filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i)).map(f => f.path)
+            : [];
+
+        inicializarGaleria(fotos, canciones);
+    } catch (e) {
+        console.error("Error cargando archivos de GitHub", e);
+    }
+}
+
+function inicializarGaleria(fotos, canciones) {
+    const riel = document.getElementById('riel-fotos');
+    const audio = document.getElementById('musicaFondo');
+    
+    if (canciones.length > 0) {
+        audio.src = canciones[0];
+    }
+
+    if (fotos.length > 0) {
+        const fotosTotales = [...fotos, ...fotos];
+        let htmlFotos = "";
+        fotosTotales.forEach((foto, idx) => {
+            const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
+            htmlFotos += `
+            <div class="item-cuerda">
+                <div class="polaroid">
+                    <img src="${foto}" alt="Recuerdo" />
+                    <p class="texto-polaroid">${frase}</p>
+                </div>
+            </div>`;
+        });
+        riel.innerHTML = htmlFotos;
+    }
+}
+
+const audio = document.getElementById('musicaFondo');
+const btnMusica = document.getElementById('btnMusica');
+
+function toggleMusica() {
+    if (audio.paused) {
+        audio.play();
+        btnMusica.innerHTML = '🎶 Música: ON';
+    } else {
+        audio.pause();
+        btnMusica.innerHTML = '🎵 Música: OFF';
+    }
+}
+
+const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨', '🌹'];
+function crearCorazon() {
+    const corazon = document.createElement('div');
+    corazon.classList.add('corazon-flotante');
+    corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
+    corazon.style.left = Math.random() * 100 + 'vw';
+    corazon.style.fontSize = (Math.random() * 20 + 14) + 'px';
+    corazon.style.animationDuration = (Math.random() * 5 + 6) + 's';
+    document.getElementById('contenedor-corazones').appendChild(corazon);
+    setTimeout(() => corazon.remove(), 11000);
+}
+setInterval(crearCorazon, 450);
+
+cargarArchivosAutomaticos();
+</script>
+</body>
+</html>
