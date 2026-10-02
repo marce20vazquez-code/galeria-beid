@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GALERÍA DE RECUERDOS</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,6 @@
         html, body {
             width: 100vw;
             height: 100vh;
-            height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -27,7 +26,7 @@
 
         #overlay-inicio {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(8, 0, 20, 0.95);
             z-index: 99999;
             display: flex;
@@ -36,27 +35,27 @@
             align-items: center;
             cursor: pointer;
             backdrop-filter: blur(15px);
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-            padding: 20px;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
         #overlay-inicio h2 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-size: 2rem;
             color: #fff;
             text-shadow: 0 0 20px #ff007f;
             margin-bottom: 15px;
             text-align: center;
+            padding: 0 20px;
         }
 
         #overlay-inicio p {
-            font-size: clamp(1rem, 3.5vw, 1.3rem);
+            font-size: 1.1rem;
             color: #00ffff;
             animation: latir 1.5s infinite;
         }
 
         @keyframes latir {
             0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.08); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
 
         #contenedor-corazones {
@@ -65,29 +64,29 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
 
+        /* Controles superiores */
         .top-controls {
-            position: fixed; 
-            top: clamp(10px, 2vh, 20px); 
-            right: clamp(10px, 2vw, 25px); 
-            z-index: 1000; 
-            display: flex; 
-            gap: 10px;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
         }
 
         .btn-control {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            padding: clamp(6px, 1.5vh, 10px) clamp(12px, 2vw, 20px);
+            padding: 8px 12px;
             border-radius: 30px;
             font-family: 'Montserrat', sans-serif;
-            font-size: clamp(0.7rem, 2vw, 0.85rem); 
+            font-size: 0.75rem;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
             transition: all 0.3s ease;
-            white-space: nowrap;
         }
 
         .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.4); }
@@ -102,17 +101,18 @@
             100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
         }
 
+        /* Título con espacio suficiente para no ser tapado por los botones */
         .titulo-3d {
-            font-size: clamp(1.8rem, 6vw, 3.2rem); 
-            font-weight: 900; 
+            font-size: 2.2rem;
+            font-weight: 900;
             letter-spacing: 3px;
             background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: moverColores 5s infinite, flotarYLatir 3.5s infinite;
-            margin-top: clamp(15px, 3vh, 30px); 
-            z-index: 2; 
+            margin-top: 65px; /* Bajas el título para evitar colisión */
+            z-index: 2;
             text-align: center;
             padding: 0 10px;
         }
@@ -121,46 +121,33 @@
         @keyframes flotarYLatir { 0%, 100% {transform: translateY(0) scale(1);} 50% {transform: translateY(-8px) scale(1.03);} }
 
         .galeria-caja {
-            width: 100%; 
-            overflow: hidden; 
+            width: 100%;
+            overflow: hidden;
             position: relative;
-            padding: clamp(40px, 8vh, 60px) 0 clamp(30px, 6vh, 50px) 0;
+            padding: 50px 0 40px 0;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             z-index: 2;
         }
 
         .cuerda {
-            position: absolute; 
-            top: clamp(55px, 10vh, 75px); 
-            left: 0; 
-            width: 100%; 
-            height: 4px;
+            position: absolute; top: 65px; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
         }
 
         .riel-desplazamiento {
-            display: flex; 
-            width: max-content;
+            display: flex; width: max-content;
             animation: desplazar 120s linear infinite;
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .item-cuerda { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            margin: 0 clamp(16px, 3vw, 32px); 
-            position: relative; 
-        }
+        .item-cuerda { display: flex; flex-direction: column; align-items: center; margin: 0 28px; position: relative; }
 
         .polaroid {
-            background: #ffffff; 
-            padding: clamp(8px, 1.8vw, 12px) clamp(8px, 1.8vw, 12px) clamp(12px, 2.2vw, 18px) clamp(8px, 1.8vw, 12px);
+            background: #ffffff; padding: 12px 12px 18px 12px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-            border-radius: 6px; 
-            width: clamp(170px, 48vw, 230px);
+            border-radius: 6px; width: 220px;
             transform-origin: top center;
             animation: balanceoFoto 3.5s ease-in-out infinite alternate;
         }
@@ -168,44 +155,33 @@
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
         .polaroid img { 
-            width: 100%; 
-            height: clamp(180px, 50vw, 235px); 
+            width: 196px; 
+            height: 225px; 
             object-fit: cover; 
             border-radius: 3px; 
             display: block; 
-            background: #1a1a2e;
+            background-color: #f0f0f0;
         }
 
         .texto-polaroid {
-            font-family: 'Caveat', cursive; 
-            font-size: clamp(1.05rem, 3.2vw, 1.35rem); 
-            color: #1a1a1a;
-            text-align: center; 
-            margin: clamp(8px, 1.8vw, 12px) 0 0 0; 
-            font-weight: 600;
+            font-family: 'Caveat', cursive; font-size: 1.3rem; color: #1a1a1a;
+            text-align: center; margin: 10px 0 0 0; font-weight: 600;
         }
 
         .frase-bottom {
-            text-align: center; 
-            margin-bottom: clamp(15px, 3vh, 25px); 
-            font-size: clamp(0.95rem, 3.8vw, 1.5rem); 
-            font-weight: 800;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); 
-            z-index: 2;
-            padding: 0 15px;
+            text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2;
+            padding: 0 10px;
         }
 
-        /* Ajustes específicos para móviles muy pequeños */
-        @media (max-width: 480px) {
-            .top-controls {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-                justify-content: flex-end;
-            }
-            .titulo-3d {
-                margin-top: 50px;
-            }
+        /* Ajustes para pantallas más grandes (PC/Tablets) */
+        @media (min-width: 768px) {
+            .titulo-3d { font-size: 3.5rem; margin-top: 70px; letter-spacing: 5px; }
+            .btn-control { font-size: 0.85rem; padding: 10px 20px; }
+            .top-controls { top: 20px; right: 25px; gap: 12px; }
+            .polaroid { width: 240px; }
+            .polaroid img { width: 216px; height: 245px; }
+            .frase-bottom { font-size: 1.5rem; margin-bottom: 25px; }
         }
     </style>
 </head>
@@ -217,7 +193,7 @@
 </div>
 
 <div id="contenedor-corazones"></div>
-<audio id="musicaFondo" loop preload="auto"></audio>
+<audio id="musicaFondo" loop></audio>
 
 <div class="top-controls">
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
@@ -252,34 +228,35 @@ const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 
 async function cargarArchivosAutomaticos() {
-    let fotos = [];
-    let canciones = [];
-
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
-        if (resFotos.ok) {
-            const dataFotos = await resFotos.json();
+        const dataFotos = await resFotos.json();
+        
+        let fotos = [];
+        if (Array.isArray(dataFotos)) {
             fotos = dataFotos
                 .filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
-                .map(f => `fotos/${encodeURIComponent(f.name)}`);
+                .map(f => ({
+                    nombre: f.name,
+                    cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
+                    github: f.download_url
+                }));
         }
-    } catch (e) {
-        console.warn("API de GitHub no disponible para fotos", e);
-    }
 
-    try {
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
-        if (resMusica.ok) {
-            const dataMusica = await resMusica.json();
+        const dataMusica = await resMusica.json();
+        
+        let canciones = [];
+        if (Array.isArray(dataMusica)) {
             canciones = dataMusica
                 .filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
-                .map(f => `musica/${encodeURIComponent(f.name)}`);
+                .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
         }
-    } catch (e) {
-        console.warn("API de GitHub no disponible para música", e);
-    }
 
-    inicializarGaleria(fotos, canciones);
+        inicializarGaleria(fotos, canciones);
+    } catch (e) {
+        console.error("Error cargando archivos de GitHub", e);
+    }
 }
 
 function inicializarGaleria(fotos, canciones) {
@@ -288,18 +265,20 @@ function inicializarGaleria(fotos, canciones) {
     if (canciones.length > 0) {
         const indiceAleatorio = Math.floor(Math.random() * canciones.length);
         audio.src = canciones[indiceAleatorio];
-        audio.load();
     }
 
     if (fotos.length > 0) {
         const fotosTotales = [...fotos, ...fotos];
         let htmlFotos = "";
-        fotosTotales.forEach((fotoRuta, idx) => {
+        fotosTotales.forEach((foto, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
             htmlFotos += `
             <div class="item-cuerda">
                 <div class="polaroid">
-                    <img src="${fotoRuta}" alt="Recuerdo" loading="lazy" />
+                    <img src="${foto.cdn}" 
+                         alt="Recuerdo" 
+                         referrerpolicy="no-referrer"
+                         onerror="if(this.src!=='${foto.github}'){this.src='${foto.github}';}" />
                     <p class="texto-polaroid">${frase}</p>
                 </div>
             </div>`;
@@ -322,14 +301,14 @@ function activarPantallaCompleta() {
 function iniciarExperiencia() {
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 600);
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
 
     activarPantallaCompleta();
 
     if (audio.src) {
         audio.play().then(() => {
             btnMusica.innerHTML = '🎶 Música: ON';
-        }).catch(err => console.log("Autoplay bloqueado:", err));
+        }).catch(err => console.log("Autoplay prevenido por navegador", err));
     }
 }
 
