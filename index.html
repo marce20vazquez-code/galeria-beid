@@ -35,7 +35,7 @@
             align-items: center;
             cursor: pointer;
             backdrop-filter: blur(15px);
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
 
         #overlay-inicio h2 {
@@ -145,7 +145,7 @@
             object-fit: cover; 
             border-radius: 3px; 
             display: block; 
-            background-color: #f0f0f0;
+            background: #1a1a2e;
         }
 
         .texto-polaroid {
@@ -167,7 +167,7 @@
 </div>
 
 <div id="contenedor-corazones"></div>
-<audio id="musicaFondo" loop></audio>
+<audio id="musicaFondo" loop preload="auto"></audio>
 
 <div class="top-controls">
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
@@ -202,35 +202,34 @@ const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 
 async function cargarArchivosAutomaticos() {
+    let fotos = [];
+    let canciones = [];
+
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
-        const dataFotos = await resFotos.json();
-        
-        let fotos = [];
-        if (Array.isArray(dataFotos)) {
+        if (resFotos.ok) {
+            const dataFotos = await resFotos.json();
             fotos = dataFotos
                 .filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
-                .map(f => ({
-                    nombre: f.name,
-                    cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
-                    github: f.download_url
-                }));
+                .map(f => `fotos/${encodeURIComponent(f.name)}`);
         }
+    } catch (e) {
+        console.warn("API de GitHub no disponible para fotos", e);
+    }
 
+    try {
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
-        const dataMusica = await resMusica.json();
-        
-        let canciones = [];
-        if (Array.isArray(dataMusica)) {
+        if (resMusica.ok) {
+            const dataMusica = await resMusica.json();
             canciones = dataMusica
                 .filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
-                .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
+                .map(f => `musica/${encodeURIComponent(f.name)}`);
         }
-
-        inicializarGaleria(fotos, canciones);
     } catch (e) {
-        console.error("Error cargando archivos de GitHub", e);
+        console.warn("API de GitHub no disponible para música", e);
     }
+
+    inicializarGaleria(fotos, canciones);
 }
 
 function inicializarGaleria(fotos, canciones) {
@@ -239,20 +238,18 @@ function inicializarGaleria(fotos, canciones) {
     if (canciones.length > 0) {
         const indiceAleatorio = Math.floor(Math.random() * canciones.length);
         audio.src = canciones[indiceAleatorio];
+        audio.load();
     }
 
     if (fotos.length > 0) {
         const fotosTotales = [...fotos, ...fotos];
         let htmlFotos = "";
-        fotosTotales.forEach((foto, idx) => {
+        fotosTotales.forEach((fotoRuta, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
             htmlFotos += `
             <div class="item-cuerda">
                 <div class="polaroid">
-                    <img src="${foto.cdn}" 
-                         alt="Recuerdo" 
-                         referrerpolicy="no-referrer"
-                         onerror="if(this.src!=='${foto.github}'){this.src='${foto.github}';}" />
+                    <img src="${fotoRuta}" alt="Recuerdo" loading="lazy" />
                     <p class="texto-polaroid">${frase}</p>
                 </div>
             </div>`;
@@ -275,14 +272,14 @@ function activarPantallaCompleta() {
 function iniciarExperiencia() {
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 600);
 
     activarPantallaCompleta();
 
     if (audio.src) {
         audio.play().then(() => {
             btnMusica.innerHTML = '🎶 Música: ON';
-        }).catch(err => console.log("Autoplay prevenido por navegador", err));
+        }).catch(err => console.log("Autoplay bloqueado:", err));
     }
 }
 
