@@ -4,7 +4,6 @@ import json
 import os
 from PIL import Image
 import streamlit as st
-import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
 # CONFIGURACIÓN DE LA PÁGINA
@@ -547,9 +546,17 @@ setInterval(crearCorazon, 450);
 </html>
 """
 
-html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
-    "__CANCIONES_JSON__", canciones_json
+html_completo = (
+    html_template.replace("__HTML_FOTOS__", html_fotos)
+    .replace("__CANCIONES_JSON__", canciones_json)
+    .replace('"', '\\"')
+    .replace("\n", " ")
 )
 
-# Renderizado seguro original mediante el componente oficial de Streamlit
-components.html(html_completo, height=750, scrolling=False)
+# Renderizado mediante iframe nativo seguro que evita el cierre de Streamlit
+st.markdown(
+    f"""
+    <iframe srcdoc="{html_completo}" style="width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 99999;"></iframe>
+""",
+    unsafe_allow_html=True,
+)
