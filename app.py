@@ -8,21 +8,19 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
-# CONFIGURACIÓN DE LA PÁGINA
+# ENLACE DE GOOGLE DRIVE (FOTOS)
 # ---------------------------------------------------------
+URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
+CARPETA_FOTOS = "fotos_drive"
+
+# 1. Configuración inicial de la página
 st.set_page_config(
     page_title="GALERÍA DE RECUERDOS",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ---------------------------------------------------------
-# ENLACE DE GOOGLE DRIVE (FOTOS) Y CARPETAS
-# ---------------------------------------------------------
-URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
-CARPETA_FOTOS = "fotos_drive"
-
-# CSS para limpiar la interfaz de Streamlit y dejar la pantalla limpia
+# 2. CSS para eliminar márgenes e interfaz predeterminada de Streamlit
 st.markdown(
     """
     <style>
@@ -32,15 +30,22 @@ st.markdown(
         div[data-testid="stHeader"] {display: none;}
         
         .block-container {
-            padding: 0rem !important;
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
             max-width: 100% !important;
+        }
+        
+        iframe {
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
         }
         
         body {
             background-color: #080014 !important;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+            overflow: hidden !important;
         }
     </style>
 """,
@@ -52,7 +57,7 @@ LISTA_DE_FRASES = [
     "Tú y yo, mi momento preferido del día. 💖✨",
     "Contigo cada instante se vuelve inolvidable. 🌙✨",
     "Mi lugar favorito en el mundo siempre es a tu lado. 🌹",
-    "Cada foto guarda una sonrisa que me sacaste. 📸❤️️",
+    "Cada foto guarda una sonrisa que me sacaste. 📸❤️",
     "El mejor capítulo de mi vida lo escribo contigo. 📖💖",
     "Gracias por iluminar mis días con tu existencia. ✨💫",
     "Un recuerdo más de todos los que nos faltan por vivir. 🥰",
@@ -60,7 +65,7 @@ LISTA_DE_FRASES = [
 ]
 
 
-# --- FUNCIONES DE CARGA Y CACHÉ ROBUSTAS ---
+# --- DESCARGA DE FOTOS DESDE DRIVE ---
 @st.cache_resource
 def descargar_fotos_de_drive():
   if not os.path.exists(CARPETA_FOTOS):
@@ -72,6 +77,20 @@ def descargar_fotos_de_drive():
       )
     except Exception:
       pass
+
+
+with st.spinner("Cargando recuerdos y música... ❤️✨"):
+  descargar_fotos_de_drive()
+
+# Procesar Fotos
+archivos_fotos = []
+if os.path.exists(CARPETA_FOTOS):
+  for root, _, files in os.walk(CARPETA_FOTOS):
+    for file in files:
+      if file.lower().endswith(("png", "jpg", "jpeg", "webp")):
+        archivos_fotos.append(os.path.join(root, file))
+
+archivos_fotos.sort()
 
 
 @st.cache_data
@@ -88,20 +107,6 @@ def get_optimized_image_base64(path):
     return ""
 
 
-# Ejecutar descarga con contenedor protegido
-with st.spinner("Cargando recuerdos y música... ❤️✨"):
-  descargar_fotos_de_drive()
-
-# Recolectar rutas de fotos
-archivos_fotos = []
-if os.path.exists(CARPETA_FOTOS):
-  for root, _, files in os.walk(CARPETA_FOTOS):
-    for file in files:
-      if file.lower().endswith(("png", "jpg", "jpeg", "webp")):
-        archivos_fotos.append(os.path.join(root, file))
-
-archivos_fotos.sort()
-
 imagenes_b64 = [
     get_optimized_image_base64(f)
     for f in archivos_fotos
@@ -109,10 +114,7 @@ imagenes_b64 = [
 ]
 
 if not imagenes_b64:
-  st.warning(
-      "No se encontraron imágenes. Verifica el enlace público de tu carpeta"
-      " de Google Drive."
-  )
+  st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
 # --- CARGAR CANCIONES DE LA CARPETA MÚSICA ---
@@ -140,7 +142,7 @@ for file_path in archivos_musica:
 
 canciones_json = json.dumps(lista_canciones_b64)
 
-# --- CONSTRUCCIÓN DE ELEMENTOS VISUALES ---
+# --- CONSTRUCCIÓN DE LA GALERÍA ---
 focos_colores = [
     "foco-rojo",
     "foco-azul",
@@ -166,17 +168,17 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- PLANTILLA HTML & JAVASCRIPT SEGURA ---
-html_template = """
+# --- ESTRUCTURA HTML, CSS Y JAVASCRIPT SEGURO ---
+html_completo = f"""
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; }
+* {{ box-sizing: border-box; }}
 
-html, body {
+html, body {{
     width: 100vw;
     height: 100vh;
     margin: 0;
@@ -190,9 +192,9 @@ html, body {
     justify-content: space-between;
     align-items: center;
     position: relative;
-}
+}}
 
-#contenedor-corazones {
+#contenedor-corazones {{
     position: absolute;
     top: 0;
     left: 0;
@@ -201,24 +203,24 @@ html, body {
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
-}
+}}
 
-.top-controls {
+.top-controls {{
     position: fixed;
     top: 20px;
     right: 25px;
     z-index: 1000;
     display: flex;
     gap: 12px;
-}
+}}
 
-.btn-control {
+.btn-control {{
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     color: #ffffff;
-    padding: 10px 20px;
+    padding: 12px 22px;
     border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.85rem;
@@ -230,43 +232,43 @@ html, body {
     display: flex;
     align-items: center;
     gap: 6px;
-}
+}}
 
-.btn-control:hover {
+.btn-control:hover {{
     background: rgba(255, 0, 127, 0.4);
     border-color: #00ffff;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
     transform: scale(1.08);
-}
+}}
 
-.btn-control.active {
+.btn-control.active {{
     background: rgba(0, 255, 255, 0.25);
     border-color: #00ffff;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
-}
+}}
 
-.corazon-flotante {
+.corazon-flotante {{
     position: absolute;
     bottom: -40px;
     user-select: none;
     pointer-events: none;
     animation: flotarHaciaArriba linear forwards;
-}
+}}
 
-@keyframes flotarHaciaArriba {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
-}
+@keyframes flotarHaciaArriba {{
+    0% {{ transform: translateY(0) rotate(0deg); opacity: 1; }}
+    100% {{ transform: translateY(-120vh) rotate(360deg); opacity: 0; }}
+}}
 
-.titulo-container {
+.titulo-container {{
     text-align: center;
-    margin-top: 20px;
+    margin-top: 25px;
     z-index: 2;
-}
+}}
 
-.titulo-3d {
+.titulo-3d {{
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.8rem;
+    font-size: 4.2rem;
     font-weight: 900;
     letter-spacing: 8px;
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
@@ -276,30 +278,30 @@ html, body {
     display: inline-block;
     animation: moverColores 5s linear infinite, flotarYLatir 3.5s ease-in-out infinite;
     margin: 0;
-}
+}}
 
-@keyframes moverColores {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+@keyframes moverColores {{
+    0% {{ background-position: 0% 50%; }}
+    50% {{ background-position: 100% 50%; }}
+    100% {{ background-position: 0% 50%; }}
+}}
 
-@keyframes flotarYLatir {
-    0%, 100% {
+@keyframes flotarYLatir {{
+    0%, 100% {{
         transform: translateY(0) scale(1);
         filter: drop-shadow(0px 0px 15px rgba(255, 0, 127, 0.8));
-    }
-    50% {
-        transform: translateY(-10px) scale(1.04);
-        filter: drop-shadow(0px 0px 25px rgba(0, 255, 255, 1));
-    }
-}
+    }}
+    50% {{
+        transform: translateY(-12px) scale(1.04);
+        filter: drop-shadow(0px 0px 30px rgba(0, 255, 255, 1));
+    }}
+}}
 
-.galeria-caja {
+.galeria-caja {{
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 60px 0 50px 0;
+    padding: 70px 0 60px 0;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -307,133 +309,136 @@ html, body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     z-index: 2;
-}
+}}
 
-.cuerda {
+.cuerda {{
     position: absolute;
-    top: 75px;
+    top: 85px;
     left: 0;
     width: 100%;
     height: 4px;
     background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
     box-shadow: 0 3px 8px rgba(0,0,0,0.6);
     z-index: 1;
-}
+}}
 
-.riel-desplazamiento {
+.riel-desplazamiento {{
     display: flex;
     width: max-content;
-    animation: desplazar 300s linear infinite;
+    animation: desplazar 320s linear infinite;
     z-index: 2;
     position: relative;
-}
+}}
 
-.riel-desplazamiento:hover {
+.riel-desplazamiento:hover {{
     animation-play-state: paused;
-}
+}}
 
-@keyframes desplazar {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
+@keyframes desplazar {{
+    0% {{ transform: translateX(0); }}
+    100% {{ transform: translateX(-50%); }}
+}}
 
-.item-cuerda {
+.item-cuerda {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 32px;
+    margin: 0 35px;
     position: relative;
-}
+}}
 
-.pinza {
+.pinza {{
     position: absolute;
-    top: -18px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 14px;
-    height: 30px;
+    width: 15px;
+    height: 32px;
     background: linear-gradient(to bottom, #d2b48c, #a87e50);
     border-radius: 3px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.5);
     z-index: 10;
-}
+}}
 
-.polaroid {
+.polaroid {{
     background: #ffffff;
-    padding: 12px 12px 18px 12px;
+    padding: 14px 14px 20px 14px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
     border-radius: 6px;
-    width: 230px;
+    width: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
     transform-origin: top center;
     animation: balanceoFoto 3.5s ease-in-out infinite alternate;
     transition: transform 0.3s ease;
-}
+}}
 
-.polaroid:hover {
-    transform: scale(1.06) rotate(0deg) !important;
+.polaroid:hover {{
+    transform: scale(1.05) rotate(0deg) !important;
     z-index: 20;
-}
+}}
 
-.item-cuerda:nth-child(even) .polaroid { animation-delay: -1.75s; }
-.item-cuerda:nth-child(3n) .polaroid { animation-duration: 4.2s; animation-delay: -0.9s; }
+.item-cuerda:nth-child(even) .polaroid {{ animation-delay: -1.75s; }}
+.item-cuerda:nth-child(3n) .polaroid {{ animation-duration: 4.2s; animation-delay: -0.9s; }}
 
-@keyframes balanceoFoto {
-    0% { transform: rotate(-4deg); }
-    100% { transform: rotate(4deg); }
-}
+@keyframes balanceoFoto {{
+    0% {{ transform: rotate(-5deg); }}
+    100% {{ transform: rotate(5deg); }}
+}}
 
-.polaroid img {
-    width: 206px;
-    height: 235px;
+.polaroid img {{
+    width: 222px;
+    height: 255px;
     object-fit: cover;
     border-radius: 3px;
     display: block;
-}
+}}
 
-.texto-polaroid {
+.texto-polaroid {{
     font-family: 'Caveat', cursive, sans-serif;
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     color: #1a1a1a;
     text-align: center;
-    margin: 12px 0 0 0;
+    margin: 14px 0 0 0;
     line-height: 1.2;
     font-weight: 600;
-}
+}}
 
-.foco {
+.foco {{
     position: absolute;
-    top: -45px;
-    width: 22px;
-    height: 32px;
+    top: -50px;
+    width: 24px;
+    height: 35px;
     border-radius: 50% 50% 45% 45%;
     z-index: 5;
-}
+}}
 
-.foco-rojo { background: #ff4d4d; box-shadow: 0 0 18px #ff4d4d, 0 0 35px #ff4d4d; }
-.foco-azul { background: #4da6ff; box-shadow: 0 0 18px #4da6ff, 0 0 35px #4da6ff; }
-.foco-dorado { background: #ffd700; box-shadow: 0 0 18px #ffd700, 0 0 35px #ffd700; }
-.foco-verde { background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }
-.foco-morado { background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }
+.foco-rojo {{ background: #ff4d4d; box-shadow: 0 0 18px #ff4d4d, 0 0 35px #ff4d4d; }}
+.foco-azul {{ background: #4da6ff; box-shadow: 0 0 18px #4da6ff, 0 0 35px #4da6ff; }}
+.foco-dorado {{ background: #ffd700; box-shadow: 0 0 18px #ffd700, 0 0 35px #ffd700; }}
+.foco-verde {{ background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }}
+.foco-morado {{ background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }}
 
-.frase-bottom {
+.frase-bottom {{
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 800;
     color: #ffffff;
     text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 25px rgba(255, 0, 127, 0.7);
     z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     animation: floatingFrase 3s infinite ease-in-out;
-}
+}}
 
-@keyframes floatingFrase {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-}
+@keyframes floatingFrase {{
+    0%, 100% {{ transform: translateY(0px); }}
+    50% {{ transform: translateY(-6px); }}
+}}
 </style>
 </head>
 <body>
@@ -457,7 +462,7 @@ html, body {
 <div class="galeria-caja">
     <div class="cuerda"></div>
     <div class="riel-desplazamiento">
-        __HTML_FOTOS__
+        {html_fotos}
     </div>
 </div>
 
@@ -470,89 +475,89 @@ const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 const contenedorCorazones = document.getElementById('contenedor-corazones');
 
-const canciones = __CANCIONES_JSON__;
+const canciones = {canciones_json};
 let currentIdx = 0;
 
-if (canciones.length > 0) {
+if (canciones.length > 0) {{
     currentIdx = Math.floor(Math.random() * canciones.length);
     audio.src = canciones[currentIdx];
-}
+}}
 
-function reproducirSiguienteAleatoria() {
+function reproducirSiguienteAleatoria() {{
     if (canciones.length === 0) return;
-    if (canciones.length === 1) {
+    if (canciones.length === 1) {{
         audio.currentTime = 0;
         audio.play();
         return;
-    }
+    }}
     
     let nextIdx;
-    do {
+    do {{
         nextIdx = Math.floor(Math.random() * canciones.length);
-    } while (nextIdx === currentIdx && canciones.length > 1);
+    }} while (nextIdx === currentIdx && canciones.length > 1);
 
     currentIdx = nextIdx;
     audio.src = canciones[currentIdx];
     audio.play();
-}
+}}
 
 audio.addEventListener('ended', reproducirSiguienteAleatoria);
 
-function toggleMusica() {
-    if (canciones.length === 0) {
-        alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de agregar tus pistas en formato .mp3");
+function toggleMusica() {{
+    if (canciones.length === 0) {{
+        alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de que los archivos terminen en .mp3");
         return;
-    }
-    if (audio.paused) {
+    }}
+    if (audio.paused) {{
         audio.play();
         btnMusica.innerHTML = '🎶 Música: ON';
         btnMusica.classList.add('active');
-    } else {
+    }} else {{
         audio.pause();
         btnMusica.innerHTML = '🎵 Música: OFF';
         btnMusica.classList.remove('active');
-    }
-}
+    }}
+}}
 
-function toggleFullscreen() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+function toggleFullscreen() {{
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {{
         const elem = document.documentElement;
-        if (elem.requestFullscreen) {
+        if (elem.requestFullscreen) {{
             elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
+        }} else if (elem.webkitRequestFullscreen) {{
             elem.webkitRequestFullscreen();
-        }
-    } else {
-        if (document.exitFullscreen) {
+        }}
+    }} else {{
+        if (document.exitFullscreen) {{
             document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
+        }} else if (document.webkitExitFullscreen) {{
             document.webkitExitFullscreen();
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function actualizarBoton() {
+function actualizarBoton() {{
     const btn = document.getElementById('btnFullscreen');
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {{
         btn.innerHTML = '🗗 Salir';
-    } else {
+    }} else {{
         btn.innerHTML = '⛶ Pantalla Completa';
-    }
-}
+    }}
+}}
 
 document.addEventListener('fullscreenchange', actualizarBoton);
 document.addEventListener('webkitfullscreenchange', actualizarBoton);
 
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨', '🌹'];
 
-function crearCorazon() {
+function crearCorazon() {{
     if (!contenedorCorazones) return;
     const corazon = document.createElement('div');
     corazon.classList.add('corazon-flotante');
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
     corazon.style.left = Math.random() * 100 + 'vw';
     
-    const tamano = Math.random() * 20 + 14;
+    const tamano = Math.random() * 22 + 16;
     corazon.style.fontSize = tamano + 'px';
     
     const duracion = Math.random() * 5 + 6;
@@ -561,23 +566,18 @@ function crearCorazon() {
     
     contenedorCorazones.appendChild(corazon);
     
-    setTimeout(() => {
-        if (corazon && corazon.parentNode) {
+    setTimeout(() => {{
+        if (corazon && corazon.parentNode) {{
             corazon.parentNode.removeChild(corazon);
-        }
-    }, duracion * 1000);
-}
+        }}
+    }}, duracion * 1000);
+}}
 
-setInterval(crearCorazon, 450);
+setInterval(crearCorazon, 400);
 </script>
 
 </body>
 </html>
 """
 
-html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
-    "__CANCIONES_JSON__", canciones_json
-)
-
-# Renderizar el componente de forma limpia con una altura fija de 750px
-components.html(html_completo, height=750, scrolling=False)
+components.html(html_completo)
