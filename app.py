@@ -8,19 +8,21 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
-# ENLACE DE GOOGLE DRIVE (FOTOS)
+# CONFIGURACIÓN DE LA PÁGINA
 # ---------------------------------------------------------
-URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
-CARPETA_FOTOS = "fotos_drive"
-
-# 1. Configuración inicial de la página
 st.set_page_config(
     page_title="GALERÍA DE RECUERDOS",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# 2. CSS para eliminar márgenes e interfaz predeterminada de Streamlit
+# ---------------------------------------------------------
+# ENLACE DE GOOGLE DRIVE (FOTOS) Y CARPETAS
+# ---------------------------------------------------------
+URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
+CARPETA_FOTOS = "fotos_drive"
+
+# CSS para limpiar la interfaz de Streamlit y dejar la pantalla limpia
 st.markdown(
     """
     <style>
@@ -30,23 +32,15 @@ st.markdown(
         div[data-testid="stHeader"] {display: none;}
         
         .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            padding-left: 0rem !important;
-            padding-right: 0rem !important;
+            padding: 0rem !important;
             max-width: 100% !important;
-        }
-        
-        iframe {
-            width: 100% !important;
-            height: 100vh !important;
-            border: none !important;
         }
         
         body {
             background-color: #080014 !important;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
     </style>
 """,
@@ -58,7 +52,7 @@ LISTA_DE_FRASES = [
     "Tú y yo, mi momento preferido del día. 💖✨",
     "Contigo cada instante se vuelve inolvidable. 🌙✨",
     "Mi lugar favorito en el mundo siempre es a tu lado. 🌹",
-    "Cada foto guarda una sonrisa que me sacaste. 📸❤️",
+    "Cada foto guarda una sonrisa que me sacaste. 📸❤️️",
     "El mejor capítulo de mi vida lo escribo contigo. 📖💖",
     "Gracias por iluminar mis días con tu existencia. ✨💫",
     "Un recuerdo más de todos los que nos faltan por vivir. 🥰",
@@ -66,7 +60,7 @@ LISTA_DE_FRASES = [
 ]
 
 
-# --- DESCARGA DE FOTOS DESDE DRIVE ---
+# --- FUNCIONES DE CARGA Y CACHÉ ROBUSTAS ---
 @st.cache_resource
 def descargar_fotos_de_drive():
   if not os.path.exists(CARPETA_FOTOS):
@@ -78,20 +72,6 @@ def descargar_fotos_de_drive():
       )
     except Exception:
       pass
-
-
-with st.spinner("Cargando recuerdos y música... ❤️✨"):
-  descargar_fotos_de_drive()
-
-# Procesar Fotos
-archivos_fotos = []
-if os.path.exists(CARPETA_FOTOS):
-  for root, _, files in os.walk(CARPETA_FOTOS):
-    for file in files:
-      if file.lower().endswith(("png", "jpg", "jpeg", "webp")):
-        archivos_fotos.append(os.path.join(root, file))
-
-archivos_fotos.sort()
 
 
 @st.cache_data
@@ -108,6 +88,20 @@ def get_optimized_image_base64(path):
     return ""
 
 
+# Ejecutar descarga con contenedor protegido
+with st.spinner("Cargando recuerdos y música... ❤️✨"):
+  descargar_fotos_de_drive()
+
+# Recolectar rutas de fotos
+archivos_fotos = []
+if os.path.exists(CARPETA_FOTOS):
+  for root, _, files in os.walk(CARPETA_FOTOS):
+    for file in files:
+      if file.lower().endswith(("png", "jpg", "jpeg", "webp")):
+        archivos_fotos.append(os.path.join(root, file))
+
+archivos_fotos.sort()
+
 imagenes_b64 = [
     get_optimized_image_base64(f)
     for f in archivos_fotos
@@ -115,7 +109,10 @@ imagenes_b64 = [
 ]
 
 if not imagenes_b64:
-  st.warning("No se encontraron imágenes en la carpeta de Drive.")
+  st.warning(
+      "No se encontraron imágenes. Verifica el enlace público de tu carpeta"
+      " de Google Drive."
+  )
   st.stop()
 
 # --- CARGAR CANCIONES DE LA CARPETA MÚSICA ---
@@ -143,7 +140,7 @@ for file_path in archivos_musica:
 
 canciones_json = json.dumps(lista_canciones_b64)
 
-# --- CONSTRUCCIÓN DE LA GALERÍA ---
+# --- CONSTRUCCIÓN DE ELEMENTOS VISUALES ---
 focos_colores = [
     "foco-rojo",
     "foco-azul",
@@ -169,7 +166,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA HTML Y JS ---
+# --- PLANTILLA HTML & JAVASCRIPT SEGURA ---
 html_template = """
 <!DOCTYPE html>
 <html>
@@ -221,7 +218,7 @@ html, body {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     color: #ffffff;
-    padding: 12px 22px;
+    padding: 10px 20px;
     border-radius: 30px;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.85rem;
@@ -263,13 +260,13 @@ html, body {
 
 .titulo-container {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 20px;
     z-index: 2;
 }
 
 .titulo-3d {
     font-family: 'Montserrat', sans-serif;
-    font-size: 4.2rem;
+    font-size: 3.8rem;
     font-weight: 900;
     letter-spacing: 8px;
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
@@ -293,8 +290,8 @@ html, body {
         filter: drop-shadow(0px 0px 15px rgba(255, 0, 127, 0.8));
     }
     50% {
-        transform: translateY(-12px) scale(1.04);
-        filter: drop-shadow(0px 0px 30px rgba(0, 255, 255, 1));
+        transform: translateY(-10px) scale(1.04);
+        filter: drop-shadow(0px 0px 25px rgba(0, 255, 255, 1));
     }
 }
 
@@ -302,7 +299,7 @@ html, body {
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 70px 0 60px 0;
+    padding: 60px 0 50px 0;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -314,7 +311,7 @@ html, body {
 
 .cuerda {
     position: absolute;
-    top: 85px;
+    top: 75px;
     left: 0;
     width: 100%;
     height: 4px;
@@ -326,7 +323,7 @@ html, body {
 .riel-desplazamiento {
     display: flex;
     width: max-content;
-    animation: desplazar 320s linear infinite;
+    animation: desplazar 300s linear infinite;
     z-index: 2;
     position: relative;
 }
@@ -344,17 +341,17 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 35px;
+    margin: 0 32px;
     position: relative;
 }
 
 .pinza {
     position: absolute;
-    top: -20px;
+    top: -18px;
     left: 50%;
     transform: translateX(-50%);
-    width: 15px;
-    height: 32px;
+    width: 14px;
+    height: 30px;
     background: linear-gradient(to bottom, #d2b48c, #a87e50);
     border-radius: 3px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.5);
@@ -363,10 +360,10 @@ html, body {
 
 .polaroid {
     background: #ffffff;
-    padding: 14px 14px 20px 14px;
+    padding: 12px 12px 18px 12px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
     border-radius: 6px;
-    width: 250px;
+    width: 230px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -376,7 +373,7 @@ html, body {
 }
 
 .polaroid:hover {
-    transform: scale(1.05) rotate(0deg) !important;
+    transform: scale(1.06) rotate(0deg) !important;
     z-index: 20;
 }
 
@@ -384,13 +381,13 @@ html, body {
 .item-cuerda:nth-child(3n) .polaroid { animation-duration: 4.2s; animation-delay: -0.9s; }
 
 @keyframes balanceoFoto {
-    0% { transform: rotate(-5deg); }
-    100% { transform: rotate(5deg); }
+    0% { transform: rotate(-4deg); }
+    100% { transform: rotate(4deg); }
 }
 
 .polaroid img {
-    width: 222px;
-    height: 255px;
+    width: 206px;
+    height: 235px;
     object-fit: cover;
     border-radius: 3px;
     display: block;
@@ -398,19 +395,19 @@ html, body {
 
 .texto-polaroid {
     font-family: 'Caveat', cursive, sans-serif;
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     color: #1a1a1a;
     text-align: center;
-    margin: 14px 0 0 0;
+    margin: 12px 0 0 0;
     line-height: 1.2;
     font-weight: 600;
 }
 
 .foco {
     position: absolute;
-    top: -50px;
-    width: 24px;
-    height: 35px;
+    top: -45px;
+    width: 22px;
+    height: 32px;
     border-radius: 50% 50% 45% 45%;
     z-index: 5;
 }
@@ -423,22 +420,19 @@ html, body {
 
 .frase-bottom {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: #ffffff;
     text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 25px rgba(255, 0, 127, 0.7);
     z-index: 2;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     animation: floatingFrase 3s infinite ease-in-out;
 }
 
 @keyframes floatingFrase {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
+    50% { transform: translateY(-5px); }
 }
 </style>
 </head>
@@ -506,7 +500,7 @@ audio.addEventListener('ended', reproducirSiguienteAleatoria);
 
 function toggleMusica() {
     if (canciones.length === 0) {
-        alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de que los archivos terminen en .mp3");
+        alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de agregar tus pistas en formato .mp3");
         return;
     }
     if (audio.paused) {
@@ -558,7 +552,7 @@ function crearCorazon() {
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
     corazon.style.left = Math.random() * 100 + 'vw';
     
-    const tamano = Math.random() * 22 + 16;
+    const tamano = Math.random() * 20 + 14;
     corazon.style.fontSize = tamano + 'px';
     
     const duracion = Math.random() * 5 + 6;
@@ -574,7 +568,7 @@ function crearCorazon() {
     }, duracion * 1000);
 }
 
-setInterval(crearCorazon, 400);
+setInterval(crearCorazon, 450);
 </script>
 
 </body>
@@ -585,5 +579,5 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Se especifica la altura explícita para que el iframe de Streamlit muestre el contenido
-components.html(html_completo, height=800, scrolling=False)
+# Renderizar el componente de forma limpia con una altura fija de 750px
+components.html(html_completo, height=750, scrolling=False)
