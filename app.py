@@ -1,13 +1,26 @@
 import os
 import base64
 import streamlit as st
-from PIL import Image, ImageOps
+from PIL import Image
 import gdown
 
-# Configuración de la página
-st.set_page_config(page_title="RECUERDOS", layout="wide")
+# Configuración de página de Streamlit
+st.set_page_config(page_title="GALERÍA DE RECUERDOS", layout="wide")
 
-# --- DESCARGA DE FOTOS DESDE GOOGLE DRIVE ---
+# --- LISTA DE FRASES ---
+# Puedes agregar, modificar o quitar las frases que quieras aquí:
+LISTA_DE_FRASES = [
+    "Tú y yo, mi momento preferido del día. 💖✨",
+    "Contigo cada instante se vuelve inolvidable. 🌙✨",
+    "Mi lugar favorito en el mundo siempre es a tu lado. 🌹",
+    "Cada foto guarda una sonrisa que me sacaste. 📸❤️",
+    "El mejor capítulo de mi vida lo escribo contigo. 📖💖",
+    "Gracias por iluminar mis días con tu existencia. ✨💫",
+    "Un recuerdo más de todos los que nos faltan por vivir. 🥰",
+    "Amor del bueno, del que hace bien al alma. 💘"
+]
+
+# --- DESCARGA DE FOTOS DE GOOGLE DRIVE ---
 URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
 CARPETA_FOTOS = "fotos_drive"
 
@@ -21,7 +34,7 @@ def descargar_fotos_de_drive():
         except Exception as e:
             st.error(f"Error al descargar imágenes de Drive: {e}")
 
-with st.spinner("Cargando recuerdos... ❤️✨"):
+with st.spinner("Cargando recuerdos y frases... ❤️✨"):
     descargar_fotos_de_drive()
 
 # Obtener rutas de las fotos
@@ -34,7 +47,7 @@ if os.path.exists(CARPETA_FOTOS):
 
 archivos_fotos.sort()
 
-# Función para convertir imágenes a base64
+# Convertir imágenes a base64
 def get_image_base64(path):
     try:
         with open(path, "rb") as image_file:
@@ -43,43 +56,45 @@ def get_image_base64(path):
     except Exception:
         return ""
 
-# Convertir imágenes
 imagenes_b64 = [get_image_base64(f) for f in archivos_fotos if get_image_base64(f)]
 
-# Duplicar la lista para lograr un desplazamiento infinito fluido
+# Duplicar la lista para lograr el bucle infinito sin interrupciones
 items_galeria = imagenes_b64 + imagenes_b64
 
-# --- CONSTRUCCIÓN DEL HTML/CSS ---
+# --- CONSTRUCCIÓN DEL HTML CON FRASES ---
 focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
-
 html_fotos = ""
+
 for idx, img_src in enumerate(items_galeria):
     foco_clase = focos_colores[idx % len(focos_colores)]
     rotacion = "-3deg" if idx % 2 == 0 else "3deg"
+    # Asigna secuencialmente una frase diferente a cada foto
+    frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
     
     html_fotos += f"""
     <div class="item-cuerda">
         <div class="foco {foco_clase}"></div>
         <div class="polaroid" style="transform: rotate({rotacion});">
             <div class="pinza"></div>
-            <img src="{img_src}" alt="Foto Recuerdo" />
+            <img src="{img_src}" alt="Recuerdo" />
+            <p class="texto-polaroid">{frase_actual}</p>
         </div>
     </div>
     """
 
+# --- ESTILOS CSS Y DIBUJO DE LA GALERÍA ---
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap');
 
 body {{
     background-color: #0c001f;
 }}
 
-/* TÍTULO SUPERIOR */
 .titulo-container {{
     text-align: center;
     margin-top: -10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }}
 
 .titulo-3d {{
@@ -101,18 +116,16 @@ body {{
     100% {{ background-position: 0% 50%; }}
 }}
 
-/* MARCO PRINCIPAL DE LA GALERÍA */
 .galeria-caja {{
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 60px 0 30px 0;
+    padding: 60px 0 40px 0;
     background: radial-gradient(circle, rgba(26,0,51,0.8) 0%, rgba(12,0,31,1) 100%);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }}
 
-/* LA CUERDA */
 .cuerda {{
     position: absolute;
     top: 75px;
@@ -124,17 +137,16 @@ body {{
     z-index: 1;
 }}
 
-/* RIEL EN MOVIMIENTO (ANIMACIÓN DESPLAZABLE) */
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    animation: desplazar 35s linear infinite;
+    animation: desplazar 40s linear infinite;
     z-index: 2;
     position: relative;
 }}
 
 .riel-desplazamiento:hover {{
-    animation-play-state: paused; /* Pausa el movimiento si pasas el mouse encima */
+    animation-play-state: paused;
 }}
 
 @keyframes desplazar {{
@@ -142,16 +154,14 @@ body {{
     100% {{ transform: translateX(-50%); }}
 }}
 
-/* ELEMENTO INDIVIDUAL (FOTO + FOCO) */
 .item-cuerda {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 35px;
+    margin: 0 30px;
     position: relative;
 }}
 
-/* PINZA DE MADERA */
 .pinza {{
     position: absolute;
     top: -18px;
@@ -165,24 +175,38 @@ body {{
     z-index: 10;
 }}
 
-/* FOTO POLAROID */
+/* MARCO POLAROID CON TEXTO MANUSCRITO */
 .polaroid {{
     background: #ffffff;
-    padding: 10px 10px 25px 10px;
+    padding: 10px 10px 15px 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     border-radius: 4px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     transition: transform 0.3s ease;
 }}
 
 .polaroid img {{
     width: 180px;
-    height: 220px;
+    height: 210px;
     object-fit: cover;
     border-radius: 2px;
     display: block;
 }}
 
-/* FOCOS DE COLORES INTERCALADOS */
+.texto-polaroid {{
+    font-family: 'Caveat', cursive, sans-serif;
+    font-size: 1.25rem;
+    color: #222222;
+    text-align: center;
+    margin: 10px 0 0 0;
+    line-height: 1.2;
+    font-weight: 600;
+}}
+
+/* FOCOS */
 .foco {{
     position: absolute;
     top: -45px;
@@ -198,7 +222,6 @@ body {{
 .foco-verde {{ background: #4dff4d; box-shadow: 0 0 15px #4dff4d, 0 0 30px #4dff4d; }}
 .foco-morado {{ background: #a855f7; box-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7; }}
 
-/* FRASE INFERIOR */
 .frase-bottom {{
     text-align: center;
     margin-top: 35px;
@@ -222,6 +245,6 @@ body {{
 </div>
 
 <div class="frase-bottom">
-    Tú y yo, mi momento preferido del día. 💖✨🌙
+    Nuestra historia en imágenes 💖✨🌙
 </div>
 """, unsafe_allow_html=True)
