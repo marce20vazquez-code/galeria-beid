@@ -131,7 +131,6 @@ if os.path.exists(CARPETA_MUSICA):
 
 archivos_musica.sort()
 
-# Busca explícitamente cancion_20.mp3 o canción_20.mp3
 cancion_elegida = None
 for music_file in archivos_musica:
   nombre = os.path.basename(music_file).lower()
@@ -139,7 +138,6 @@ for music_file in archivos_musica:
     cancion_elegida = music_file
     break
 
-# Si por alguna razón no encuentra la 20, toma la primera disponible
 if not cancion_elegida and archivos_musica:
   cancion_elegida = archivos_musica[0]
 
@@ -321,7 +319,6 @@ html, body {{
     z-index: 1;
 }}
 
-/* Velocidad reducida a 320s para desplazamiento más lento */
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
@@ -420,6 +417,7 @@ html, body {{
 .foco-verde {{ background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }}
 .foco-morado {{ background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }}
 
+/* ESTILOS Y ANIMACIÓN DE LETRAS PARA LA FRASE INFERIOR */
 .frase-bottom {{
     text-align: center;
     margin-bottom: 30px;
@@ -429,6 +427,57 @@ html, body {{
     color: #ffffff;
     text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 25px rgba(255, 0, 127, 0.7);
     z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}}
+
+.frase-bottom .char {{
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: 
+        appearDisappear 30s infinite ease-in-out,
+        floatingFrase 3s infinite ease-in-out;
+    animation-delay: 
+        calc(var(--char-index) * 0.08s), 
+        calc(var(--char-index) * 0.08s);
+}}
+
+.frase-bottom .space {{
+    width: 0.4em;
+}}
+
+@keyframes appearDisappear {{
+    0% {{
+        opacity: 0;
+        transform: translateY(15px) scale(0.8);
+        filter: blur(5px);
+    }}
+    8% {{
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }}
+    85% {{
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }}
+    92%, 100% {{
+        opacity: 0;
+        transform: translateY(-15px) scale(0.8);
+        filter: blur(5px);
+    }}
+}}
+
+@keyframes floatingFrase {{
+    0%, 100% {{
+        transform: translateY(0px);
+    }}
+    50% {{
+        transform: translateY(-6px);
+    }}
 }}
 </style>
 </head>
@@ -456,8 +505,8 @@ html, body {{
     </div>
 </div>
 
-<div class="frase-bottom">
-    Nuestra historia en imágenes 💖✨🌙
+<div class="frase-bottom" id="fraseBottom">
+    Nuestra historia en imágenes 💖 ✨ 🌙
 </div>
 
 <script>
@@ -532,6 +581,24 @@ function crearCorazon() {{
 }}
 
 setInterval(crearCorazon, 300);
+
+// SCRIPT PARA SEPARAR LETRAS Y APLICAR RETRASO ANIMADO
+const fraseElem = document.getElementById('fraseBottom');
+if (fraseElem) {{
+    const textFrase = fraseElem.innerText;
+    fraseElem.innerHTML = '';
+    Array.from(textFrase).forEach((char, index) => {{
+        const span = document.createElement('span');
+        if (char === ' ') {{
+            span.className = 'space';
+        }} else {{
+            span.className = 'char';
+            span.innerText = char;
+            span.style.setProperty('--char-index', index);
+        }}
+        fraseElem.appendChild(span);
+    }});
+}}
 </script>
 
 </body>
