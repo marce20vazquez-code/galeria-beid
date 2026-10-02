@@ -551,5 +551,5 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Renderizado correcto con el componente oficial de Streamlit
-components.html(html_completo, height=800, scrolling=False)
+# Renderizado corregido y seguro para la nueva versión de Streamlit
+components.html(html_completo, height=750, scrolling=False)
