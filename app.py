@@ -52,9 +52,10 @@ def get_optimized_image_base64(path):
     try:
         with Image.open(path) as img:
             img = img.convert('RGB')
-            img.thumbnail((300, 350))
+            # Redimensionar a mayor resolución para imágenes más grandes
+            img.thumbnail((400, 450))
             buffer = io.BytesIO()
-            img.save(buffer, format="JPEG", quality=75, optimize=True)
+            img.save(buffer, format="JPEG", quality=80, optimize=True)
             encoded = base64.b64encode(buffer.getvalue()).decode('utf-8')
             return f"data:image/jpeg;base64,{encoded}"
     except Exception:
@@ -111,7 +112,7 @@ body {{
 
 .titulo-3d {{
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.2rem;
+    font-size: 3.5rem;
     font-weight: 900;
     letter-spacing: 5px;
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
@@ -133,7 +134,7 @@ body {{
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 60px 0 40px 0;
+    padding: 60px 0 50px 0;
     background: radial-gradient(circle, rgba(26,0,51,0.8) 0%, rgba(12,0,31,1) 100%);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -153,7 +154,8 @@ body {{
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    animation: desplazar 40s linear infinite;
+    /* Duración cambiada a 75s para que vaya más lento */
+    animation: desplazar 75s linear infinite;
     z-index: 2;
     position: relative;
 }}
@@ -171,7 +173,7 @@ body {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 25px;
+    margin: 0 30px;
     position: relative;
 }}
 
@@ -180,8 +182,8 @@ body {{
     top: -18px;
     left: 50%;
     transform: translateX(-50%);
-    width: 12px;
-    height: 28px;
+    width: 14px;
+    height: 30px;
     background: #d2b48c;
     border-radius: 2px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.4);
@@ -190,18 +192,18 @@ body {{
 
 .polaroid {{
     background: #ffffff;
-    padding: 10px 10px 15px 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    padding: 12px 12px 18px 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     border-radius: 4px;
-    width: 190px;
+    width: 230px; /* Tamaño más grande */
     display: flex;
     flex-direction: column;
     align-items: center;
 }}
 
 .polaroid img {{
-    width: 170px;
-    height: 200px;
+    width: 206px; /* Imagen más grande */
+    height: 240px;
     object-fit: cover;
     border-radius: 2px;
     display: block;
@@ -209,10 +211,10 @@ body {{
 
 .texto-polaroid {{
     font-family: 'Caveat', cursive, sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.35rem;
     color: #222222;
     text-align: center;
-    margin: 10px 0 0 0;
+    margin: 12px 0 0 0;
     line-height: 1.2;
     font-weight: 600;
 }}
@@ -234,9 +236,9 @@ body {{
 
 .frase-bottom {{
     text-align: center;
-    margin-top: 30px;
+    margin-top: 35px;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: #ffffff;
     text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 20px rgba(255, 0, 127, 0.6);
@@ -264,5 +266,5 @@ body {{
 </html>
 """
 
-# Renderizado seguro en iFrame para evitar conflictos de formateo en Streamlit
-components.html(html_completo, height=520, scrolling=False)
+# Se aumentó la altura a 600px para que entren cómodamente las fotos más grandes
+components.html(html_completo, height=600, scrolling=False)
