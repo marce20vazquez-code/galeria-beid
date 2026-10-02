@@ -64,6 +64,7 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
 
+        /* Botones superiores */
         .top-controls {
             position: fixed;
             top: 12px;
@@ -89,6 +90,30 @@
         }
 
         .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.4); }
+
+        /* Botón Flotante para Carta de Amor */
+        .btn-carta-flotante {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #ff007f, #a855f7);
+            border: none;
+            color: white;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
+            animation: latir 1.8s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-carta-flotante:hover { transform: scale(1.15); }
 
         .corazon-flotante {
             position: absolute; bottom: -40px;
@@ -118,7 +143,6 @@
             font-size: 2.1rem;
             font-weight: 900;
             color: #ffffff;
-            /* Efecto de volumen 3D con sombras multicapa y neón */
             text-shadow: 
                 1px 1px 0 #ff007f, 
                 2px 2px 0 #e60073, 
@@ -133,16 +157,8 @@
             animation: flotarLatir 3.5s ease-in-out infinite alternate;
         }
 
-        .letra-3d.visible {
-            opacity: 1;
-            transform: translateY(0) scale(1) rotateX(0deg);
-        }
-
-        .letra-3d.desaparecer {
-            opacity: 0;
-            transform: translateY(25px) scale(0.7);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
+        .letra-3d.visible { opacity: 1; transform: translateY(0) scale(1) rotateX(0deg); }
+        .letra-3d.desaparecer { opacity: 0; transform: translateY(25px) scale(0.7); transition: opacity 0.8s ease, transform 0.8s ease; }
 
         @keyframes flotarLatir {
             0% { transform: translateY(0) scale(1); }
@@ -179,7 +195,11 @@
             border-radius: 6px; width: 220px;
             transform-origin: top center;
             animation: balanceoFoto 3.5s ease-in-out infinite alternate;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
+
+        .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; }
 
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
@@ -195,27 +215,15 @@
             justify-content: center;
         }
 
-        .loader-corazon {
-            font-size: 1.8rem;
-            animation: latir 1s infinite alternate;
-            opacity: 0.7;
-        }
+        .loader-corazon { font-size: 1.8rem; animation: latir 1s infinite alternate; opacity: 0.7; }
 
         .polaroid img { 
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            border-radius: 3px; 
-            display: block; 
-            opacity: 0;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; border-radius: 3px; display: block; opacity: 0; 
             transition: opacity 0.6s ease-in-out;
         }
 
-        .polaroid img.cargada {
-            opacity: 1;
-        }
+        .polaroid img.cargada { opacity: 1; }
 
         .texto-polaroid {
             font-family: 'Caveat', cursive; font-size: 1.3rem; color: #1a1a1a;
@@ -224,8 +232,71 @@
 
         .frase-bottom {
             text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2;
-            padding: 0 10px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2; padding: 0 10px;
+        }
+
+        /* MODALES (ZOOM Y CARTA) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(10px);
+            z-index: 100000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.activo { opacity: 1; visibility: visible; }
+
+        .btn-cerrar-modal {
+            position: absolute; top: 12px; right: 18px;
+            background: none; border: none; font-size: 2rem; color: #ff007f;
+            cursor: pointer; font-weight: bold; z-index: 100001;
+        }
+
+        /* Modal Zoom Foto */
+        .contenido-zoom {
+            background: rgba(20, 5, 35, 0.95);
+            border: 2px solid rgba(255, 0, 127, 0.5);
+            border-radius: 15px; padding: 20px; max-width: 90vw; max-height: 85vh;
+            display: flex; flex-direction: column; align-items: center; position: relative;
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.5);
+        }
+
+        .contenido-zoom img {
+            max-width: 80vw; max-height: 60vh; object-fit: contain;
+            border-radius: 8px; border: 3px solid #fff;
+        }
+
+        .contenido-zoom p {
+            font-family: 'Caveat', cursive; font-size: 1.6rem; color: #ffd700;
+            margin-top: 15px; margin-bottom: 0; text-align: center;
+        }
+
+        /* Modal Carta Secreta */
+        .contenido-carta {
+            background: #fff; color: #2b1020; max-width: 500px; width: 100%;
+            max-height: 75vh; overflow-y: auto; border-radius: 15px; padding: 30px 25px;
+            position: relative; box-shadow: 0 0 35px rgba(255, 0, 127, 0.6);
+            border: 3px solid #ff007f; text-align: center;
+        }
+
+        .contenido-carta h3 {
+            font-family: 'Caveat', cursive; font-size: 2.3rem; color: #d10068; margin-top: 0;
+        }
+
+        .contenido-carta p {
+            font-family: 'Caveat', cursive; font-size: 1.35rem; line-height: 1.6;
+            color: #333; text-align: justify; white-space: pre-line;
+        }
+
+        /* Rastro mágico de destellos */
+        .destello-magico {
+            position: fixed; pointer-events: none; z-index: 9999;
+            font-size: 1.2rem; animation: desvanecerTrail 0.8s ease-out forwards;
+        }
+
+        @keyframes desvanecerTrail {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -70px) scale(0.2) rotate(45deg); opacity: 0; }
         }
 
         @media (min-width: 768px) {
@@ -254,6 +325,9 @@
     <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
 </div>
 
+<!-- Botón carta flotante -->
+<button class="btn-carta-flotante" onclick="abrirCarta()" title="Carta Secreta">💌</button>
+
 <!-- Título 3D dinámico -->
 <div class="titulo-3d-container" id="titulo3D"></div>
 
@@ -265,6 +339,32 @@
 </div>
 
 <div class="frase-bottom">Nuestra historia en imágenes 💖 ✨ 🌙</div>
+
+<!-- Modal Zoom Foto -->
+<div class="modal-overlay" id="modalZoom" onclick="cerrarZoom()">
+    <div class="contenido-zoom" onclick="event.stopPropagation()">
+        <button class="btn-cerrar-modal" onclick="cerrarZoom()">✕</button>
+        <img id="imgZoom" src="" alt="Recuerdo Ampliado" />
+        <p id="textoZoom"></p>
+    </div>
+</div>
+
+<!-- Modal Carta Secreta -->
+<div class="modal-overlay" id="modalCarta" onclick="cerrarCarta()">
+    <div class="contenido-carta" onclick="event.stopPropagation()">
+        <button class="btn-cerrar-modal" onclick="cerrarCarta()">✕</button>
+        <h3>Una carta para ti... 💌</h3>
+        <p id="textoCarta">
+Para la persona más especial de mi vida:
+
+Gracias por llenar mis días de sonrisas, momentos mágicos e instantes inolvidables. Cada foto de esta galería guarda solo una pequeña parte de todo lo que siento por ti. 
+
+Gracias por ser mi lugar seguro, mi compañía favorita y el amor más bonito. ¡Que sigamos creando miles de recuerdos juntos!
+
+Con todo mi amor, siempre. 💖✨
+        </p>
+    </div>
+</div>
 
 <script>
 const LISTA_DE_FRASES = [
@@ -281,8 +381,8 @@ const LISTA_DE_FRASES = [
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
+const riel = document.getElementById('riel-fotos');
 
-// ANIMACIÓN DE TÍTULO 3D LETRA POR LETRA Y CICLO DE 30 SEGUNDOS
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
     const texto = "RECUERDOS";
@@ -298,19 +398,11 @@ function iniciarAnimacionTitulo() {
     }
 
     function ejecutarCiclo() {
-        // Resetear clases
-        spans.forEach(span => {
-            span.classList.remove('visible', 'desaparecer');
-        });
-
-        // 1. Aparecer letra por letra (180ms de desfase por letra)
+        spans.forEach(span => span.classList.remove('visible', 'desaparecer'));
         spans.forEach((span, index) => {
-            setTimeout(() => {
-                span.classList.add('visible');
-            }, index * 180);
+            setTimeout(() => span.classList.add('visible'), index * 180);
         });
 
-        // 2. A los 25 segundos, desaparece suavemente
         setTimeout(() => {
             spans.forEach(span => {
                 span.classList.remove('visible');
@@ -320,7 +412,6 @@ function iniciarAnimacionTitulo() {
     }
 
     ejecutarCiclo();
-    // Repetir ciclo cada 30 segundos
     setInterval(ejecutarCiclo, 30000);
 }
 
@@ -357,8 +448,6 @@ async function cargarArchivosAutomaticos() {
 }
 
 function inicializarGaleria(fotos, canciones) {
-    const riel = document.getElementById('riel-fotos');
-    
     if (canciones.length > 0) {
         const indiceAleatorio = Math.floor(Math.random() * canciones.length);
         audio.src = canciones[indiceAleatorio];
@@ -371,7 +460,7 @@ function inicializarGaleria(fotos, canciones) {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
             htmlFotos += `
             <div class="item-cuerda">
-                <div class="polaroid">
+                <div class="polaroid" onclick="abrirZoom('${foto.cdn}', '${frase}')">
                     <div class="contenedor-foto">
                         <div class="loader-corazon">💖</div>
                         <img src="${foto.cdn}" 
@@ -388,6 +477,57 @@ function inicializarGaleria(fotos, canciones) {
         riel.innerHTML = htmlFotos;
     }
 }
+
+/* FUNCIONES DE ZOOM FOTO */
+function abrirZoom(urlSrc, fraseTexto) {
+    riel.style.animationPlayState = 'paused';
+    document.getElementById('imgZoom').src = urlSrc;
+    document.getElementById('textoZoom').innerText = fraseTexto;
+    document.getElementById('modalZoom').classList.add('activo');
+}
+
+function cerrarZoom() {
+    document.getElementById('modalZoom').classList.remove('activo');
+    riel.style.animationPlayState = 'running';
+}
+
+/* FUNCIONES DE CARTA SECRETA */
+function abrirCarta() {
+    riel.style.animationPlayState = 'paused';
+    document.getElementById('modalCarta').classList.add('activo');
+}
+
+function cerrarCarta() {
+    document.getElementById('modalCarta').classList.remove('activo');
+    riel.style.animationPlayState = 'running';
+}
+
+/* RASTRO MÁGICO TÁCTIL */
+let ultimoDestello = 0;
+function crearDestello(x, y) {
+    const destello = document.createElement('div');
+    destello.className = 'destello-magico';
+    const iconos = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
+    destello.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
+    destello.style.left = x + 'px';
+    destello.style.top = y + 'px';
+    document.body.appendChild(destello);
+    setTimeout(() => destello.remove(), 800);
+}
+
+function manejarRastro(e) {
+    const ahora = Date.now();
+    if (ahora - ultimoDestello > 45) {
+        const x = e.clientX || (e.touches && e.touches[0].clientX);
+        const y = e.clientY || (e.touches && e.touches[0].clientY);
+        if (x && y) {
+            crearDestello(x, y);
+            ultimoDestello = ahora;
+        }
+    }
+}
+window.addEventListener('mousemove', manejarRastro);
+window.addEventListener('touchmove', manejarRastro);
 
 function activarPantallaCompleta() {
     const el = document.documentElement;
