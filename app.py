@@ -104,6 +104,38 @@ body {{
     position: relative;
 }}
 
+/* BOTÓN DE PANTALLA COMPLETA */
+.btn-fullscreen {{
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 0, 127, 0.5);
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+    transition: all 0.3s ease;
+    outline: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}}
+
+.btn-fullscreen:hover {{
+    background: rgba(255, 0, 127, 0.3);
+    border-color: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    transform: scale(1.05);
+}}
+
 /* Corazones flotantes del fondo */
 .corazon-flotante {{
     position: fixed;
@@ -190,7 +222,6 @@ body {{
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    /* Duración duplicada de 75s a 150s para reducir la velocidad al 50% */
     animation: desplazar 150s linear infinite;
     z-index: 2;
     position: relative;
@@ -306,6 +337,11 @@ body {{
 </head>
 <body>
 
+<!-- BOTÓN PARA ACTIVAR PANTALLA COMPLETA -->
+<button id="btnFullscreen" class="btn-fullscreen" onclick="toggleFullscreen()">
+    ⛶ Pantalla Completa
+</button>
+
 <div class="titulo-container">
     <h1 class="titulo-3d">RECUERDOS</h1>
 </div>
@@ -322,6 +358,37 @@ body {{
 </div>
 
 <script>
+// Función para alternar Pantalla Completa
+function toggleFullscreen() {{
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {{
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {{
+            elem.requestFullscreen();
+        }} else if (elem.webkitRequestFullscreen) {{
+            elem.webkitRequestFullscreen();
+        }}
+    }} else {{
+        if (document.exitFullscreen) {{
+            document.exitFullscreen();
+        }} else if (document.webkitExitFullscreen) {{
+            document.webkitExitFullscreen();
+        }}
+    }}
+}}
+
+// Cambiar el texto del botón al entrar o salir
+function actualizarBoton() {{
+    const btn = document.getElementById('btnFullscreen');
+    if (document.fullscreenElement || document.webkitFullscreenElement) {{
+        btn.innerHTML = '🗗 Salir de Pantalla Completa';
+    }} else {{
+        btn.innerHTML = '⛶ Pantalla Completa';
+    }}
+}}
+
+document.addEventListener('fullscreenchange', actualizarBoton);
+document.addEventListener('webkitfullscreenchange', actualizarBoton);
+
 // Corazones flotantes en el fondo
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨'];
 
