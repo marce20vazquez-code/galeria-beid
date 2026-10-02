@@ -52,7 +52,6 @@ LISTA_DE_FRASES = [
     "Amor del bueno, del que hace bien al alma. 💘",
 ]
 
-# Asegurar carpetas locales para evitar errores si no existen
 CARPETA_FOTOS = "fotos"
 CARPETA_MUSICA = "musica"
 
@@ -93,7 +92,7 @@ for f in archivos_fotos:
   if img_b64:
     imagenes_b64.append(img_b64)
 
-# Imagen de respaldo por defecto si la carpeta está vacía
+# Respaldo temporal si la carpeta está vacía
 if not imagenes_b64:
   imagenes_b64 = [
       "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400"
@@ -558,5 +557,4 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Renderizado correcto con components.html
 components.html(html_completo, height=750, scrolling=False)
