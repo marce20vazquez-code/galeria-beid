@@ -117,7 +117,7 @@ if not imagenes_b64:
   st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
-# --- CARGAR TODAS LAS CANCIONES (PRIORIZANDO CANCION_20) ---
+# --- CARGAR TODAS LAS CANCIONES DE LA CARPETA MÚSICA ---
 posibles_carpetas = ["música", "musica", "Música", "Musica"]
 CARPETA_MUSICA = next(
     (c for c in posibles_carpetas if os.path.exists(c)), "musica"
@@ -130,21 +130,13 @@ if os.path.exists(CARPETA_MUSICA):
       if file.lower().endswith(("mp3", "wav", "m4a", "ogg")):
         archivos_musica.append(os.path.join(root, file))
 
-archivos_musica.sort()
-
 lista_canciones_b64 = []
-idx_cancion_20 = 0
-
 for music_file in archivos_musica:
-  nombre = os.path.basename(music_file).lower()
   try:
     with open(music_file, "rb") as audio_file:
       encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
       data_uri = f"data:audio/mp3;base64,{encoded_audio}"
       lista_canciones_b64.append(data_uri)
-
-      if "cancion_20." in nombre or "canción_20." in nombre:
-        idx_cancion_20 = len(lista_canciones_b64) - 1
   except Exception:
     pass
 
@@ -514,14 +506,16 @@ const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 
 const canciones = {canciones_json};
-let currentIdx = {idx_cancion_20};
+let currentIdx = 0;
 
+// Al abrir la página, selecciona una canción al azar para comenzar
 if (canciones.length > 0) {{
+    currentIdx = Math.floor(Math.random() * canciones.length);
     audio.src = canciones[currentIdx];
 }}
 
-// Al terminar la canción actual, reproduce una aleatoria
-audio.addEventListener('ended', function() {{
+// Función para elegir y reproducir una siguiente canción de forma aleatoria
+function reproducirSiguienteAleatoria() {{
     if (canciones.length === 0) return;
     if (canciones.length === 1) {{
         audio.currentTime = 0;
@@ -537,7 +531,10 @@ audio.addEventListener('ended', function() {{
     currentIdx = nextIdx;
     audio.src = canciones[currentIdx];
     audio.play();
-}});
+}}
+
+// Al terminar la canción actual, reproduce la siguiente aleatoria
+audio.addEventListener('ended', reproducirSiguienteAleatoria);
 
 function toggleMusica() {{
     if (canciones.length === 0) {{
