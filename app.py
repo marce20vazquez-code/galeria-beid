@@ -1,5 +1,9 @@
 import os
+import base64
+import io
 import streamlit as st
+import streamlit.components.v1 as components
+from PIL import Image
 import gdown
 
 # Configuración inicial de Streamlit
@@ -17,7 +21,7 @@ LISTA_DE_FRASES = [
     "Amor del bueno, del que hace bien al alma. 💘"
 ]
 
-# --- DESCARGA DE FOTOS DESDE GOOGLE DRIVE ---
+# --- DESCARGA Y OPTIMIZACIÓN DE IMÁGENES ---
 URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
 CARPETA_FOTOS = "fotos_drive"
 
@@ -29,12 +33,11 @@ def descargar_fotos_de_drive():
         try:
             gdown.download_folder(URL_DRIVE, output=CARPETA_FOTOS, quiet=True, use_cookies=False)
         except Exception as e:
-            st.error(f"Error al descargar imágenes de Drive: {e}")
+            st.error(f"Error al descargar de Drive: {e}")
 
-with st.spinner("Cargando recuerdos... ❤️✨"):
+with st.spinner("Cargando y optimizando recuerdos... ❤️✨"):
     descargar_fotos_de_drive()
 
-# Obtener rutas de las imágenes
 archivos_fotos = []
 if os.path.exists(CARPETA_FOTOS):
     for root, _, files in os.walk(CARPETA_FOTOS):
@@ -44,17 +47,222 @@ if os.path.exists(CARPETA_FOTOS):
 
 archivos_fotos.sort()
 
-# Título
-st.header("Nuestra historia en imágenes 💖✨🌙")
+@st.cache_data
+def get_optimized_image_base64(path):
+    try:
+        with Image.open(path) as img:
+            img = img.convert('RGB')
+            img.thumbnail((300, 350))
+            buffer = io.BytesIO()
+            img.save(buffer, format="JPEG", quality=75, optimize=True)
+            encoded = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            return f"data:image/jpeg;base64,{encoded}"
+    except Exception:
+        return ""
 
-# --- MOSTRAR GALERÍA EN COLUMNAS ---
-if archivos_fotos:
-    num_frases = len(LISTA_DE_FRASES)
-    cols = st.columns(3)
+imagenes_b64 = [get_optimized_image_base64(f) for f in archivos_fotos if get_optimized_image_base64(f)]
+
+if not imagenes_b64:
+    st.warning("No se encontraron imágenes en la carpeta de Drive o aún se están procesando.")
+    st.stop()
+
+# --- CONSTRUCCIÓN DE LA GALERÍA CON CUERDA Y FOCOS ---
+focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
+items_galeria = imagenes_b64 + imagenes_b64  # Duplicar para el efecto de bucle infinito
+
+html_fotos = ""
+for idx, img_src in enumerate(items_galeria):
+    foco_clase = focos_colores[idx % len(focos_colores)]
+    rotacion = "-3deg" if idx % 2 == 0 else "3deg"
+    frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
     
-    for i, path in enumerate(archivos_fotos):
-        frase_actual = LISTA_DE_FRASES[i % num_frases]
-        # Se utiliza use_container_width=True en lugar de use_column_width
-        cols[i % 3].image(path, caption=frase_actual, use_container_width=True)
-else:
-    st.warning("No se encontraron imágenes en la carpeta de Drive.")
+    html_fotos += f"""
+    <div class="item-cuerda">
+        <div class="foco {foco_clase}"></div>
+        <div class="polaroid" style="transform: rotate({rotacion});">
+            <div class="pinza"></div>
+            <img src="{img_src}" alt="Recuerdo" loading="lazy" />
+            <p class="texto-polaroid">{frase_actual}</p>
+        </div>
+    </div>
+    """
+
+# --- ESTRUCTURA COMPLETA HTML Y CSS ---
+html_completo = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<style>
+body {{
+    background-color: #0c001f;
+    margin: 0;
+    padding: 10px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+}}
+
+.titulo-container {{
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}}
+
+.titulo-3d {{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: moverColores 5s linear infinite;
+    filter: drop-shadow(0px 0px 12px rgba(255, 0, 127, 0.8));
+    margin: 0;
+}}
+
+@keyframes moverColores {{
+    0% {{ background-position: 0% 50%; }}
+    50% {{ background-position: 100% 50%; }}
+    100% {{ background-position: 0% 50%; }}
+}}
+
+.galeria-caja {{
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 60px 0 40px 0;
+    background: radial-gradient(circle, rgba(26,0,51,0.8) 0%, rgba(12,0,31,1) 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}}
+
+.cuerda {{
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #a87e50;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    z-index: 1;
+}}
+
+.riel-desplazamiento {{
+    display: flex;
+    width: max-content;
+    animation: desplazar 40s linear infinite;
+    z-index: 2;
+    position: relative;
+}}
+
+.riel-desplazamiento:hover {{
+    animation-play-state: paused;
+}}
+
+@keyframes desplazar {{
+    0% {{ transform: translateX(0); }}
+    100% {{ transform: translateX(-50%); }}
+}}
+
+.item-cuerda {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 25px;
+    position: relative;
+}}
+
+.pinza {{
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 28px;
+    background: #d2b48c;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    z-index: 10;
+}}
+
+.polaroid {{
+    background: #ffffff;
+    padding: 10px 10px 15px 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    border-radius: 4px;
+    width: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}}
+
+.polaroid img {{
+    width: 170px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+}}
+
+.texto-polaroid {{
+    font-family: 'Caveat', cursive, sans-serif;
+    font-size: 1.2rem;
+    color: #222222;
+    text-align: center;
+    margin: 10px 0 0 0;
+    line-height: 1.2;
+    font-weight: 600;
+}}
+
+.foco {{
+    position: absolute;
+    top: -45px;
+    width: 22px;
+    height: 32px;
+    border-radius: 50% 50% 45% 45%;
+    z-index: 5;
+}}
+
+.foco-rojo {{ background: #ff4d4d; box-shadow: 0 0 15px #ff4d4d, 0 0 30px #ff4d4d; }}
+.foco-azul {{ background: #4da6ff; box-shadow: 0 0 15px #4da6ff, 0 0 30px #4da6ff; }}
+.foco-dorado {{ background: #ffd700; box-shadow: 0 0 15px #ffd700, 0 0 30px #ffd700; }}
+.foco-verde {{ background: #4dff4d; box-shadow: 0 0 15px #4dff4d, 0 0 30px #4dff4d; }}
+.foco-morado {{ background: #a855f7; box-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7; }}
+
+.frase-bottom {{
+    text-align: center;
+    margin-top: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 20px rgba(255, 0, 127, 0.6);
+}}
+</style>
+</head>
+<body>
+
+<div class="titulo-container">
+    <h1 class="titulo-3d">RECUERDOS</h1>
+</div>
+
+<div class="galeria-caja">
+    <div class="cuerda"></div>
+    <div class="riel-desplazamiento">
+        {html_fotos}
+    </div>
+</div>
+
+<div class="frase-bottom">
+    Nuestra historia en imágenes 💖✨🌙
+</div>
+
+</body>
+</html>
+"""
+
+# Renderizado seguro en iFrame para evitar conflictos de formateo en Streamlit
+components.html(html_completo, height=520, scrolling=False)
