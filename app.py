@@ -190,7 +190,8 @@ body {{
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    animation: desplazar 75s linear infinite;
+    /* Duración duplicada de 75s a 150s para reducir la velocidad al 50% */
+    animation: desplazar 150s linear infinite;
     z-index: 2;
     position: relative;
 }}
@@ -235,13 +236,10 @@ body {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    
-    /* Punto de giro ajustado al centro superior donde está la pinza */
     transform-origin: top center;
     animation: balanceoFoto 3.2s ease-in-out infinite alternate;
 }}
 
-/* Desfase de animación entre fotos para que se mezan de forma natural */
 .item-cuerda:nth-child(even) .polaroid {{
     animation-delay: -1.6s;
 }}
