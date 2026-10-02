@@ -139,7 +139,14 @@
 
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        .polaroid img { width: 206px; height: 235px; object-fit: cover; border-radius: 3px; display: block; }
+        .polaroid img { 
+            width: 206px; 
+            height: 235px; 
+            object-fit: cover; 
+            border-radius: 3px; 
+            display: block; 
+            background-color: #f0f0f0;
+        }
 
         .texto-polaroid {
             font-family: 'Caveat', cursive; font-size: 1.35rem; color: #1a1a1a;
@@ -198,15 +205,27 @@ async function cargarArchivosAutomaticos() {
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
         const dataFotos = await resFotos.json();
-        const fotos = Array.isArray(dataFotos) 
-            ? dataFotos.filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i)).map(f => f.download_url)
-            : [];
+        
+        let fotos = [];
+        if (Array.isArray(dataFotos)) {
+            fotos = dataFotos
+                .filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
+                .map(f => ({
+                    nombre: f.name,
+                    cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
+                    github: f.download_url
+                }));
+        }
 
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
         const dataMusica = await resMusica.json();
-        const canciones = Array.isArray(dataMusica) 
-            ? dataMusica.filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i)).map(f => f.download_url)
-            : [];
+        
+        let canciones = [];
+        if (Array.isArray(dataMusica)) {
+            canciones = dataMusica
+                .filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
+                .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
+        }
 
         inicializarGaleria(fotos, canciones);
     } catch (e) {
@@ -225,12 +244,15 @@ function inicializarGaleria(fotos, canciones) {
     if (fotos.length > 0) {
         const fotosTotales = [...fotos, ...fotos];
         let htmlFotos = "";
-        fotosTotales.forEach((fotoUrl, idx) => {
+        fotosTotales.forEach((foto, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
             htmlFotos += `
             <div class="item-cuerda">
                 <div class="polaroid">
-                    <img src="${fotoUrl}" alt="Recuerdo" />
+                    <img src="${foto.cdn}" 
+                         alt="Recuerdo" 
+                         referrerpolicy="no-referrer"
+                         onerror="if(this.src!=='${foto.github}'){this.src='${foto.github}';}" />
                     <p class="texto-polaroid">${frase}</p>
                 </div>
             </div>`;
@@ -243,9 +265,9 @@ function activarPantallaCompleta() {
     const el = document.documentElement;
     if (el.requestFullscreen) {
         el.requestFullscreen().catch(err => console.log(err));
-    } else if (el.webkitRequestFullscreen) { /* Safari / iOS */
+    } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
-    } else if (el.msRequestFullscreen) { /* IE11 / Edge */
+    } else if (el.msRequestFullscreen) {
         el.msRequestFullscreen();
     }
 }
@@ -255,7 +277,6 @@ function iniciarExperiencia() {
     overlay.style.opacity = '0';
     setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
 
-    // Intenta activar pantalla completa al tocar la pantalla de entrada
     activarPantallaCompleta();
 
     if (audio.src) {
