@@ -1,7 +1,6 @@
 import base64
 import io
 import os
-import random
 from PIL import Image
 import gdown
 import streamlit as st
@@ -117,7 +116,7 @@ if not imagenes_b64:
   st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
-# --- CARGAR CANCIÓN ALEATORIA DESDE LA CARPETA LOCAL (SOPORTA TILDES) ---
+# --- CARGAR CANCIÓN (PRIORIZA CANCION_20) ---
 posibles_carpetas = ["música", "musica", "Música", "Musica"]
 CARPETA_MUSICA = next(
     (c for c in posibles_carpetas if os.path.exists(c)), "musica"
@@ -130,9 +129,22 @@ if os.path.exists(CARPETA_MUSICA):
       if file.lower().endswith(("mp3", "wav", "m4a", "ogg")):
         archivos_musica.append(os.path.join(root, file))
 
+archivos_musica.sort()
+
+# Busca explícitamente cancion_20.mp3 o canción_20.mp3
+cancion_elegida = None
+for music_file in archivos_musica:
+  nombre = os.path.basename(music_file).lower()
+  if "cancion_20." in nombre or "canción_20." in nombre:
+    cancion_elegida = music_file
+    break
+
+# Si por alguna razón no encuentra la 20, toma la primera disponible
+if not cancion_elegida and archivos_musica:
+  cancion_elegida = archivos_musica[0]
+
 musica_b64 = ""
-if archivos_musica:
-  cancion_elegida = random.choice(archivos_musica)
+if cancion_elegida:
   try:
     with open(cancion_elegida, "rb") as audio_file:
       encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
@@ -309,10 +321,11 @@ html, body {{
     z-index: 1;
 }}
 
+/* Velocidad reducida a 320s para desplazamiento más lento */
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    animation: desplazar 150s linear infinite;
+    animation: desplazar 320s linear infinite;
     z-index: 2;
     position: relative;
 }}
