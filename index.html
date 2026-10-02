@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GALERÍA DE RECUERDOS</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <style>
@@ -11,6 +11,7 @@
         html, body {
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -26,7 +27,7 @@
 
         #overlay-inicio {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background: rgba(8, 0, 20, 0.95);
             z-index: 99999;
             display: flex;
@@ -36,26 +37,26 @@
             cursor: pointer;
             backdrop-filter: blur(15px);
             transition: opacity 0.6s ease, visibility 0.6s ease;
+            padding: 20px;
         }
 
         #overlay-inicio h2 {
-            font-size: 2.2rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             color: #fff;
             text-shadow: 0 0 20px #ff007f;
             margin-bottom: 15px;
             text-align: center;
-            padding: 0 20px;
         }
 
         #overlay-inicio p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3.5vw, 1.3rem);
             color: #00ffff;
             animation: latir 1.5s infinite;
         }
 
         @keyframes latir {
             0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 1; }
         }
 
         #contenedor-corazones {
@@ -65,24 +66,31 @@
         }
 
         .top-controls {
-            position: fixed; top: 20px; right: 25px; z-index: 1000; display: flex; gap: 12px;
+            position: fixed; 
+            top: clamp(10px, 2vh, 20px); 
+            right: clamp(10px, 2vw, 25px); 
+            z-index: 1000; 
+            display: flex; 
+            gap: 10px;
         }
 
         .btn-control {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #ffffff;
-            padding: 10px 20px;
+            padding: clamp(6px, 1.5vh, 10px) clamp(12px, 2vw, 20px);
             border-radius: 30px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem; font-weight: 800;
+            font-size: clamp(0.7rem, 2vw, 0.85rem); 
+            font-weight: 800;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
-        .btn-control:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.4); }
+        .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.4); }
 
         .corazon-flotante {
             position: absolute; bottom: -40px;
@@ -95,44 +103,64 @@
         }
 
         .titulo-3d {
-            font-size: 3rem; font-weight: 900; letter-spacing: 5px;
+            font-size: clamp(1.8rem, 6vw, 3.2rem); 
+            font-weight: 900; 
+            letter-spacing: 3px;
             background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: moverColores 5s infinite, flotarYLatir 3.5s infinite;
-            margin-top: 20px; z-index: 2; text-align: center;
+            margin-top: clamp(15px, 3vh, 30px); 
+            z-index: 2; 
+            text-align: center;
+            padding: 0 10px;
         }
 
         @keyframes moverColores { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-        @keyframes flotarYLatir { 0%, 100% {transform: translateY(0) scale(1);} 50% {transform: translateY(-10px) scale(1.04);} }
+        @keyframes flotarYLatir { 0%, 100% {transform: translateY(0) scale(1);} 50% {transform: translateY(-8px) scale(1.03);} }
 
         .galeria-caja {
-            width: 100%; overflow: hidden; position: relative;
-            padding: 60px 0 50px 0;
+            width: 100%; 
+            overflow: hidden; 
+            position: relative;
+            padding: clamp(40px, 8vh, 60px) 0 clamp(30px, 6vh, 50px) 0;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             z-index: 2;
         }
 
         .cuerda {
-            position: absolute; top: 75px; left: 0; width: 100%; height: 4px;
+            position: absolute; 
+            top: clamp(55px, 10vh, 75px); 
+            left: 0; 
+            width: 100%; 
+            height: 4px;
             background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
         }
 
         .riel-desplazamiento {
-            display: flex; width: max-content;
+            display: flex; 
+            width: max-content;
             animation: desplazar 120s linear infinite;
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .item-cuerda { display: flex; flex-direction: column; align-items: center; margin: 0 32px; position: relative; }
+        .item-cuerda { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 0 clamp(16px, 3vw, 32px); 
+            position: relative; 
+        }
 
         .polaroid {
-            background: #ffffff; padding: 12px 12px 18px 12px;
+            background: #ffffff; 
+            padding: clamp(8px, 1.8vw, 12px) clamp(8px, 1.8vw, 12px) clamp(12px, 2.2vw, 18px) clamp(8px, 1.8vw, 12px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-            border-radius: 6px; width: 230px;
+            border-radius: 6px; 
+            width: clamp(170px, 48vw, 230px);
             transform-origin: top center;
             animation: balanceoFoto 3.5s ease-in-out infinite alternate;
         }
@@ -140,8 +168,8 @@
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
         .polaroid img { 
-            width: 206px; 
-            height: 235px; 
+            width: 100%; 
+            height: clamp(180px, 50vw, 235px); 
             object-fit: cover; 
             border-radius: 3px; 
             display: block; 
@@ -149,13 +177,35 @@
         }
 
         .texto-polaroid {
-            font-family: 'Caveat', cursive; font-size: 1.35rem; color: #1a1a1a;
-            text-align: center; margin: 12px 0 0 0; font-weight: 600;
+            font-family: 'Caveat', cursive; 
+            font-size: clamp(1.05rem, 3.2vw, 1.35rem); 
+            color: #1a1a1a;
+            text-align: center; 
+            margin: clamp(8px, 1.8vw, 12px) 0 0 0; 
+            font-weight: 600;
         }
 
         .frase-bottom {
-            text-align: center; margin-bottom: 25px; font-size: 1.5rem; font-weight: 800;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2;
+            text-align: center; 
+            margin-bottom: clamp(15px, 3vh, 25px); 
+            font-size: clamp(0.95rem, 3.8vw, 1.5rem); 
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); 
+            z-index: 2;
+            padding: 0 15px;
+        }
+
+        /* Ajustes específicos para móviles muy pequeños */
+        @media (max-width: 480px) {
+            .top-controls {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                justify-content: flex-end;
+            }
+            .titulo-3d {
+                margin-top: 50px;
+            }
         }
     </style>
 </head>
