@@ -117,7 +117,7 @@ if not imagenes_b64:
   st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
-# --- CARGAR CANCIONES DE LA CARPETA MÚSICA ---
+# --- CARGAR TODAS LAS CANCIONES DE LA CARPETA MÚSICA ---
 posibles_carpetas = ["música", "musica", "Música", "Musica"]
 CARPETA_MUSICA = next(
     (c for c in posibles_carpetas if os.path.exists(c)), "musica"
@@ -131,9 +131,9 @@ if os.path.exists(CARPETA_MUSICA):
         archivos_musica.append(os.path.join(root, file))
 
 lista_canciones_b64 = []
-for file_path in archivos_musica:
+for music_file in archivos_musica:
   try:
-    with open(file_path, "rb") as audio_file:
+    with open(music_file, "rb") as audio_file:
       encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
       data_uri = f"data:audio/mp3;base64,{encoded_audio}"
       lista_canciones_b64.append(data_uri)
@@ -508,11 +508,13 @@ const btnMusica = document.getElementById('btnMusica');
 const canciones = {canciones_json};
 let currentIdx = 0;
 
+// Al abrir la página, selecciona una canción al azar para comenzar
 if (canciones.length > 0) {{
     currentIdx = Math.floor(Math.random() * canciones.length);
     audio.src = canciones[currentIdx];
 }}
 
+// Función para elegir y reproducir una siguiente canción de forma aleatoria
 function reproducirSiguienteAleatoria() {{
     if (canciones.length === 0) return;
     if (canciones.length === 1) {{
@@ -531,6 +533,7 @@ function reproducirSiguienteAleatoria() {{
     audio.play();
 }}
 
+// Al terminar la canción actual, reproduce la siguiente aleatoria
 audio.addEventListener('ended', reproducirSiguienteAleatoria);
 
 function toggleMusica() {{
@@ -602,6 +605,7 @@ function crearCorazon() {{
 
 setInterval(crearCorazon, 300);
 
+// SCRIPT PARA SEPARAR LETRAS Y APLICAR RETRASO ANIMADO
 const fraseElem = document.getElementById('fraseBottom');
 if (fraseElem) {{
     const textFrase = fraseElem.innerText;
