@@ -93,7 +93,7 @@ for f in archivos_fotos:
   if img_b64:
     imagenes_b64.append(img_b64)
 
-# Imagen de respaldo por defecto si la carpeta está vacía (evita que la app muera)
+# Imagen de respaldo por defecto si la carpeta está vacía
 if not imagenes_b64:
   imagenes_b64 = [
       "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400"
@@ -558,5 +558,5 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Renderizado seguro con st.iframe sin bloqueos de servidor
-st.iframe(srcdoc=html_completo, height=750, scrolling=False)
+# Renderizado correcto con components.html
+components.html(html_completo, height=750, scrolling=False)
