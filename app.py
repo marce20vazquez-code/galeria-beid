@@ -62,31 +62,36 @@ def get_optimized_image_base64(path):
     except Exception:
         return ""
 
-# Cargar imágenes optimizadas
+# Cargar imágenes optimizadas en una lista de cadenas Base64
 imagenes_b64 = [get_optimized_image_base64(f) for f in archivos_fotos if get_optimized_image_base64(f)]
 
 if not imagenes_b64:
     st.warning("No se encontraron imágenes o aún se están procesando.")
     st.stop()
 
-# Duplicar elementos para el efecto de bucle infinito
-items_galeria = imagenes_b64 + imagenes_b64
-
-# --- CONSTRUCCIÓN DEL HTML ---
+# --- CONSTRUCCIÓN DEL HTML (CORREGIDO) ---
+# Se utiliza una lógica de bucle para generar una secuencia sin interrupciones
+num_fotos = len(imagenes_b64)
 focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
 html_fotos = ""
 
-for idx, img_src in enumerate(items_galeria):
+# Se generan 2 conjuntos de fotos para un bucle infinito
+for idx in range(num_fotos * 2):
+    img_idx = idx % num_fotos # Índice de la foto original
+    # Obtiene la cadena Base64 correcta para esta foto
+    img_data_uri = imagenes_b64[img_idx]
+    
     foco_clase = focos_colores[idx % len(focos_colores)]
     rotacion = "-3deg" if idx % 2 == 0 else "3deg"
     frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
     
+    # Aquí está la corrección: el Base64 se pone como src="data:..."
     html_fotos += f"""
     <div class="item-cuerda">
         <div class="foco {foco_clase}"></div>
         <div class="polaroid" style="transform: rotate({rotacion});">
             <div class="pinza"></div>
-            <img src="{img_src}" alt="Recuerdo" loading="lazy" />
+            <img src="{img_data_uri}" alt="Recuerdo {img_idx + 1}" loading="lazy" />
             <p class="texto-polaroid">{frase_actual}</p>
         </div>
     </div>
