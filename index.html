@@ -64,7 +64,6 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
 
-        /* Botones superiores */
         .top-controls {
             position: fixed;
             top: 12px;
@@ -91,7 +90,6 @@
 
         .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.4); }
 
-        /* Botón Flotante para Carta de Amor */
         .btn-carta-flotante {
             position: fixed;
             bottom: 20px;
@@ -125,7 +123,6 @@
             100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
         }
 
-        /* TÍTULO 3D LETRA POR LETRA */
         .titulo-3d-container {
             margin-top: 60px;
             z-index: 2;
@@ -235,7 +232,6 @@
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2; padding: 0 10px;
         }
 
-        /* MODALES (ZOOM Y CARTA) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(10px);
@@ -252,7 +248,6 @@
             cursor: pointer; font-weight: bold; z-index: 100001;
         }
 
-        /* Modal Zoom Foto */
         .contenido-zoom {
             background: rgba(20, 5, 35, 0.95);
             border: 2px solid rgba(255, 0, 127, 0.5);
@@ -271,7 +266,6 @@
             margin-top: 15px; margin-bottom: 0; text-align: center;
         }
 
-        /* Modal Carta Secreta */
         .contenido-carta {
             background: #fff; color: #2b1020; max-width: 500px; width: 100%;
             max-height: 75vh; overflow-y: auto; border-radius: 15px; padding: 30px 25px;
@@ -288,7 +282,6 @@
             color: #333; text-align: justify; white-space: pre-line;
         }
 
-        /* Rastro mágico de destellos */
         .destello-magico {
             position: fixed; pointer-events: none; z-index: 9999;
             font-size: 1.2rem; animation: desvanecerTrail 0.8s ease-out forwards;
@@ -318,17 +311,16 @@
 </div>
 
 <div id="contenedor-corazones"></div>
-<audio id="musicaFondo" loop></audio>
+<!-- Se quitó el atributo 'loop' para que no repita la misma canción -->
+<audio id="musicaFondo"></audio>
 
 <div class="top-controls">
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
     <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
 </div>
 
-<!-- Botón carta flotante -->
 <button class="btn-carta-flotante" onclick="abrirCarta()" title="Carta Secreta">💌</button>
 
-<!-- Título 3D dinámico -->
 <div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
@@ -340,7 +332,6 @@
 
 <div class="frase-bottom">Nuestra historia en imágenes 💖 ✨ 🌙</div>
 
-<!-- Modal Zoom Foto -->
 <div class="modal-overlay" id="modalZoom" onclick="cerrarZoom()">
     <div class="contenido-zoom" onclick="event.stopPropagation()">
         <button class="btn-cerrar-modal" onclick="cerrarZoom()">✕</button>
@@ -349,7 +340,6 @@
     </div>
 </div>
 
-<!-- Modal Carta Secreta -->
 <div class="modal-overlay" id="modalCarta" onclick="cerrarCarta()">
     <div class="contenido-carta" onclick="event.stopPropagation()">
         <button class="btn-cerrar-modal" onclick="cerrarCarta()">✕</button>
@@ -382,6 +372,8 @@ const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 const riel = document.getElementById('riel-fotos');
+
+let listaCancionesGlobal = [];
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -434,23 +426,45 @@ async function cargarArchivosAutomaticos() {
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
         const dataMusica = await resMusica.json();
         
-        let canciones = [];
         if (Array.isArray(dataMusica)) {
-            canciones = dataMusica
+            listaCancionesGlobal = dataMusica
                 .filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
                 .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
         }
 
-        inicializarGaleria(fotos, canciones);
+        inicializarGaleria(fotos);
     } catch (e) {
         console.error("Error cargando archivos de GitHub", e);
     }
 }
 
-function inicializarGaleria(fotos, canciones) {
-    if (canciones.length > 0) {
-        const indiceAleatorio = Math.floor(Math.random() * canciones.length);
-        audio.src = canciones[indiceAleatorio];
+function reproducirSiguienteCancion() {
+    if (listaCancionesGlobal.length === 0) return;
+
+    let nuevaCancion;
+    if (listaCancionesGlobal.length === 1) {
+        nuevaCancion = listaCancionesGlobal[0];
+    } else {
+        // Selecciona una canción al azar asegurando que no se repita la actual
+        do {
+            const indice = Math.floor(Math.random() * listaCancionesGlobal.length);
+            nuevaCancion = listaCancionesGlobal[indice];
+        } while (nuevaCancion === audio.src && listaCancionesGlobal.length > 1);
+    }
+
+    audio.src = nuevaCancion;
+    audio.play().then(() => {
+        btnMusica.innerHTML = '🎶 Música: ON';
+    }).catch(err => console.log(err));
+}
+
+// Evento: Al terminar la canción actual, reproduce la siguiente de forma aleatoria
+audio.addEventListener('ended', reproducirSiguienteCancion);
+
+function inicializarGaleria(fotos) {
+    if (listaCancionesGlobal.length > 0) {
+        const indiceAleatorio = Math.floor(Math.random() * listaCancionesGlobal.length);
+        audio.src = listaCancionesGlobal[indiceAleatorio];
     }
 
     if (fotos.length > 0) {
@@ -478,7 +492,6 @@ function inicializarGaleria(fotos, canciones) {
     }
 }
 
-/* FUNCIONES DE ZOOM FOTO */
 function abrirZoom(urlSrc, fraseTexto) {
     riel.style.animationPlayState = 'paused';
     document.getElementById('imgZoom').src = urlSrc;
@@ -491,7 +504,6 @@ function cerrarZoom() {
     riel.style.animationPlayState = 'running';
 }
 
-/* FUNCIONES DE CARTA SECRETA */
 function abrirCarta() {
     riel.style.animationPlayState = 'paused';
     document.getElementById('modalCarta').classList.add('activo');
@@ -502,7 +514,6 @@ function cerrarCarta() {
     riel.style.animationPlayState = 'running';
 }
 
-/* RASTRO MÁGICO TÁCTIL */
 let ultimoDestello = 0;
 function crearDestello(x, y) {
     const destello = document.createElement('div');
