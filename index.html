@@ -24,7 +24,6 @@
             position: relative;
         }
 
-        /* Pantalla de inicio para activar audio y pantalla completa */
         #overlay-inicio {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -218,7 +217,6 @@ async function cargarArchivosAutomaticos() {
 function inicializarGaleria(fotos, canciones) {
     const riel = document.getElementById('riel-fotos');
     
-    // Selección aleatoria de canción
     if (canciones.length > 0) {
         const indiceAleatorio = Math.floor(Math.random() * canciones.length);
         audio.src = canciones[indiceAleatorio];
@@ -241,10 +239,24 @@ function inicializarGaleria(fotos, canciones) {
     }
 }
 
+function activarPantallaCompleta() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(err => console.log(err));
+    } else if (el.webkitRequestFullscreen) { /* Safari / iOS */
+        el.webkitRequestFullscreen();
+    } else if (el.msRequestFullscreen) { /* IE11 / Edge */
+        el.msRequestFullscreen();
+    }
+}
+
 function iniciarExperiencia() {
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
     setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
+
+    // Intenta activar pantalla completa al tocar la pantalla de entrada
+    activarPantallaCompleta();
 
     if (audio.src) {
         audio.play().then(() => {
@@ -264,13 +276,16 @@ function toggleMusica() {
 }
 
 function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-            console.log(`Error intentando activar pantalla completa: ${err.message}`);
-        });
+    const esFull = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+    if (!esFull) {
+        activarPantallaCompleta();
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
         }
     }
 }
