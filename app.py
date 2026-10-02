@@ -4,6 +4,7 @@ import json
 import os
 from PIL import Image
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
 # CONFIGURACIÓN DE LA PÁGINA
@@ -27,17 +28,6 @@ st.markdown(
             padding: 0rem !important;
             max-width: 100% !important;
             overflow: hidden;
-        }
-        
-        iframe {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 99999;
         }
     </style>
 """,
@@ -535,6 +525,7 @@ function crearCorazon() {
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
     corazon.style.left = Math.random() * 100 + 'vw';
     
+    no corazon_tamano = Math.random() * 20 + 14;
     const tamano = Math.random() * 20 + 14;
     corazon.style.fontSize = tamano + 'px';
     
@@ -561,5 +552,5 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Renderizado absoluto mediante st.iframe nativo en pantalla completa
-st.iframe(srcdoc=html_completo, height=800, scrolling=False)
+# Renderizado correcto con components.html
+components.html(html_completo, height=780, scrolling=False)
