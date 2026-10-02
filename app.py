@@ -1,10 +1,20 @@
 import os
 import base64
 import io
+import random
 import streamlit as st
 import streamlit.components.v1 as components
 from PIL import Image
 import gdown
+
+# ---------------------------------------------------------
+# ENLACES DE GOOGLE DRIVE (FOTOS Y MÚSICA)
+# ---------------------------------------------------------
+URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
+URL_DRIVE_MUSICA = "https://drive.google.com/drive/folders/1AA4LGHA2mE_IzmwnL245kGoyqWQ9jmn7"
+
+CARPETA_FOTOS = "fotos_drive"
+CARPETA_MUSICA = "musica_drive"
 
 # 1. Configuración inicial de la página
 st.set_page_config(
@@ -13,7 +23,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. CSS para eliminar márgenes de Streamlit y ocupar todo el viewport
+# 2. CSS para eliminar márgenes de Streamlit
 st.markdown("""
     <style>
         /* Ocultar cabecera, pie de página y menú de Streamlit */
@@ -58,22 +68,32 @@ LISTA_DE_FRASES = [
 ]
 
 # --- DESCARGA Y OPTIMIZACIÓN DE IMÁGENES ---
-URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
-CARPETA_FOTOS = "fotos_drive"
-
 @st.cache_resource
 def descargar_fotos_de_drive():
     if not os.path.exists(CARPETA_FOTOS):
         os.makedirs(CARPETA_FOTOS)
     if len(os.listdir(CARPETA_FOTOS)) == 0:
         try:
-            gdown.download_folder(URL_DRIVE, output=CARPETA_FOTOS, quiet=True, use_cookies=False)
+            gdown.download_folder(URL_DRIVE_FOTOS, output=CARPETA_FOTOS, quiet=True, use_cookies=False)
         except Exception as e:
-            st.error(f"Error al descargar de Drive: {e}")
+            st.error(f"Error al descargar fotos de Drive: {e}")
 
-with st.spinner("Cargando y optimizando recuerdos... ❤️✨"):
+# --- DESCARGA DE MÚSICA DESDE DRIVE ---
+@st.cache_resource
+def descargar_musica_de_drive():
+    if not os.path.exists(CARPETA_MUSICA):
+        os.makedirs(CARPETA_MUSICA)
+    if len(os.listdir(CARPETA_MUSICA)) == 0:
+        try:
+            gdown.download_folder(URL_DRIVE_MUSICA, output=CARPETA_MUSICA, quiet=True, use_cookies=False)
+        except Exception as e:
+            st.error(f"Error al descargar música de Drive: {e}")
+
+with st.spinner("Cargando recuerdos y música... ❤️✨"):
     descargar_fotos_de_drive()
+    descargar_musica_de_drive()
 
+# Procesar Fotos
 archivos_fotos = []
 if os.path.exists(CARPETA_FOTOS):
     for root, _, files in os.walk(CARPETA_FOTOS):
@@ -99,12 +119,30 @@ def get_optimized_image_base64(path):
 imagenes_b64 = [get_optimized_image_base64(f) for f in archivos_fotos if get_optimized_image_base64(f)]
 
 if not imagenes_b64:
-    st.warning("No se encontraron imágenes en la carpeta de Drive o aún se están procesando.")
+    st.warning("No se encontraron imágenes en la carpeta de Drive.")
     st.stop()
+
+# Procesar Canción Aleatoria a Base64
+archivos_musica = []
+if os.path.exists(CARPETA_MUSICA):
+    for root, _, files in os.walk(CARPETA_MUSICA):
+        for file in files:
+            if file.lower().endswith(('mp3', 'wav', 'm4a', 'ogg')):
+                archivos_musica.append(os.path.join(root, file))
+
+musica_b64 = ""
+if archivos_musica:
+    cancion_elegida = random.choice(archivos_musica)
+    try:
+        with open(cancion_elegida, "rb") as audio_file:
+            encoded_audio = base64.b64encode(audio_file.read()).decode('utf-8')
+            musica_b64 = f"data:audio/mp3;base64,{encoded_audio}"
+    except Exception as e:
+        st.error(f"Error al procesar el audio: {e}")
 
 # --- CONSTRUCCIÓN DE LA GALERÍA ---
 focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
-items_galeria = imagenes_b64 + imagenes_b64  # Bucle infinito
+items_galeria = imagenes_b64 + imagenes_b64
 
 html_fotos = ""
 for idx, img_src in enumerate(items_galeria):
@@ -122,7 +160,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA HTML, CSS PREMIUM Y ANIMACIONES ---
+# --- ESTRUCTURA HTML Y CSS ---
 html_completo = f"""
 <!DOCTYPE html>
 <html>
@@ -130,9 +168,7 @@ html_completo = f"""
 <meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 <style>
-* {{
-    box-sizing: border-box;
-}}
+* {{ box-sizing: border-box; }}
 
 html, body {{
     width: 100vw;
@@ -149,12 +185,16 @@ html, body {{
     align-items: center;
 }}
 
-/* BOTÓN FLOTANTE PANTALLA COMPLETA */
-.btn-fullscreen {{
+.top-controls {{
     position: fixed;
     top: 20px;
     right: 25px;
     z-index: 1000;
+    display: flex;
+    gap: 12px;
+}}
+
+.btn-control {{
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -169,16 +209,24 @@ html, body {{
     box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
     transition: all 0.3s ease;
     outline: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }}
 
-.btn-fullscreen:hover {{
+.btn-control:hover {{
     background: rgba(255, 0, 127, 0.4);
     border-color: #00ffff;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
     transform: scale(1.08);
 }}
 
-/* CORAZONES FLOTANTES */
+.btn-control.active {{
+    background: rgba(0, 255, 255, 0.25);
+    border-color: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}}
+
 .corazon-flotante {{
     position: fixed;
     bottom: -40px;
@@ -189,17 +237,10 @@ html, body {{
 }}
 
 @keyframes flotarHaciaArriba {{
-    0% {{
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
-    }}
-    100% {{
-        transform: translateY(-120vh) rotate(360deg);
-        opacity: 0;
-    }}
+    0% {{ transform: translateY(0) rotate(0deg); opacity: 1; }}
+    100% {{ transform: translateY(-120vh) rotate(360deg); opacity: 0; }}
 }}
 
-/* ENCABEZADO */
 .titulo-container {{
     text-align: center;
     margin-top: 25px;
@@ -237,7 +278,6 @@ html, body {{
     }}
 }}
 
-/* CAJA PRINCIPAL DE LA GALERÍA */
 .galeria-caja {{
     width: 100%;
     overflow: hidden;
@@ -301,7 +341,6 @@ html, body {{
     z-index: 10;
 }}
 
-/* POLAROID CON BALANCEO */
 .polaroid {{
     background: #ffffff;
     padding: 14px 14px 20px 14px;
@@ -321,14 +360,8 @@ html, body {{
     z-index: 20;
 }}
 
-.item-cuerda:nth-child(even) .polaroid {{
-    animation-delay: -1.75s;
-}}
-
-.item-cuerda:nth-child(3n) .polaroid {{
-    animation-duration: 4.2s;
-    animation-delay: -0.9s;
-}}
+.item-cuerda:nth-child(even) .polaroid {{ animation-delay: -1.75s; }}
+.item-cuerda:nth-child(3n) .polaroid {{ animation-duration: 4.2s; animation-delay: -0.9s; }}
 
 @keyframes balanceoFoto {{
     0% {{ transform: rotate(-5deg); }}
@@ -353,7 +386,6 @@ html, body {{
     font-weight: 600;
 }}
 
-/* FOCOS DE LUZ */
 .foco {{
     position: absolute;
     top: -50px;
@@ -369,7 +401,6 @@ html, body {{
 .foco-verde {{ background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }}
 .foco-morado {{ background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }}
 
-/* PIE DE PÁGINA */
 .frase-bottom {{
     text-align: center;
     margin-bottom: 30px;
@@ -384,9 +415,16 @@ html, body {{
 </head>
 <body>
 
-<button id="btnFullscreen" class="btn-fullscreen" onclick="toggleFullscreen()">
-    ⛶ Pantalla Completa
-</button>
+<audio id="musicaFondo" loop src="{musica_b64}"></audio>
+
+<div class="top-controls">
+    <button id="btnMusica" class="btn-control" onclick="toggleMusica()">
+        🎵 Música: OFF
+    </button>
+    <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">
+        ⛶ Pantalla Completa
+    </button>
+</div>
 
 <div class="titulo-container">
     <h1 class="titulo-3d">RECUERDOS</h1>
@@ -404,6 +442,21 @@ html, body {{
 </div>
 
 <script>
+const audio = document.getElementById('musicaFondo');
+const btnMusica = document.getElementById('btnMusica');
+
+function toggleMusica() {{
+    if (audio.paused) {{
+        audio.play();
+        btnMusica.innerHTML = '🎶 Música: ON';
+        btnMusica.classList.add('active');
+    }} else {{
+        audio.pause();
+        btnMusica.innerHTML = '🎵 Música: OFF';
+        btnMusica.classList.remove('active');
+    }}
+}}
+
 function toggleFullscreen() {{
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {{
         const elem = document.documentElement;
@@ -433,7 +486,6 @@ function actualizarBoton() {{
 document.addEventListener('fullscreenchange', actualizarBoton);
 document.addEventListener('webkitfullscreenchange', actualizarBoton);
 
-// Lógica de Corazones Flotantes
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨', '🌹'];
 
 function crearCorazon() {{
