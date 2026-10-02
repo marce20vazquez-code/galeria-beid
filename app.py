@@ -1,30 +1,28 @@
-import os
 import base64
 import io
+import os
 import random
-import streamlit as st
-import streamlit.components.v1 as components
 from PIL import Image
 import gdown
+import streamlit as st
+import streamlit.components.v1 as components
 
 # ---------------------------------------------------------
-# CONFIGURACIÓN DE DRIVE PARA FOTOS Y MÚSICA
+# ENLACE DE GOOGLE DRIVE (FOTOS)
 # ---------------------------------------------------------
 URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
-URL_DRIVE_MUSICA = "PEGA_AQUI_EL_ENLACE_DE_TU_CARPETA_DE_MUSICA_EN_DRIVE"
-
 CARPETA_FOTOS = "fotos_drive"
-CARPETA_MUSICA = "musica_drive"
 
 # 1. Configuración inicial de la página
 st.set_page_config(
-    page_title="GALERÍA DE RECUERDOS", 
+    page_title="GALERÍA DE RECUERDOS",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
 
-# 2. CSS para eliminar márgenes de Streamlit
-st.markdown("""
+# 2. CSS para eliminar márgenes e interfaz predeterminada de Streamlit
+st.markdown(
+    """
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
@@ -50,9 +48,11 @@ st.markdown("""
             overflow: hidden !important;
         }
     </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-# --- LISTA DE FRASES ---
+# --- LISTA DE FRASES PARA LAS POLAROID ---
 LISTA_DE_FRASES = [
     "Tú y yo, mi momento preferido del día. 💖✨",
     "Contigo cada instante se vuelve inolvidable. 🌙✨",
@@ -61,92 +61,101 @@ LISTA_DE_FRASES = [
     "El mejor capítulo de mi vida lo escribo contigo. 📖💖",
     "Gracias por iluminar mis días con tu existencia. ✨💫",
     "Un recuerdo más de todos los que nos faltan por vivir. 🥰",
-    "Amor del bueno, del que hace bien al alma. 💘"
+    "Amor del bueno, del que hace bien al alma. 💘",
 ]
 
-# --- DESCARGA Y OPTIMIZACIÓN DE IMÁGENES ---
+
+# --- DESCARGA DE FOTOS DESDE DRIVE ---
 @st.cache_resource
 def descargar_fotos_de_drive():
-    if not os.path.exists(CARPETA_FOTOS):
-        os.makedirs(CARPETA_FOTOS)
-    if len(os.listdir(CARPETA_FOTOS)) == 0:
-        try:
-            gdown.download_folder(URL_DRIVE_FOTOS, output=CARPETA_FOTOS, quiet=True, use_cookies=False)
-        except Exception as e:
-            st.error(f"Error al descargar fotos de Drive: {e}")
+  if not os.path.exists(CARPETA_FOTOS):
+    os.makedirs(CARPETA_FOTOS)
+  if len(os.listdir(CARPETA_FOTOS)) == 0:
+    try:
+      gdown.download_folder(
+          URL_DRIVE_FOTOS, output=CARPETA_FOTOS, quiet=True, use_cookies=False
+      )
+    except Exception:
+      pass
 
-# --- DESCARGA DE MÚSICA DESDE DRIVE ---
-@st.cache_resource
-def descargar_musica_de_drive():
-    if not os.path.exists(CARPETA_MUSICA):
-        os.makedirs(CARPETA_MUSICA)
-    if len(os.listdir(CARPETA_MUSICA)) == 0:
-        try:
-            gdown.download_folder(URL_DRIVE_MUSICA, output=CARPETA_MUSICA, quiet=True, use_cookies=False)
-        except Exception as e:
-            st.error(f"Error al descargar música de Drive: {e}")
 
 with st.spinner("Cargando recuerdos y música... ❤️✨"):
-    descargar_fotos_de_drive()
-    descargar_musica_de_drive()
+  descargar_fotos_de_drive()
 
 # Procesar Fotos
 archivos_fotos = []
 if os.path.exists(CARPETA_FOTOS):
-    for root, _, files in os.walk(CARPETA_FOTOS):
-        for file in files:
-            if file.lower().endswith(('png', 'jpg', 'jpeg', 'webp')):
-                archivos_fotos.append(os.path.join(root, file))
+  for root, _, files in os.walk(CARPETA_FOTOS):
+    for file in files:
+      if file.lower().endswith(("png", "jpg", "jpeg", "webp")):
+        archivos_fotos.append(os.path.join(root, file))
 
 archivos_fotos.sort()
 
+
 @st.cache_data
 def get_optimized_image_base64(path):
-    try:
-        with Image.open(path) as img:
-            img = img.convert('RGB')
-            img.thumbnail((400, 450))
-            buffer = io.BytesIO()
-            img.save(buffer, format="JPEG", quality=80, optimize=True)
-            encoded = base64.b64encode(buffer.getvalue()).decode('utf-8')
-            return f"data:image/jpeg;base64,{encoded}"
-    except Exception:
-        return ""
+  try:
+    with Image.open(path) as img:
+      img = img.convert("RGB")
+      img.thumbnail((400, 450))
+      buffer = io.BytesIO()
+      img.save(buffer, format="JPEG", quality=80, optimize=True)
+      encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+      return f"data:image/jpeg;base64,{encoded}"
+  except Exception:
+    return ""
 
-imagenes_b64 = [get_optimized_image_base64(f) for f in archivos_fotos if get_optimized_image_base64(f)]
+
+imagenes_b64 = [
+    get_optimized_image_base64(f)
+    for f in archivos_fotos
+    if get_optimized_image_base64(f)
+]
 
 if not imagenes_b64:
-    st.warning("No se encontraron imágenes en la carpeta de Drive.")
-    st.stop()
+  st.warning("No se encontraron imágenes en la carpeta de Drive.")
+  st.stop()
 
-# Procesar Canción Aleatoria a Base64
+# --- CARGAR CANCIÓN ALEATORIA DESDE LA CARPETA LOCAL (SOPORTA TILDES) ---
+posibles_carpetas = ["música", "musica", "Música", "Musica"]
+CARPETA_MUSICA = next(
+    (c for c in posibles_carpetas if os.path.exists(c)), "musica"
+)
+
 archivos_musica = []
 if os.path.exists(CARPETA_MUSICA):
-    for root, _, files in os.walk(CARPETA_MUSICA):
-        for file in files:
-            if file.lower().endswith(('mp3', 'wav', 'm4a', 'ogg')):
-                archivos_musica.append(os.path.join(root, file))
+  for root, _, files in os.walk(CARPETA_MUSICA):
+    for file in files:
+      if file.lower().endswith(("mp3", "wav", "m4a", "ogg")):
+        archivos_musica.append(os.path.join(root, file))
 
 musica_b64 = ""
 if archivos_musica:
-    cancion_elegida = random.choice(archivos_musica)
-    try:
-        with open(cancion_elegida, "rb") as audio_file:
-            encoded_audio = base64.b64encode(audio_file.read()).decode('utf-8')
-            musica_b64 = f"data:audio/mp3;base64,{encoded_audio}"
-    except Exception as e:
-        st.error(f"Error al procesar el audio: {e}")
+  cancion_elegida = random.choice(archivos_musica)
+  try:
+    with open(cancion_elegida, "rb") as audio_file:
+      encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
+      musica_b64 = f"data:audio/mp3;base64,{encoded_audio}"
+  except Exception:
+    pass
 
 # --- CONSTRUCCIÓN DE LA GALERÍA ---
-focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
+focos_colores = [
+    "foco-rojo",
+    "foco-azul",
+    "foco-dorado",
+    "foco-verde",
+    "foco-morado",
+]
 items_galeria = imagenes_b64 + imagenes_b64
 
 html_fotos = ""
 for idx, img_src in enumerate(items_galeria):
-    foco_clase = focos_colores[idx % len(focos_colores)]
-    frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
-    
-    html_fotos += f"""
+  foco_clase = focos_colores[idx % len(focos_colores)]
+  frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
+
+  html_fotos += f"""
     <div class="item-cuerda">
         <div class="foco {foco_clase}"></div>
         <div class="polaroid">
@@ -157,7 +166,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA HTML Y CSS ---
+# --- ESTRUCTURA HTML, CSS Y JAVASCRIPT ---
 html_completo = f"""
 <!DOCTYPE html>
 <html>
@@ -443,6 +452,10 @@ const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 
 function toggleMusica() {{
+    if (!audio.src || audio.src === "data:audio/mp3;base64,") {{
+        alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de que los archivos terminen en .mp3");
+        return;
+    }}
     if (audio.paused) {{
         audio.play();
         btnMusica.innerHTML = '🎶 Música: ON';
