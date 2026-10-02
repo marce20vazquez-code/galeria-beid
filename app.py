@@ -52,7 +52,6 @@ def get_optimized_image_base64(path):
     try:
         with Image.open(path) as img:
             img = img.convert('RGB')
-            # Redimensionar a mayor resolución para imágenes más grandes
             img.thumbnail((400, 450))
             buffer = io.BytesIO()
             img.save(buffer, format="JPEG", quality=80, optimize=True)
@@ -88,7 +87,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA COMPLETA HTML Y CSS ---
+# --- ESTRUCTURA COMPLETA HTML, CSS Y CORAZONES FLOTANTES ---
 html_completo = f"""
 <!DOCTYPE html>
 <html>
@@ -102,12 +101,37 @@ body {{
     padding: 10px;
     font-family: 'Montserrat', sans-serif;
     color: white;
+    overflow-x: hidden;
+    position: relative;
+}}
+
+/* Estilos para los corazones flotantes del fondo */
+.corazon-flotante {{
+    position: fixed;
+    bottom: -30px;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+    animation: flotarHaciaArriba linear forwards;
+}}
+
+@keyframes flotarHaciaArriba {{
+    0% {{
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }}
+    100% {{
+        transform: translateY(-115vh) rotate(360deg);
+        opacity: 0;
+    }}
 }}
 
 .titulo-container {{
     text-align: center;
     margin-top: 10px;
     margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
 }}
 
 .titulo-3d {{
@@ -135,9 +159,10 @@ body {{
     overflow: hidden;
     position: relative;
     padding: 60px 0 50px 0;
-    background: radial-gradient(circle, rgba(26,0,51,0.8) 0%, rgba(12,0,31,1) 100%);
+    background: radial-gradient(circle, rgba(26,0,51,0.85) 0%, rgba(12,0,31,0.95) 100%);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 2;
 }}
 
 .cuerda {{
@@ -154,7 +179,6 @@ body {{
 .riel-desplazamiento {{
     display: flex;
     width: max-content;
-    /* Duración cambiada a 75s para que vaya más lento */
     animation: desplazar 75s linear infinite;
     z-index: 2;
     position: relative;
@@ -195,14 +219,14 @@ body {{
     padding: 12px 12px 18px 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     border-radius: 4px;
-    width: 230px; /* Tamaño más grande */
+    width: 230px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }}
 
 .polaroid img {{
-    width: 206px; /* Imagen más grande */
+    width: 206px;
     height: 240px;
     object-fit: cover;
     border-radius: 2px;
@@ -242,6 +266,8 @@ body {{
     font-weight: 800;
     color: #ffffff;
     text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 20px rgba(255, 0, 127, 0.6);
+    position: relative;
+    z-index: 2;
 }}
 </style>
 </head>
@@ -262,9 +288,45 @@ body {{
     Nuestra historia en imágenes 💖✨🌙
 </div>
 
+<script>
+// Animación JavaScript para crear corazones flotantes continuamente
+const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨'];
+
+function crearCorazon() {{
+    const corazon = document.createElement('div');
+    corazon.classList.add('corazon-flotante');
+    
+    // Icono al azar
+    corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
+    
+    // Posición horizontal
+    corazon.style.left = Math.random() * 100 + 'vw';
+    
+    // Tamaños variados
+    const tamano = Math.random() * 20 + 15;
+    corazon.style.fontSize = tamano + 'px';
+    
+    // Velocidad de flotación (entre 6s y 11s)
+    const duracion = Math.random() * 5 + 6;
+    corazon.style.animationDuration = duracion + 's';
+    
+    // Opacidad aleatoria
+    corazon.style.opacity = Math.random() * 0.7 + 0.3;
+    
+    document.body.appendChild(corazon);
+    
+    // Eliminar del DOM tras ascender
+    setTimeout(() => {{
+        corazon.remove();
+    }}, duracion * 1000);
+}}
+
+// Genera un corazón cada 350ms
+setInterval(crearCorazon, 350);
+</script>
+
 </body>
 </html>
 """
 
-# Se aumentó la altura a 600px para que entren cómodamente las fotos más grandes
 components.html(html_completo, height=600, scrolling=False)
