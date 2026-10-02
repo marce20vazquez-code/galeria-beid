@@ -154,14 +154,12 @@ const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 
 async function cargarArchivosAutomaticos() {
     try {
-        // Cargar fotos de la carpeta automaticamente
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
         const dataFotos = await resFotos.json();
         const fotos = Array.isArray(dataFotos) 
             ? dataFotos.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i)).map(f => f.path)
             : [];
 
-        // Cargar canciones de la carpeta automaticamente
         const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
         const dataMusica = await resMusica.json();
         const canciones = Array.isArray(dataMusica) 
