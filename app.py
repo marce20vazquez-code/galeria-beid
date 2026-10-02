@@ -73,13 +73,12 @@ items_galeria = imagenes_b64 + imagenes_b64  # Duplicar para el efecto de bucle 
 html_fotos = ""
 for idx, img_src in enumerate(items_galeria):
     foco_clase = focos_colores[idx % len(focos_colores)]
-    rotacion = "-3deg" if idx % 2 == 0 else "3deg"
     frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
     
     html_fotos += f"""
     <div class="item-cuerda">
         <div class="foco {foco_clase}"></div>
-        <div class="polaroid" style="transform: rotate({rotacion});">
+        <div class="polaroid">
             <div class="pinza"></div>
             <img src="{img_src}" alt="Recuerdo" loading="lazy" />
             <p class="texto-polaroid">{frase_actual}</p>
@@ -134,7 +133,7 @@ body {{
     z-index: 2;
 }}
 
-/* TÍTULO CON MOVIMIENTO, FLOTACIÓN Y CAMBIO DE COLOR */
+/* Título con movimiento y resplandor neón */
 .titulo-3d {{
     font-family: 'Montserrat', sans-serif;
     font-size: 3.8rem;
@@ -145,7 +144,6 @@ body {{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
-    /* Doble animación: Movimiento de gradiente + flotar y latir */
     animation: moverColores 5s linear infinite, flotarYLatir 3s ease-in-out infinite;
     margin: 0;
 }}
@@ -227,6 +225,7 @@ body {{
     z-index: 10;
 }}
 
+/* POLAROID CON EFECTO DE BALANCEO EN LA CUERDA */
 .polaroid {{
     background: #ffffff;
     padding: 12px 12px 18px 12px;
@@ -236,6 +235,29 @@ body {{
     display: flex;
     flex-direction: column;
     align-items: center;
+    
+    /* Punto de giro ajustado al centro superior donde está la pinza */
+    transform-origin: top center;
+    animation: balanceoFoto 3.2s ease-in-out infinite alternate;
+}}
+
+/* Desfase de animación entre fotos para que se mezan de forma natural */
+.item-cuerda:nth-child(even) .polaroid {{
+    animation-delay: -1.6s;
+}}
+
+.item-cuerda:nth-child(3n) .polaroid {{
+    animation-duration: 4s;
+    animation-delay: -0.8s;
+}}
+
+@keyframes balanceoFoto {{
+    0% {{
+        transform: rotate(-6deg);
+    }}
+    100% {{
+        transform: rotate(6deg);
+    }}
 }}
 
 .polaroid img {{
@@ -302,7 +324,7 @@ body {{
 </div>
 
 <script>
-// Corazones flotantes
+// Corazones flotantes en el fondo
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨'];
 
 function crearCorazon() {{
