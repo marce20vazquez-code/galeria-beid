@@ -8,10 +8,10 @@ from PIL import Image
 import gdown
 
 # ---------------------------------------------------------
-# ENLACES DE GOOGLE DRIVE (FOTOS Y MÚSICA)
+# CONFIGURACIÓN DE DRIVE PARA FOTOS Y MÚSICA
 # ---------------------------------------------------------
 URL_DRIVE_FOTOS = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
-URL_DRIVE_MUSICA = "https://drive.google.com/drive/folders/1AA4LGHA2mE_IzmwnL245kGoyqWQ9jmn7"
+URL_DRIVE_MUSICA = "PEGA_AQUI_EL_ENLACE_DE_TU_CARPETA_DE_MUSICA_EN_DRIVE"
 
 CARPETA_FOTOS = "fotos_drive"
 CARPETA_MUSICA = "musica_drive"
@@ -26,13 +26,11 @@ st.set_page_config(
 # 2. CSS para eliminar márgenes de Streamlit
 st.markdown("""
     <style>
-        /* Ocultar cabecera, pie de página y menú de Streamlit */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
         div[data-testid="stHeader"] {display: none;}
         
-        /* Eliminar espacio y márgenes del contenedor principal */
         .block-container {
             padding-top: 0rem !important;
             padding-bottom: 0rem !important;
@@ -41,7 +39,6 @@ st.markdown("""
             max-width: 100% !important;
         }
         
-        /* Forzar al iframe de la galería a ocupar toda la pantalla */
         iframe {
             width: 100vw !important;
             height: 100vh !important;
