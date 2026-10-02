@@ -117,7 +117,7 @@ if not imagenes_b64:
   st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
-# --- CARGAR TODAS LAS CANCIONES DE LA CARPETA MÚSICA ---
+# --- CARGAR CANCIONES DE LA CARPETA MÚSICA ---
 posibles_carpetas = ["música", "musica", "Música", "Musica"]
 CARPETA_MUSICA = next(
     (c for c in posibles_carpetas if os.path.exists(c)), "musica"
@@ -131,9 +131,9 @@ if os.path.exists(CARPETA_MUSICA):
         archivos_musica.append(os.path.join(root, file))
 
 lista_canciones_b64 = []
-for music_file in archivos_musica:
+for file_path in archivos_musica:
   try:
-    with open(music_file, "rb") as audio_file:
+    with open(file_path, "rb") as audio_file:
       encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
       data_uri = f"data:audio/mp3;base64,{encoded_audio}"
       lista_canciones_b64.append(data_uri)
@@ -168,17 +168,17 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA HTML, CSS Y JAVASCRIPT ---
-html_completo = f"""
+# --- ESTRUCTURA HTML Y JS SIN PROBLEMAS DE ESCAPE ---
+html_template = """
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 <style>
-* {{ box-sizing: border-box; }}
+* { box-sizing: border-box; }
 
-html, body {{
+html, body {
     width: 100vw;
     height: 100vh;
     margin: 0;
@@ -191,18 +191,30 @@ html, body {{
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-}}
+    position: relative;
+}
 
-.top-controls {{
+#contenedor-corazones {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.top-controls {
     position: fixed;
     top: 20px;
     right: 25px;
     z-index: 1000;
     display: flex;
     gap: 12px;
-}}
+}
 
-.btn-control {{
+.btn-control {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -220,42 +232,41 @@ html, body {{
     display: flex;
     align-items: center;
     gap: 6px;
-}}
+}
 
-.btn-control:hover {{
+.btn-control:hover {
     background: rgba(255, 0, 127, 0.4);
     border-color: #00ffff;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
     transform: scale(1.08);
-}}
+}
 
-.btn-control.active {{
+.btn-control.active {
     background: rgba(0, 255, 255, 0.25);
     border-color: #00ffff;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
-}}
+}
 
-.corazon-flotante {{
-    position: fixed;
+.corazon-flotante {
+    position: absolute;
     bottom: -40px;
     user-select: none;
     pointer-events: none;
-    z-index: 0;
     animation: flotarHaciaArriba linear forwards;
-}}
+}
 
-@keyframes flotarHaciaArriba {{
-    0% {{ transform: translateY(0) rotate(0deg); opacity: 1; }}
-    100% {{ transform: translateY(-120vh) rotate(360deg); opacity: 0; }}
-}}
+@keyframes flotarHaciaArriba {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+}
 
-.titulo-container {{
+.titulo-container {
     text-align: center;
     margin-top: 25px;
     z-index: 2;
-}}
+}
 
-.titulo-3d {{
+.titulo-3d {
     font-family: 'Montserrat', sans-serif;
     font-size: 4.2rem;
     font-weight: 900;
@@ -267,26 +278,26 @@ html, body {{
     display: inline-block;
     animation: moverColores 5s linear infinite, flotarYLatir 3.5s ease-in-out infinite;
     margin: 0;
-}}
+}
 
-@keyframes moverColores {{
-    0% {{ background-position: 0% 50%; }}
-    50% {{ background-position: 100% 50%; }}
-    100% {{ background-position: 0% 50%; }}
-}}
+@keyframes moverColores {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-@keyframes flotarYLatir {{
-    0%, 100% {{
+@keyframes flotarYLatir {
+    0%, 100% {
         transform: translateY(0) scale(1);
         filter: drop-shadow(0px 0px 15px rgba(255, 0, 127, 0.8));
-    }}
-    50% {{
+    }
+    50% {
         transform: translateY(-12px) scale(1.04);
         filter: drop-shadow(0px 0px 30px rgba(0, 255, 255, 1));
-    }}
-}}
+    }
+}
 
-.galeria-caja {{
+.galeria-caja {
     width: 100%;
     overflow: hidden;
     position: relative;
@@ -298,9 +309,9 @@ html, body {{
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     z-index: 2;
-}}
+}
 
-.cuerda {{
+.cuerda {
     position: absolute;
     top: 85px;
     left: 0;
@@ -309,34 +320,34 @@ html, body {{
     background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
     box-shadow: 0 3px 8px rgba(0,0,0,0.6);
     z-index: 1;
-}}
+}
 
-.riel-desplazamiento {{
+.riel-desplazamiento {
     display: flex;
     width: max-content;
     animation: desplazar 320s linear infinite;
     z-index: 2;
     position: relative;
-}}
+}
 
-.riel-desplazamiento:hover {{
+.riel-desplazamiento:hover {
     animation-play-state: paused;
-}}
+}
 
-@keyframes desplazar {{
-    0% {{ transform: translateX(0); }}
-    100% {{ transform: translateX(-50%); }}
-}}
+@keyframes desplazar {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
 
-.item-cuerda {{
+.item-cuerda {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0 35px;
     position: relative;
-}}
+}
 
-.pinza {{
+.pinza {
     position: absolute;
     top: -20px;
     left: 50%;
@@ -347,9 +358,9 @@ html, body {{
     border-radius: 3px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.5);
     z-index: 10;
-}}
+}
 
-.polaroid {{
+.polaroid {
     background: #ffffff;
     padding: 14px 14px 20px 14px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
@@ -361,30 +372,30 @@ html, body {{
     transform-origin: top center;
     animation: balanceoFoto 3.5s ease-in-out infinite alternate;
     transition: transform 0.3s ease;
-}}
+}
 
-.polaroid:hover {{
+.polaroid:hover {
     transform: scale(1.05) rotate(0deg) !important;
     z-index: 20;
-}}
+}
 
-.item-cuerda:nth-child(even) .polaroid {{ animation-delay: -1.75s; }}
-.item-cuerda:nth-child(3n) .polaroid {{ animation-duration: 4.2s; animation-delay: -0.9s; }}
+.item-cuerda:nth-child(even) .polaroid { animation-delay: -1.75s; }
+.item-cuerda:nth-child(3n) .polaroid { animation-duration: 4.2s; animation-delay: -0.9s; }
 
-@keyframes balanceoFoto {{
-    0% {{ transform: rotate(-5deg); }}
-    100% {{ transform: rotate(5deg); }}
-}}
+@keyframes balanceoFoto {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
+}
 
-.polaroid img {{
+.polaroid img {
     width: 222px;
     height: 255px;
     object-fit: cover;
     border-radius: 3px;
     display: block;
-}}
+}
 
-.texto-polaroid {{
+.texto-polaroid {
     font-family: 'Caveat', cursive, sans-serif;
     font-size: 1.45rem;
     color: #1a1a1a;
@@ -392,25 +403,24 @@ html, body {{
     margin: 14px 0 0 0;
     line-height: 1.2;
     font-weight: 600;
-}}
+}
 
-.foco {{
+.foco {
     position: absolute;
     top: -50px;
     width: 24px;
     height: 35px;
     border-radius: 50% 50% 45% 45%;
     z-index: 5;
-}}
+}
 
-.foco-rojo {{ background: #ff4d4d; box-shadow: 0 0 18px #ff4d4d, 0 0 35px #ff4d4d; }}
-.foco-azul {{ background: #4da6ff; box-shadow: 0 0 18px #4da6ff, 0 0 35px #4da6ff; }}
-.foco-dorado {{ background: #ffd700; box-shadow: 0 0 18px #ffd700, 0 0 35px #ffd700; }}
-.foco-verde {{ background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }}
-.foco-morado {{ background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }}
+.foco-rojo { background: #ff4d4d; box-shadow: 0 0 18px #ff4d4d, 0 0 35px #ff4d4d; }
+.foco-azul { background: #4da6ff; box-shadow: 0 0 18px #4da6ff, 0 0 35px #4da6ff; }
+.foco-dorado { background: #ffd700; box-shadow: 0 0 18px #ffd700, 0 0 35px #ffd700; }
+.foco-verde { background: #4dff4d; box-shadow: 0 0 18px #4dff4d, 0 0 35px #4dff4d; }
+.foco-morado { background: #a855f7; box-shadow: 0 0 18px #a855f7, 0 0 35px #a855f7; }
 
-/* ESTILOS Y ANIMACIÓN DE LETRAS PARA LA FRASE INFERIOR */
-.frase-bottom {{
+.frase-bottom {
     text-align: center;
     margin-bottom: 30px;
     font-family: 'Montserrat', sans-serif;
@@ -422,59 +432,18 @@ html, body {{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-}}
+    animation: floatingFrase 3s infinite ease-in-out;
+}
 
-.frase-bottom .char {{
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(15px);
-    animation: 
-        appearDisappear 30s infinite ease-in-out,
-        floatingFrase 3s infinite ease-in-out;
-    animation-delay: 
-        calc(var(--char-index) * 0.08s), 
-        calc(var(--char-index) * 0.08s);
-}}
-
-.frase-bottom .space {{
-    width: 0.4em;
-}}
-
-@keyframes appearDisappear {{
-    0% {{
-        opacity: 0;
-        transform: translateY(15px) scale(0.8);
-        filter: blur(5px);
-    }}
-    8% {{
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0px);
-    }}
-    85% {{
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0px);
-    }}
-    92%, 100% {{
-        opacity: 0;
-        transform: translateY(-15px) scale(0.8);
-        filter: blur(5px);
-    }}
-}}
-
-@keyframes floatingFrase {{
-    0%, 100% {{
-        transform: translateY(0px);
-    }}
-    50% {{
-        transform: translateY(-6px);
-    }}
-}}
+@keyframes floatingFrase {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
 </style>
 </head>
 <body>
 
+<div id="contenedor-corazones"></div>
 <audio id="musicaFondo"></audio>
 
 <div class="top-controls">
@@ -493,97 +462,96 @@ html, body {{
 <div class="galeria-caja">
     <div class="cuerda"></div>
     <div class="riel-desplazamiento">
-        {html_fotos}
+        __HTML_FOTOS__
     </div>
 </div>
 
-<div class="frase-bottom" id="fraseBottom">
+<div class="frase-bottom">
     Nuestra historia en imágenes 💖 ✨ 🌙
 </div>
 
 <script>
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
+const contenedorCorazones = document.getElementById('contenedor-corazones');
 
-const canciones = {canciones_json};
+const canciones = __CANCIONES_JSON__;
 let currentIdx = 0;
 
-// Al abrir la página, selecciona una canción al azar para comenzar
-if (canciones.length > 0) {{
+if (canciones.length > 0) {
     currentIdx = Math.floor(Math.random() * canciones.length);
     audio.src = canciones[currentIdx];
-}}
+}
 
-// Función para elegir y reproducir una siguiente canción de forma aleatoria
-function reproducirSiguienteAleatoria() {{
+function reproducirSiguienteAleatoria() {
     if (canciones.length === 0) return;
-    if (canciones.length === 1) {{
+    if (canciones.length === 1) {
         audio.currentTime = 0;
         audio.play();
         return;
-    }}
+    }
     
     let nextIdx;
-    do {{
+    do {
         nextIdx = Math.floor(Math.random() * canciones.length);
-    }} while (nextIdx === currentIdx && canciones.length > 1);
+    } while (nextIdx === currentIdx && canciones.length > 1);
 
     currentIdx = nextIdx;
     audio.src = canciones[currentIdx];
     audio.play();
-}}
+}
 
-// Al terminar la canción actual, reproduce la siguiente aleatoria
 audio.addEventListener('ended', reproducirSiguienteAleatoria);
 
-function toggleMusica() {{
-    if (canciones.length === 0) {{
+function toggleMusica() {
+    if (canciones.length === 0) {
         alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de que los archivos terminen en .mp3");
         return;
-    }}
-    if (audio.paused) {{
+    }
+    if (audio.paused) {
         audio.play();
         btnMusica.innerHTML = '🎶 Música: ON';
         btnMusica.classList.add('active');
-    }} else {{
+    } else {
         audio.pause();
         btnMusica.innerHTML = '🎵 Música: OFF';
         btnMusica.classList.remove('active');
-    }}
-}}
+    }
+}
 
-function toggleFullscreen() {{
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {{
+function toggleFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         const elem = document.documentElement;
-        if (elem.requestFullscreen) {{
+        if (elem.requestFullscreen) {
             elem.requestFullscreen();
-        }} else if (elem.webkitRequestFullscreen) {{
+        } else if (elem.webkitRequestFullscreen) {
             elem.webkitRequestFullscreen();
-        }}
-    }} else {{
-        if (document.exitFullscreen) {{
+        }
+    } else {
+        if (document.exitFullscreen) {
             document.exitFullscreen();
-        }} else if (document.webkitExitFullscreen) {{
+        } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function actualizarBoton() {{
+function actualizarBoton() {
     const btn = document.getElementById('btnFullscreen');
-    if (document.fullscreenElement || document.webkitFullscreenElement) {{
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
         btn.innerHTML = '🗗 Salir';
-    }} else {{
+    } else {
         btn.innerHTML = '⛶ Pantalla Completa';
-    }}
-}}
+    }
+}
 
 document.addEventListener('fullscreenchange', actualizarBoton);
 document.addEventListener('webkitfullscreenchange', actualizarBoton);
 
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨', '🌹'];
 
-function crearCorazon() {{
+function crearCorazon() {
+    if (!contenedorCorazones) return;
     const corazon = document.createElement('div');
     corazon.classList.add('corazon-flotante');
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
@@ -596,36 +564,25 @@ function crearCorazon() {{
     corazon.style.animationDuration = duracion + 's';
     corazon.style.opacity = Math.random() * 0.7 + 0.3;
     
-    document.body.appendChild(corazon);
+    contenedorCorazones.appendChild(corazon);
     
-    setTimeout(() => {{
-        corazon.remove();
-    }}, duracion * 1000);
-}}
+    setTimeout(() => {
+        if (corazon && corazon.parentNode) {
+            corazon.parentNode.removeChild(corazon);
+        }
+    }, duracion * 1000);
+}
 
-setInterval(crearCorazon, 300);
-
-// SCRIPT PARA SEPARAR LETRAS Y APLICAR RETRASO ANIMADO
-const fraseElem = document.getElementById('fraseBottom');
-if (fraseElem) {{
-    const textFrase = fraseElem.innerText;
-    fraseElem.innerHTML = '';
-    Array.from(textFrase).forEach((char, index) => {{
-        const span = document.createElement('span');
-        if (char === ' ') {{
-            span.className = 'space';
-        }} else {{
-            span.className = 'char';
-            span.innerText = char;
-            span.style.setProperty('--char-index', index);
-        }}
-        fraseElem.appendChild(span);
-    }});
-}}
+setInterval(crearCorazon, 400);
 </script>
 
 </body>
 </html>
 """
+
+# Reemplazamos los comodines para evitar fallos de formato
+html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
+    "__CANCIONES_JSON__", canciones_json
+)
 
 components.html(html_completo)
