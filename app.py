@@ -28,17 +28,6 @@ st.markdown(
             max-width: 100% !important;
             overflow: hidden;
         }
-        
-        /* Contenedor seguro para el iframe nativo */
-        .element-container iframe {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 99999;
-        }
     </style>
 """,
     unsafe_allow_html=True,
@@ -557,15 +546,17 @@ setInterval(crearCorazon, 450);
 </html>
 """
 
-html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
-    "__CANCIONES_JSON__", canciones_json
+html_completo = (
+    html_template.replace("__HTML_FOTOS__", html_fotos)
+    .replace("__CANCIONES_JSON__", canciones_json)
+    .replace('"', '\\"')
+    .replace("\n", " ")
 )
 
-# Renderizado moderno utilizando st.html (disponible en las versiones recientes de Streamlit)
-if hasattr(st, "html"):
-  st.html(html_completo)
-else:
-  st.markdown(
-      f'<iframe srcdoc="{html_completo}" style="width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; z-index:99999;"></iframe>',
-      unsafe_allow_html=True,
-  )
+# Renderizado seguro e impecable mediante un iframe nativo limpio de Streamlit
+st.markdown(
+    f"""
+    <iframe srcdoc="{html_completo}" style="width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 99999;"></iframe>
+""",
+    unsafe_allow_html=True,
+)
