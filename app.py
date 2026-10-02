@@ -87,7 +87,7 @@ for idx, img_src in enumerate(items_galeria):
     </div>
     """
 
-# --- ESTRUCTURA COMPLETA HTML, CSS Y CORAZONES FLOTANTES ---
+# --- ESTRUCTURA COMPLETA HTML, CSS Y ANIMACIONES ---
 html_completo = f"""
 <!DOCTYPE html>
 <html>
@@ -105,7 +105,7 @@ body {{
     position: relative;
 }}
 
-/* Estilos para los corazones flotantes del fondo */
+/* Corazones flotantes del fondo */
 .corazon-flotante {{
     position: fixed;
     bottom: -30px;
@@ -128,23 +128,25 @@ body {{
 
 .titulo-container {{
     text-align: center;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: 25px;
     position: relative;
     z-index: 2;
 }}
 
+/* TÍTULO CON MOVIMIENTO, FLOTACIÓN Y CAMBIO DE COLOR */
 .titulo-3d {{
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     font-weight: 900;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     background: linear-gradient(120deg, #ff007f, #ffd700, #00ffff, #a855f7);
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: moverColores 5s linear infinite;
-    filter: drop-shadow(0px 0px 12px rgba(255, 0, 127, 0.8));
+    display: inline-block;
+    /* Doble animación: Movimiento de gradiente + flotar y latir */
+    animation: moverColores 5s linear infinite, flotarYLatir 3s ease-in-out infinite;
     margin: 0;
 }}
 
@@ -152,6 +154,17 @@ body {{
     0% {{ background-position: 0% 50%; }}
     50% {{ background-position: 100% 50%; }}
     100% {{ background-position: 0% 50%; }}
+}}
+
+@keyframes flotarYLatir {{
+    0%, 100% {{
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0px 0px 12px rgba(255, 0, 127, 0.8));
+    }}
+    50% {{
+        transform: translateY(-10px) scale(1.05);
+        filter: drop-shadow(0px 0px 25px rgba(0, 255, 255, 1));
+    }}
 }}
 
 .galeria-caja {{
@@ -289,39 +302,29 @@ body {{
 </div>
 
 <script>
-// Animación JavaScript para crear corazones flotantes continuamente
+// Corazones flotantes
 const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨'];
 
 function crearCorazon() {{
     const corazon = document.createElement('div');
     corazon.classList.add('corazon-flotante');
-    
-    // Icono al azar
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
-    
-    // Posición horizontal
     corazon.style.left = Math.random() * 100 + 'vw';
     
-    // Tamaños variados
     const tamano = Math.random() * 20 + 15;
     corazon.style.fontSize = tamano + 'px';
     
-    // Velocidad de flotación (entre 6s y 11s)
     const duracion = Math.random() * 5 + 6;
     corazon.style.animationDuration = duracion + 's';
-    
-    // Opacidad aleatoria
     corazon.style.opacity = Math.random() * 0.7 + 0.3;
     
     document.body.appendChild(corazon);
     
-    // Eliminar del DOM tras ascender
     setTimeout(() => {{
         corazon.remove();
     }}, duracion * 1000);
 }}
 
-// Genera un corazón cada 350ms
 setInterval(crearCorazon, 350);
 </script>
 
@@ -329,4 +332,4 @@ setInterval(crearCorazon, 350);
 </html>
 """
 
-components.html(html_completo, height=600, scrolling=False)
+components.html(html_completo, height=620, scrolling=False)
