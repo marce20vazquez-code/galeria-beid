@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 import os
 from PIL import Image
 import gdown
@@ -116,7 +117,7 @@ if not imagenes_b64:
   st.warning("No se encontraron imágenes en la carpeta de Drive.")
   st.stop()
 
-# --- CARGAR CANCIÓN (PRIORIZA CANCION_20) ---
+# --- CARGAR TODAS LAS CANCIONES (PRIORIZANDO CANCION_20) ---
 posibles_carpetas = ["música", "musica", "Música", "Musica"]
 CARPETA_MUSICA = next(
     (c for c in posibles_carpetas if os.path.exists(c)), "musica"
@@ -131,24 +132,23 @@ if os.path.exists(CARPETA_MUSICA):
 
 archivos_musica.sort()
 
-cancion_elegida = None
+lista_canciones_b64 = []
+idx_cancion_20 = 0
+
 for music_file in archivos_musica:
   nombre = os.path.basename(music_file).lower()
-  if "cancion_20." in nombre or "canción_20." in nombre:
-    cancion_elegida = music_file
-    break
-
-if not cancion_elegida and archivos_musica:
-  cancion_elegida = archivos_musica[0]
-
-musica_b64 = ""
-if cancion_elegida:
   try:
-    with open(cancion_elegida, "rb") as audio_file:
+    with open(music_file, "rb") as audio_file:
       encoded_audio = base64.b64encode(audio_file.read()).decode("utf-8")
-      musica_b64 = f"data:audio/mp3;base64,{encoded_audio}"
+      data_uri = f"data:audio/mp3;base64,{encoded_audio}"
+      lista_canciones_b64.append(data_uri)
+
+      if "cancion_20." in nombre or "canción_20." in nombre:
+        idx_cancion_20 = len(lista_canciones_b64) - 1
   except Exception:
     pass
+
+canciones_json = json.dumps(lista_canciones_b64)
 
 # --- CONSTRUCCIÓN DE LA GALERÍA ---
 focos_colores = [
@@ -483,7 +483,7 @@ html, body {{
 </head>
 <body>
 
-<audio id="musicaFondo" loop src="{musica_b64}"></audio>
+<audio id="musicaFondo"></audio>
 
 <div class="top-controls">
     <button id="btnMusica" class="btn-control" onclick="toggleMusica()">
@@ -513,8 +513,34 @@ html, body {{
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('btnMusica');
 
+const canciones = {canciones_json};
+let currentIdx = {idx_cancion_20};
+
+if (canciones.length > 0) {{
+    audio.src = canciones[currentIdx];
+}}
+
+// Al terminar la canción actual, reproduce una aleatoria
+audio.addEventListener('ended', function() {{
+    if (canciones.length === 0) return;
+    if (canciones.length === 1) {{
+        audio.currentTime = 0;
+        audio.play();
+        return;
+    }}
+    
+    let nextIdx;
+    do {{
+        nextIdx = Math.floor(Math.random() * canciones.length);
+    }} while (nextIdx === currentIdx && canciones.length > 1);
+
+    currentIdx = nextIdx;
+    audio.src = canciones[currentIdx];
+    audio.play();
+}});
+
 function toggleMusica() {{
-    if (!audio.src || audio.src === "data:audio/mp3;base64,") {{
+    if (canciones.length === 0) {{
         alert("No se encontró ningún archivo de audio en la carpeta 'música'. Asegúrate de que los archivos terminen en .mp3");
         return;
     }}
