@@ -1,14 +1,13 @@
 import os
 import base64
+import io
 import streamlit as st
 from PIL import Image
 import gdown
 
-# Configuración de página de Streamlit
 st.set_page_config(page_title="GALERÍA DE RECUERDOS", layout="wide")
 
 # --- LISTA DE FRASES ---
-# Puedes agregar, modificar o quitar las frases que quieras aquí:
 LISTA_DE_FRASES = [
     "Tú y yo, mi momento preferido del día. 💖✨",
     "Contigo cada instante se vuelve inolvidable. 🌙✨",
@@ -20,7 +19,7 @@ LISTA_DE_FRASES = [
     "Amor del bueno, del que hace bien al alma. 💘"
 ]
 
-# --- DESCARGA DE FOTOS DE GOOGLE DRIVE ---
+# --- DESCARGA Y OPTIMIZACIÓN DE IMÁGENES ---
 URL_DRIVE = "https://drive.google.com/drive/folders/18IbNspLPRE20xGHNiA1ldh0H9zf1kD_l?usp=sharing"
 CARPETA_FOTOS = "fotos_drive"
 
@@ -30,14 +29,13 @@ def descargar_fotos_de_drive():
         os.makedirs(CARPETA_FOTOS)
     if len(os.listdir(CARPETA_FOTOS)) == 0:
         try:
-            gdown.download_folder(URL_DRIVE, output=CARPETA_FOTOS, quiet=False, use_cookies=False)
+            gdown.download_folder(URL_DRIVE, output=CARPETA_FOTOS, quiet=True, use_cookies=False)
         except Exception as e:
-            st.error(f"Error al descargar imágenes de Drive: {e}")
+            st.error(f"Error al descargar de Drive: {e}")
 
-with st.spinner("Cargando recuerdos y frases... ❤️✨"):
+with st.spinner("Cargando y optimizando recuerdos... ❤️✨"):
     descargar_fotos_de_drive()
 
-# Obtener rutas de las fotos
 archivos_fotos = []
 if os.path.exists(CARPETA_FOTOS):
     for root, _, files in os.walk(CARPETA_FOTOS):
@@ -47,28 +45,40 @@ if os.path.exists(CARPETA_FOTOS):
 
 archivos_fotos.sort()
 
-# Convertir imágenes a base64
-def get_image_base64(path):
+# Función optimizada: Redimensiona y comprime la foto en memoria antes de Base64
+@st.cache_data
+def get_optimized_image_base64(path):
     try:
-        with open(path, "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode()
+        with Image.open(path) as img:
+            img = img.convert('RGB')
+            # Redimensiona a tamaño compacto para Polaroid (máximo 300px)
+            img.thumbnail((300, 350))
+            
+            buffer = io.BytesIO()
+            # Guarda comprimido en calidad 75%
+            img.save(buffer, format="JPEG", quality=75, optimize=True)
+            encoded = base64.b64encode(buffer.getvalue()).decode()
             return f"data:image/jpeg;base64,{encoded}"
     except Exception:
         return ""
 
-imagenes_b64 = [get_image_base64(f) for f in archivos_fotos if get_image_base64(f)]
+# Cargar imágenes optimizadas
+imagenes_b64 = [get_optimized_image_base64(f) for f in archivos_fotos if get_optimized_image_base64(f)]
 
-# Duplicar la lista para lograr el bucle infinito sin interrupciones
+if not imagenes_b64:
+    st.warning("No se encontraron imágenes o aún se están procesando.")
+    st.stop()
+
+# Duplicar elementos para el efecto de bucle infinito
 items_galeria = imagenes_b64 + imagenes_b64
 
-# --- CONSTRUCCIÓN DEL HTML CON FRASES ---
+# --- CONSTRUCCIÓN DEL HTML ---
 focos_colores = ["foco-rojo", "foco-azul", "foco-dorado", "foco-verde", "foco-morado"]
 html_fotos = ""
 
 for idx, img_src in enumerate(items_galeria):
     foco_clase = focos_colores[idx % len(focos_colores)]
     rotacion = "-3deg" if idx % 2 == 0 else "3deg"
-    # Asigna secuencialmente una frase diferente a cada foto
     frase_actual = LISTA_DE_FRASES[idx % len(LISTA_DE_FRASES)]
     
     html_fotos += f"""
@@ -76,13 +86,13 @@ for idx, img_src in enumerate(items_galeria):
         <div class="foco {foco_clase}"></div>
         <div class="polaroid" style="transform: rotate({rotacion});">
             <div class="pinza"></div>
-            <img src="{img_src}" alt="Recuerdo" />
+            <img src="{img_src}" alt="Recuerdo" loading="lazy" />
             <p class="texto-polaroid">{frase_actual}</p>
         </div>
     </div>
     """
 
-# --- ESTILOS CSS Y DIBUJO DE LA GALERÍA ---
+# --- ESTILOS CSS ---
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap');
@@ -158,7 +168,7 @@ body {{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 30px;
+    margin: 0 25px;
     position: relative;
 }}
 
@@ -175,22 +185,20 @@ body {{
     z-index: 10;
 }}
 
-/* MARCO POLAROID CON TEXTO MANUSCRITO */
 .polaroid {{
     background: #ffffff;
     padding: 10px 10px 15px 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     border-radius: 4px;
-    width: 200px;
+    width: 190px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.3s ease;
 }}
 
 .polaroid img {{
-    width: 180px;
-    height: 210px;
+    width: 170px;
+    height: 200px;
     object-fit: cover;
     border-radius: 2px;
     display: block;
@@ -198,7 +206,7 @@ body {{
 
 .texto-polaroid {{
     font-family: 'Caveat', cursive, sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: #222222;
     text-align: center;
     margin: 10px 0 0 0;
@@ -206,7 +214,6 @@ body {{
     font-weight: 600;
 }}
 
-/* FOCOS */
 .foco {{
     position: absolute;
     top: -45px;
