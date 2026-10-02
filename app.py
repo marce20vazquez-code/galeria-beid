@@ -525,7 +525,6 @@ function crearCorazon() {
     corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
     corazon.style.left = Math.random() * 100 + 'vw';
     
-    no corazon_tamano = Math.random() * 20 + 14;
     const tamano = Math.random() * 20 + 14;
     corazon.style.fontSize = tamano + 'px';
     
@@ -552,5 +551,5 @@ html_completo = html_template.replace("__HTML_FOTOS__", html_fotos).replace(
     "__CANCIONES_JSON__", canciones_json
 )
 
-# Renderizado correcto con components.html
-components.html(html_completo, height=780, scrolling=False)
+# Renderizado correcto con el componente oficial de Streamlit
+components.html(html_completo, height=800, scrolling=False)
