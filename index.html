@@ -4,15 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GALERÍA DE RECUERDOS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@800;900&family=Orbitron:wght@600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
         html, body {
             width: 100vw;
             height: 100vh;
-            margin: 0;
-            padding: 0;
             overflow: hidden;
             background: radial-gradient(circle at center, #1b003a 0%, #080014 100%);
             font-family: 'Montserrat', sans-serif;
@@ -27,149 +25,223 @@
         #overlay-inicio {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(8, 0, 20, 0.95);
+            background: rgba(8, 0, 20, 0.97);
             z-index: 99999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            backdrop-filter: blur(15px);
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            backdrop-filter: blur(20px);
+            transition: opacity 1.2s ease, visibility 1.2s ease;
         }
 
         #overlay-inicio h2 {
             font-size: 2rem;
             color: #fff;
-            text-shadow: 0 0 20px #ff007f;
-            margin-bottom: 15px;
+            text-shadow: 0 0 25px #ff007f;
+            margin-bottom: 20px;
             text-align: center;
-            padding: 0 20px;
+            padding: 0 25px;
         }
 
         #overlay-inicio p {
             font-size: 1.1rem;
             color: #00ffff;
-            animation: latir 1.5s infinite;
+            animation: latirPulsar 1.8s infinite alternate;
         }
 
-        @keyframes latir {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        #contenedor-corazones {
+        /* FONDO DETALLADO: Polvo de Estrellas y Nieve de Oro */
+        #contenedor-particulas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 0; overflow: hidden;
         }
 
-        .top-controls {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            z-index: 1000;
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-control {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #ffffff;
-            padding: 8px 12px;
-            border-radius: 30px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.4); }
-
-        .btn-carta-flotante {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: linear-gradient(135deg, #ff007f, #a855f7);
-            border: none;
-            color: white;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-            animation: latir 1.8s infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-carta-flotante:hover { transform: scale(1.15); }
-
-        .corazon-flotante {
+        .particula-brillo, .corazon-fondo {
             position: absolute; bottom: -40px;
+            pointer-events: none;
+            opacity: 0.8;
             animation: flotarHaciaArriba linear forwards;
         }
 
+        .corazon-fondo { font-size: 14px; animation-duration: 8s; }
+
         @keyframes flotarHaciaArriba {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(-130vh) rotate(420deg); opacity: 0; }
         }
 
+        .top-controls {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-control {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
+            transition: all 0.35s ease;
+        }
+
+        .btn-control:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.45); }
+
+        /* VINILO MUSICAL GIRATORIO */
+        #viniloMusica {
+            width: 55px; height: 55px;
+            border-radius: 50%;
+            background: #000;
+            border: 2px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 3px #ccc inset;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+
+        #viniloMusica::before {
+            content: '🎵';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #f1f1f1;
+            z-index: 1;
+        }
+
+        #viniloMusica.playing {
+            animation: girarVinilo 2.5s linear infinite;
+        }
+
+        @keyframes girarVinilo {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #labelMusica {
+            position: absolute;
+            top: -22px; right: -5px;
+            background: rgba(8, 0, 20, 0.9);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #ffd700;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #viniloMusica:hover #labelMusica { opacity: 1; }
+
+        /* TÍTULO 3D MODERNO Y BRILLANTE */
         .titulo-3d-container {
-            margin-top: 60px;
+            margin-top: 65px;
             z-index: 2;
             text-align: center;
-            padding: 0 10px;
+            padding: 0 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 3px;
-            min-height: 55px;
+            gap: 4px;
+            min-height: 60px;
         }
 
         .letra-3d {
             display: inline-block;
-            font-size: 2.1rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #ffffff;
             text-shadow: 
-                1px 1px 0 #ff007f, 
-                2px 2px 0 #e60073, 
-                3px 3px 0 #cc0066, 
-                4px 4px 0 #99004d, 
-                5px 5px 12px rgba(0, 0, 0, 0.9),
-                0 0 15px rgba(0, 255, 255, 0.8);
+                2px 2px 0 #ff007f, 
+                4px 4px 15px rgba(0, 255, 255, 0.9);
             opacity: 0;
-            transform: translateY(-25px) scale(0.5) rotateX(45deg);
-            transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                        transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: flotarLatir 3.5s ease-in-out infinite alternate;
+            transform: translateY(-25px) scale(0.6);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            animation: flotarLatir 3.8s ease-in-out infinite alternate;
         }
 
-        .letra-3d.visible { opacity: 1; transform: translateY(0) scale(1) rotateX(0deg); }
-        .letra-3d.desaparecer { opacity: 0; transform: translateY(25px) scale(0.7); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .letra-3d.visible { opacity: 1; transform: translateY(0) scale(1); }
+        .letra-3d.desaparecer { opacity: 0; transform: translateY(25px) scale(0.8); transition: opacity 0.8s ease, transform 0.8s ease; }
 
         @keyframes flotarLatir {
             0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-8px) scale(1.05); }
+            100% { transform: translateY(-8px) scale(1.06); }
         }
 
         .galeria-caja {
             width: 100%;
             overflow: hidden;
             position: relative;
-            padding: 20px 0 30px 0;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
+            padding: 20px 0 110px 0;
+            background: rgba(255, 255, 255, 0.025);
+            backdrop-filter: blur(12px);
             z-index: 2;
+        }
+
+        /* CUERDA SVG MODERNA */
+        .svg-cuerda {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 100%;
+            height: 95px;
+            pointer-events: none;
+            z-index: 1;
+            filter: drop-shadow(0px 7px 9px rgba(0, 0, 0, 0.75));
+        }
+
+        /* CONTENEDOR DE LUCES MÁS GRANDES Y BRILLANTES */
+        .contenedor-luces {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 100%;
+            height: 95px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .luz {
+            position: absolute;
+            width: 16px;
+            height: 22px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: parpadeoLuz 1.3s infinite alternate;
+        }
+
+        .luz::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 4px;
+            width: 8px;
+            height: 4px;
+            background: #222;
+            border-radius: 1px;
+        }
+
+        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 18px #ff0055, 0 0 30px #ff0055; animation-delay: 0s; }
+        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 18px #00e5ff, 0 0 30px #00e5ff; animation-delay: 0.3s; }
+        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 18px #ffea00, 0 0 30px #ffea00; animation-delay: 0.6s; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 18px #00ff66, 0 0 30px #00ff66; animation-delay: 0.9s; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 18px #b000ff, 0 0 30px #b000ff; animation-delay: 1.2s; }
+
+        @keyframes parpadeoLuz {
+            0% { opacity: 0.38; filter: brightness(0.65); transform: scale(0.85); }
+            100% { opacity: 1; filter: brightness(1.55); transform: scale(1.18); }
         }
 
         .riel-desplazamiento {
@@ -183,87 +255,45 @@
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
         .item-cuerda { 
-            position: relative;
-            width: 330px;
-            flex: 0 0 330px;
-            height: 390px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 0 55px; 
+            position: relative; 
+            will-change: transform;
+            transform-origin: 23px 0;
         }
 
-        .cuerda-segmento {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 95px;
-            z-index: 1;
-            filter: drop-shadow(0px 5px 6px rgba(0,0,0,0.7));
-        }
-
-        .luces-tramo {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 95px;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .luz {
-            position: absolute;
-            width: 15px;
-            height: 21px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: parpadeoLuz 1.2s infinite alternate;
-        }
-
-        .luz::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: 4px;
-            width: 7px;
-            height: 4px;
-            background: #222;
-            border-radius: 1px;
-        }
-
-        /* FOCO AMARILLO EN LA UNIÓN DE LOS ARCOS */
-        .luz-amarilla-union {
-            left: -7.5px;
-            top: 5px;
-            background: #ffea00 !important;
-            box-shadow: 0 0 18px #ffea00, 0 0 32px #ffea00 !important;
-            z-index: 5;
-        }
-
-        .luz:nth-child(5n+2) { background: #ff0055; box-shadow: 0 0 16px #ff0055, 0 0 28px #ff0055; animation-delay: 0s; }
-        .luz:nth-child(5n+3) { background: #00e5ff; box-shadow: 0 0 16px #00e5ff, 0 0 28px #00e5ff; animation-delay: 0.3s; }
-        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 16px #00ff66, 0 0 28px #00ff66; animation-delay: 0.6s; }
-        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 16px #b000ff, 0 0 28px #b000ff; animation-delay: 0.9s; }
-
-        @keyframes parpadeoLuz {
-            0% { opacity: 0.35; filter: brightness(0.6); transform: scale(0.85); }
-            100% { opacity: 1; filter: brightness(1.5); transform: scale(1.18); }
-        }
-
-        /* POLAROID ALINEADA A LA MITAD EXACTA DEL ARCO DE LA CUERDA (165px) */
+        /* FOTO POLAROID: Con Cinta Washi, Fecha Retro y Brillo Dinámico */
         .polaroid {
-            position: absolute;
-            top: 52px;
-            left: 147px; /* 165px centro - 18px pinza = 147px */
+            position: relative;
             background: #ffffff; padding: 12px 12px 18px 12px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             border-radius: 6px; width: 220px;
             transform-origin: 23px 0;
-            animation: balanceoFoto 3.5s ease-in-out infinite alternate;
+            animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            z-index: 3;
+            transition: transform 0.35s ease;
         }
 
+        /* CINTA DECORATIVA (Washi Tape) semi-transparente */
         .polaroid::before {
             content: '';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            width: 70px;
+            height: 20px;
+            background: rgba(255, 128, 192, 0.35); /* Rosa semi-transparente */
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            z-index: 10;
+            transform: rotate(-10deg);
+        }
+
+        /* GANCHO DE MADERA CON ESTRELLA */
+        .gancho-madera {
             position: absolute;
             top: -14px;
             left: 18px;
@@ -272,25 +302,29 @@
             background: linear-gradient(135deg, #d2a679, #8c5a2b);
             border-radius: 2px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.6);
-            z-index: 10;
+            z-index: 11;
         }
 
-        .polaroid::after {
-            content: '';
+        .gancho-madera::after {
+            content: '⭐';
             position: absolute;
-            top: -3px;
-            left: 17px;
-            width: 12px;
-            height: 4px;
-            background: linear-gradient(to right, #ccc, #ffffff, #888);
-            border-radius: 1px;
-            z-index: 11;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            bottom: -8px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #ffd700;
+            text-shadow: 0 0 5px #ffd700;
         }
 
         .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; }
 
         @keyframes balanceoFoto { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
+
+        /* Brillo Neón que cambia sutilmente de color */
+        @keyframes resplandorNeónDinámico {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 2px #fff inset; }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.5), 0 0 2px #fff inset; }
+            100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 2px #fff inset; }
+        }
 
         .contenedor-foto {
             position: relative;
@@ -304,7 +338,7 @@
             justify-content: center;
         }
 
-        .loader-corazon { font-size: 1.8rem; animation: latir 1s infinite alternate; opacity: 0.7; }
+        .loader-corazon { font-size: 1.8rem; animation: latirPulsar 1s infinite alternate; opacity: 0.7; }
 
         .polaroid img { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
@@ -313,6 +347,17 @@
         }
 
         .polaroid img.cargada { opacity: 1; }
+
+        /* ESTAMPA DE FECHA RETRO (Cámara Analógica) */
+        .retro-date {
+            position: absolute;
+            bottom: 5px; right: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #ff9900; /* Naranja LED */
+            text-shadow: 0 0 5px #ff9900;
+            z-index: 10;
+        }
 
         .texto-polaroid {
             font-family: 'Caveat', cursive; font-size: 1.3rem; color: #1a1a1a;
@@ -324,73 +369,96 @@
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2; padding: 0 10px;
         }
 
+        /* BOTÓN DE CARTA FLOTANTE: MÁS GRANDE Y ANIMADO (SOBRE 3D) */
+        .btn-carta-envelope {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-carta-envelope:hover { transform: translateX(-50%) scale(1.18); }
+
+        .envelope-svg {
+            width: 70px;
+            height: 52px;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.7));
+            animation: envelopeFlotarPulsar 2.5s infinite;
+        }
+
+        @keyframes envelopeFlotarPulsar {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+            50% { transform: translateY(-8px) rotate(-3deg); opacity: 1; }
+        }
+
+        /* MODALES DETALLADOS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px);
             z-index: 100000; display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s ease;
             padding: 20px;
         }
 
         .modal-overlay.activo { opacity: 1; visibility: visible; }
 
         .btn-cerrar-modal {
-            position: absolute; top: 12px; right: 18px;
+            position: absolute; top: 15px; right: 20px;
             background: none; border: none; font-size: 2rem; color: #ff007f;
             cursor: pointer; font-weight: bold; z-index: 100001;
         }
 
         .contenido-zoom {
-            background: rgba(20, 5, 35, 0.95);
-            border: 2px solid rgba(255, 0, 127, 0.5);
-            border-radius: 15px; padding: 20px; max-width: 90vw; max-height: 85vh;
+            background: rgba(20, 5, 35, 0.97);
+            border: 2px solid rgba(255, 0, 127, 0.6);
+            border-radius: 20px; padding: 25px; max-width: 90vw; max-height: 85vh;
             display: flex; flex-direction: column; align-items: center; position: relative;
-            box-shadow: 0 0 35px rgba(255, 0, 127, 0.5);
+            box-shadow: 0 0 40px rgba(255, 0, 127, 0.5);
         }
 
         .contenido-zoom img {
             max-width: 80vw; max-height: 60vh; object-fit: contain;
-            border-radius: 8px; border: 3px solid #fff;
+            border-radius: 10px; border: 3px solid #fff;
         }
 
         .contenido-zoom p {
-            font-family: 'Caveat', cursive; font-size: 1.6rem; color: #ffd700;
-            margin-top: 15px; margin-bottom: 0; text-align: center;
+            font-family: 'Caveat', cursive; font-size: 1.7rem; color: #ffd700;
+            margin-top: 18px; margin-bottom: 0; text-align: center;
         }
 
         .contenido-carta {
             background: #fff; color: #2b1020; max-width: 500px; width: 100%;
-            max-height: 75vh; overflow-y: auto; border-radius: 15px; padding: 30px 25px;
-            position: relative; box-shadow: 0 0 35px rgba(255, 0, 127, 0.6);
+            max-height: 78vh; overflow-y: auto; border-radius: 18px; padding: 35px 30px;
+            position: relative; box-shadow: 0 0 40px rgba(255, 0, 127, 0.7);
             border: 3px solid #ff007f; text-align: center;
         }
 
-        .contenido-carta h3 {
-            font-family: 'Caveat', cursive; font-size: 2.3rem; color: #d10068; margin-top: 0;
-        }
+        .contenido-carta h3 { font-family: 'Caveat', cursive; font-size: 2.5rem; color: #d10068; margin-bottom: 10px; }
+        .contenido-carta p { font-family: 'Caveat', cursive; font-size: 1.4rem; line-height: 1.65; color: #333; text-align: justify; white-space: pre-line; }
 
-        .contenido-carta p {
-            font-family: 'Caveat', cursive; font-size: 1.35rem; line-height: 1.6;
-            color: #333; text-align: justify; white-space: pre-line;
-        }
-
+        /* Rastro mágico tactil */
         .destello-magico {
             position: fixed; pointer-events: none; z-index: 9999;
-            font-size: 1.2rem; animation: desvanecerTrail 0.8s ease-out forwards;
+            font-size: 1.3rem; animation: desvanecerTrail 0.9s ease-out forwards;
         }
 
         @keyframes desvanecerTrail {
             0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -70px) scale(0.2) rotate(45deg); opacity: 0; }
+            100% { transform: translate(-50%, -80px) scale(0.2) rotate(45deg); opacity: 0; }
         }
 
         @media (min-width: 768px) {
             .titulo-3d-container { margin-top: 65px; gap: 6px; }
             .letra-3d { font-size: 3.5rem; }
-            .btn-control { font-size: 0.85rem; padding: 10px 20px; }
-            .top-controls { top: 20px; right: 25px; gap: 12px; }
+            .btn-control { font-size: 0.85rem; padding: 11px 22px; }
+            .top-controls { top: 20px; right: 25px; gap: 15px; }
+            .viniloMusica { width: 65px; height: 65px; }
             .polaroid { width: 240px; }
             .contenedor-foto { width: 216px; height: 245px; }
+            .envelope-svg { width: 85px; height: 62px; }
             .frase-bottom { font-size: 1.5rem; margin-bottom: 25px; }
         }
     </style>
@@ -402,19 +470,37 @@
     <p>✨ Toca la pantalla para entrar ✨</p>
 </div>
 
-<div id="contenedor-corazones"></div>
+<div id="contenedor-particulas"></div>
 <audio id="musicaFondo"></audio>
 
 <div class="top-controls">
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
-    <button id="btnMusica" class="btn-control" onclick="toggleMusica()">🎵 Música: OFF</button>
+    <div id="viniloMusica" onclick="toggleMusica()" title="Pausar/Reproducir Música">
+        <div id="labelMusica">REPRODUCIENDO</div>
+    </div>
 </div>
 
-<button class="btn-carta-flotante" onclick="abrirCarta()" title="Carta Secreta">💌</button>
+<!-- Botón carta flotante (Envelope SVG) -->
+<div class="btn-carta-envelope" onclick="abrirCarta()" title="Carta Secreta">
+    <svg class="envelope-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 5h90v60H5V5z" fill="#f1f1f1" stroke="#ff007f" stroke-width="4"/>
+        <path d="M5 5l45 35L95 5" stroke="#ff007f" stroke-width="4" stroke-linecap="round"/>
+        <path d="M5 65l30-25M95 65L65 40" stroke="#ff007f" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="50" cy="35" r="5" fill="#ffd700" stroke="#ff007f" stroke-width="2"/>
+    </svg>
+</div>
 
 <div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
+    <!-- Cuerda en SVG curvada EXACTA POR DETRÁS -->
+    <svg class="svg-cuerda" viewBox="0 0 1000 120" preserveAspectRatio="none">
+        <path id="pathCuerda" d="M 0,15 Q 500,115 1000,15" fill="none" stroke="#d2a679" stroke-width="6" />
+    </svg>
+    
+    <!-- Contenedor donde se insertan las luces calculadas sobre la cuerda -->
+    <div class="contenedor-luces" id="contenedorLuces"></div>
+
     <div class="riel-desplazamiento" id="riel-fotos">
         <!-- Fotos dinámicas -->
     </div>
@@ -460,10 +546,59 @@ const LISTA_DE_FRASES = [
 
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
-const btnMusica = document.getElementById('btnMusica');
+const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
+
+// Alinear las luces automáticamente sobre la curva de la cuerda
+function generarLucesSobreCuerda() {
+    const path = document.getElementById('pathCuerda');
+    const container = document.getElementById('contenedorLuces');
+    if (!path || !container) return;
+    
+    container.innerHTML = '';
+    const pathLength = path.getTotalLength();
+    const numLuces = 22;
+
+    for (let i = 0; i < numLuces; i++) {
+        const punto = path.getPointAtLength((i + 0.5) / numLuces * pathLength);
+        const xPct = (punto.x / 1000) * 100;
+        const yPx = (punto.y / 120) * 95;
+
+        const luz = document.createElement('div');
+        luz.className = 'luz';
+        luz.style.left = `calc(${xPct}% - 7.5px)`;
+        luz.style.top = `${yPx - 3}px`;
+        container.appendChild(luz);
+    }
+}
+
+// SIMULACIÓN DE DESLIZAMIENTO EN TIEMPO REAL (Posición Y e Inclinación por tangente de la curva)
+function actualizarPosicionFotosCuerda() {
+    const items = document.querySelectorAll('.item-cuerda');
+    const W = window.innerWidth;
+    if (W > 0) {
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            // Posición X de la pinza (x=23px es donde está la pinza en la polaroid)
+            const x = rect.left + 23; 
+            const u = x / W; // Posición de 0 a 1 en el ancho de la pantalla
+            
+            // Altura (sagPx) calculada desde la curva de la cuerda
+            const factorCurva = 4 * u * (1 - u);
+            const sagPx = factorCurva * 78; 
+            
+            // Pendiente/Inclinación (dy/dx) de la curva
+            const slope = 0.2 * (1 - 2 * u);
+            const angleDeg = Math.atan(slope) * (180 / Math.PI);
+            
+            // Aplicar traslación e inclinación dinámica
+            item.style.transform = `translateY(${sagPx}px) rotate(${angleDeg}deg)`;
+        });
+    }
+    requestAnimationFrame(actualizarPosicionFotosCuerda);
+}
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -543,11 +678,20 @@ function reproducirSiguienteCancion() {
 
     audio.src = nuevaCancion;
     audio.play().then(() => {
-        btnMusica.innerHTML = '🎶 Música: ON';
+        btnMusica.classList.add('playing');
+        document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
     }).catch(err => console.log(err));
 }
 
 audio.addEventListener('ended', reproducirSiguienteCancion);
+
+// GENERAR FECHAS RETRO ALEATORIAS (ej. OCT '23)
+const mesesRetro = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+function generarFechaRetro() {
+    const mes = mesesRetro[Math.floor(Math.random() * mesesRetro.length)];
+    const anio = Math.floor(Math.random() * 4) + 21; // '21 al '24
+    return `${mes} '${anio}`;
+}
 
 function inicializarGaleria(fotos) {
     if (listaCancionesGlobal.length > 0) {
@@ -560,19 +704,11 @@ function inicializarGaleria(fotos) {
         let htmlFotos = "";
         fotosTotales.forEach((foto, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
+            const fechaRetro = generarFechaRetro();
             htmlFotos += `
             <div class="item-cuerda">
-                <svg class="cuerda-segmento" viewBox="0 0 330 95" preserveAspectRatio="none">
-                    <path d="M 0,15 Q 165,85 330,15" fill="none" stroke="#d2a679" stroke-width="6" />
-                </svg>
-                <div class="luces-tramo">
-                    <div class="luz luz-amarilla-union"></div>
-                    <div class="luz" style="left: calc(23% - 7.5px); top: 38px;"></div>
-                    <div class="luz" style="left: calc(41% - 7.5px); top: 58px;"></div>
-                    <div class="luz" style="left: calc(59% - 7.5px); top: 58px;"></div>
-                    <div class="luz" style="left: calc(77% - 7.5px); top: 38px;"></div>
-                </div>
                 <div class="polaroid" onclick="abrirZoom('${foto.cdn}', '${frase}')">
+                    <div class="gancho-madera"></div>
                     <div class="contenedor-foto">
                         <div class="loader-corazon">💖</div>
                         <img src="${foto.cdn}" 
@@ -581,6 +717,7 @@ function inicializarGaleria(fotos) {
                              referrerpolicy="no-referrer"
                              onload="this.classList.add('cargada'); if(this.previousElementSibling) this.previousElementSibling.remove();"
                              onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
+                        <span class="retro-date">${fechaRetro}</span>
                     </div>
                     <p class="texto-polaroid">${frase}</p>
                 </div>
@@ -621,12 +758,12 @@ function crearDestello(x, y) {
     destello.style.left = x + 'px';
     destello.style.top = y + 'px';
     document.body.appendChild(destello);
-    setTimeout(() => destello.remove(), 800);
+    setTimeout(() => destello.remove(), 900);
 }
 
 function manejarRastro(e) {
     const ahora = Date.now();
-    if (ahora - ultimoDestello > 45) {
+    if (ahora - ultimoDestello > 50) {
         const x = e.clientX || (e.touches && e.touches[0].clientX);
         const y = e.clientY || (e.touches && e.touches[0].clientY);
         if (x && y) {
@@ -637,6 +774,7 @@ function manejarRastro(e) {
 }
 window.addEventListener('mousemove', manejarRastro);
 window.addEventListener('touchmove', manejarRastro);
+window.addEventListener('resize', generarLucesSobreCuerda);
 
 function activarPantallaCompleta() {
     const el = document.documentElement;
@@ -652,24 +790,28 @@ function activarPantallaCompleta() {
 function iniciarExperiencia() {
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 800);
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1200);
 
     activarPantallaCompleta();
 
     if (audio.src) {
         audio.play().then(() => {
-            btnMusica.innerHTML = '🎶 Música: ON';
-        }).catch(err => console.log("Autoplay prevenido por navegador", err));
+            btnMusica.classList.add('playing');
+            document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
+        }).catch(err => console.log("Autoplay prevenido", err));
     }
 }
 
 function toggleMusica() {
+    const label = document.getElementById('labelMusica');
     if (audio.paused) {
         audio.play();
-        btnMusica.innerHTML = '🎶 Música: ON';
+        btnMusica.classList.add('playing');
+        label.innerText = 'REPRODUCIENDO';
     } else {
         audio.pause();
-        btnMusica.innerHTML = '🎵 Música: OFF';
+        btnMusica.classList.remove('playing');
+        label.innerText = 'PAUSADO';
     }
 }
 
@@ -688,19 +830,41 @@ function toggleFullscreen() {
     }
 }
 
-const iconosCorazones = ['❤️', '💖', '💕', '💗', '💓', '✨', '🌹'];
-function crearCorazon() {
-    const corazon = document.createElement('div');
-    corazon.classList.add('corazon-flotante');
-    corazon.innerHTML = iconosCorazones[Math.floor(Math.random() * iconosCorazones.length)];
-    corazon.style.left = Math.random() * 100 + 'vw';
-    corazon.style.fontSize = (Math.random() * 20 + 14) + 'px';
-    corazon.style.animationDuration = (Math.random() * 5 + 6) + 's';
-    document.getElementById('contenedor-corazones').appendChild(corazon);
-    setTimeout(() => corazon.remove(), 11000);
-}
-setInterval(crearCorazon, 450);
+// FONTO DETALLADO (Polvo de Estrellas y Nieve Oro)
+function crearParticulaDeFondo() {
+    const contenedor = document.getElementById('contenedor-particulas');
+    
+    // Crear polvo de estrellas (pequeños puntos brillantes)
+    for(let i=0; i<3; i++) {
+        const estrella = document.createElement('div');
+        estrella.className = 'particula-brillo';
+        estrella.style.width = (Math.random() * 3 + 1) + 'px';
+        estrella.style.height = estrella.style.width;
+        estrella.style.background = `rgba(255, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 50)}, ${Math.random() * 0.7 + 0.3})`; // Dorado
+        estrella.style.borderRadius = '50%';
+        estrella.style.left = Math.random() * 100 + 'vw';
+        estrella.style.animationDuration = (Math.random() * 6 + 7) + 's'; // Lentitud
+        estrella.style.boxShadow = `0 0 5px ${estrella.style.background}`;
+        contenedor.appendChild(estrella);
+        setTimeout(() => estrella.remove(), 13000);
+    }
 
+    // Crear corazones dorados flotantes sutiles
+    if(Math.random() < 0.4) {
+        const corazon = document.createElement('div');
+        corazon.className = 'corazon-fondo';
+        const tonosDorado = ['🧡', '🌕', '✨', '💖'];
+        corazon.innerHTML = tonosDorado[Math.floor(Math.random() * tonosDorado.length)];
+        corazon.style.left = Math.random() * 100 + 'vw';
+        corazon.style.opacity = Math.random() * 0.5 + 0.2;
+        contenedor.appendChild(corazon);
+        setTimeout(() => corazon.remove(), 8500);
+    }
+}
+setInterval(crearParticulaDeFondo, 600); // Frecuencia sutil
+
+generarLucesSobreCuerda();
+requestAnimationFrame(actualizarPosicionFotosCuerda);
 iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
 </script>
