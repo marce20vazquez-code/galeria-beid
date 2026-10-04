@@ -172,39 +172,34 @@
             z-index: 2;
         }
 
-        /* CUERDA POR DETRÁS DE LAS FOTOS */
-        .cuerda {
+        /* CUERDA EN SVG CURVA EXACTA POR DETRÁS */
+        .svg-cuerda {
             position: absolute;
-            top: 10px;
-            left: -5%;
-            width: 110%;
-            height: 85px;
-            border-bottom: 5px solid #d2a679;
-            border-radius: 50%;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
-            pointer-events: none;
-            z-index: 1; /* Cuerda ajustada por detrás */
-        }
-
-        /* LUCES NAVIDEÑAS POR DETRÁS DE LAS FOTOS */
-        .luces-navidad {
-            position: absolute;
-            top: 25px;
+            top: 5px;
             left: 0;
             width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 0 10px;
-            margin: 0;
-            list-style: none;
+            height: 95px;
             pointer-events: none;
             z-index: 1;
+            filter: drop-shadow(0px 6px 8px rgba(0, 0, 0, 0.7));
         }
 
+        /* CONTENEDOR DE LUCES NAVIDEÑAS ALINEADAS A LA CUERDA */
+        .contenedor-luces {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 100%;
+            height: 95px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* FOCOS MÁS GRANDES Y BRILLANTES */
         .luz {
-            position: relative;
-            width: 10px;
-            height: 14px;
+            position: absolute;
+            width: 15px;
+            height: 21px;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             animation: parpadeoLuz 1.2s infinite alternate;
         }
@@ -212,47 +207,43 @@
         .luz::before {
             content: '';
             position: absolute;
-            top: -3px;
-            left: 3px;
-            width: 4px;
-            height: 3px;
+            top: -4px;
+            left: 4px;
+            width: 7px;
+            height: 4px;
             background: #222;
             border-radius: 1px;
         }
 
-        .luz:nth-child(1), .luz:nth-child(20) { transform: translateY(0px); }
-        .luz:nth-child(2), .luz:nth-child(19) { transform: translateY(14px); }
-        .luz:nth-child(3), .luz:nth-child(18) { transform: translateY(26px); }
-        .luz:nth-child(4), .luz:nth-child(17) { transform: translateY(36px); }
-        .luz:nth-child(5), .luz:nth-child(16) { transform: translateY(44px); }
-        .luz:nth-child(6), .luz:nth-child(15) { transform: translateY(50px); }
-        .luz:nth-child(7), .luz:nth-child(14) { transform: translateY(54px); }
-        .luz:nth-child(8), .luz:nth-child(13) { transform: translateY(57px); }
-        .luz:nth-child(9), .luz:nth-child(12) { transform: translateY(59px); }
-        .luz:nth-child(10), .luz:nth-child(11) { transform: translateY(60px); }
-
-        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 12px #ff0055; animation-delay: 0s; }
-        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 12px #00e5ff; animation-delay: 0.3s; }
-        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 12px #ffea00; animation-delay: 0.6s; }
-        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 12px #00ff66; animation-delay: 0.9s; }
-        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 12px #b000ff; animation-delay: 1.2s; }
+        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 16px #ff0055, 0 0 28px #ff0055; animation-delay: 0s; }
+        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 16px #00e5ff, 0 0 28px #00e5ff; animation-delay: 0.3s; }
+        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 16px #ffea00, 0 0 28px #ffea00; animation-delay: 0.6s; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 16px #00ff66, 0 0 28px #00ff66; animation-delay: 0.9s; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 16px #b000ff, 0 0 28px #b000ff; animation-delay: 1.2s; }
 
         @keyframes parpadeoLuz {
-            0% { opacity: 0.3; filter: brightness(0.5); transform: scale(0.85); }
-            100% { opacity: 1; filter: brightness(1.4); transform: scale(1.15); }
+            0% { opacity: 0.35; filter: brightness(0.6); transform: scale(0.85); }
+            100% { opacity: 1; filter: brightness(1.5); transform: scale(1.18); }
         }
 
         .riel-desplazamiento {
             display: flex; 
             width: max-content;
             position: relative;
-            z-index: 3; /* Fotos por enfrente de la cuerda */
+            z-index: 3; /* Fotos en frente de la cuerda y las luces */
             animation: desplazar 120s linear infinite;
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .item-cuerda { display: flex; flex-direction: column; align-items: center; margin: 0 28px; position: relative; }
+        /* DISTANCIA AUMENTADA ENTRE FOTOS (margin: 0 55px) */
+        .item-cuerda { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 0 55px; 
+            position: relative; 
+        }
 
         .polaroid {
             position: relative;
@@ -270,7 +261,7 @@
             position: absolute;
             top: -14px;
             left: 18px;
-            width: 100px;
+            width: 10px;
             height: 24px;
             background: linear-gradient(135deg, #d2a679, #8c5a2b);
             border-radius: 2px;
@@ -418,14 +409,13 @@
 <div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
-    <div class="cuerda"></div>
+    <!-- Cuerda en SVG curvada -->
+    <svg class="svg-cuerda" viewBox="0 0 1000 120" preserveAspectRatio="none">
+        <path id="pathCuerda" d="M 0,15 Q 500,115 1000,15" fill="none" stroke="#d2a679" stroke-width="6" />
+    </svg>
     
-    <ul class="luces-navidad">
-        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
-        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
-        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
-        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
-    </ul>
+    <!-- Contenedor donde se insertan las luces calculadas sobre la cuerda -->
+    <div class="contenedor-luces" id="contenedorLuces"></div>
 
     <div class="riel-desplazamiento" id="riel-fotos">
         <!-- Fotos dinámicas -->
@@ -476,6 +466,29 @@ const btnMusica = document.getElementById('btnMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
+
+// Alinear las luces automáticamente sobre la curva de la cuerda
+function generarLucesSobreCuerda() {
+    const path = document.getElementById('pathCuerda');
+    const container = document.getElementById('contenedorLuces');
+    if (!path || !container) return;
+    
+    container.innerHTML = '';
+    const pathLength = path.getTotalLength();
+    const numLuces = 22;
+
+    for (let i = 0; i < numLuces; i++) {
+        const punto = path.getPointAtLength((i + 0.5) / numLuces * pathLength);
+        const xPct = (punto.x / 1000) * 100;
+        const yPx = (punto.y / 120) * 95;
+
+        const luz = document.createElement('div');
+        luz.className = 'luz';
+        luz.style.left = `calc(${xPct}% - 7.5px)`;
+        luz.style.top = `${yPx - 3}px`;
+        container.appendChild(luz);
+    }
+}
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -639,6 +652,7 @@ function manejarRastro(e) {
 }
 window.addEventListener('mousemove', manejarRastro);
 window.addEventListener('touchmove', manejarRastro);
+window.addEventListener('resize', generarLucesSobreCuerda);
 
 function activarPantallaCompleta() {
     const el = document.documentElement;
@@ -703,6 +717,7 @@ function crearCorazon() {
 }
 setInterval(crearCorazon, 450);
 
+generarLucesSobreCuerda();
 iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
 </script>
