@@ -166,7 +166,7 @@
             width: 100%;
             overflow: hidden;
             position: relative;
-            padding: 60px 0 40px 0;
+            padding: 30px 0 110px 0; /* Padding inferior amplio para permitir la curva vertical */
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
             z-index: 2;
@@ -195,7 +195,6 @@
             z-index: 2;
         }
 
-        /* FOCOS MÁS GRANDES Y BRILLANTES */
         .luz {
             position: absolute;
             width: 15px;
@@ -236,13 +235,14 @@
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* DISTANCIA AUMENTADA ENTRE FOTOS (margin: 0 55px) */
+        /* DISTANCIA ENTRE FOTOS Y CONTENEDOR AJUSTABLE EN ALTURA */
         .item-cuerda { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             margin: 0 55px; 
             position: relative; 
+            will-change: transform;
         }
 
         .polaroid {
@@ -490,6 +490,27 @@ function generarLucesSobreCuerda() {
     }
 }
 
+// BUCLE DE ANIMACIÓN CONTINUA: Mueve cada foto verticalmente siguiendo la curva de la cuerda
+function actualizarPosicionFotosCuerda() {
+    const items = document.querySelectorAll('.item-cuerda');
+    const W = window.innerWidth;
+    if (W > 0) {
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            // Posición X del gancho/pinza de la foto
+            const x = rect.left + 23; 
+            const u = x / W; // Posición normalizada de 0 a 1 en la pantalla
+            
+            // Fórmula parabólica para coincidir exactamente con el trazado de la cuerda Q(500,115)
+            const factorCurva = Math.max(-0.2, 4 * u * (1 - u));
+            const sagPx = factorCurva * 78; 
+            
+            item.style.transform = `translateY(${sagPx}px)`;
+        });
+    }
+    requestAnimationFrame(actualizarPosicionFotosCuerda);
+}
+
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
     const texto = "RECUERDOS";
@@ -718,6 +739,7 @@ function crearCorazon() {
 setInterval(crearCorazon, 450);
 
 generarLucesSobreCuerda();
+requestAnimationFrame(actualizarPosicionFotosCuerda);
 iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
 </script>
