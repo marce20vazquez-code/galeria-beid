@@ -182,14 +182,11 @@
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* CADA SECCIÓN DE CUERDA + LUCES + FOTO QUE AVANZAN JUNTAS */
         .item-cuerda { 
             position: relative;
             width: 330px;
             flex: 0 0 330px;
             height: 390px;
-            display: flex;
-            justify-content: center;
         }
 
         .cuerda-segmento {
@@ -231,20 +228,30 @@
             border-radius: 1px;
         }
 
-        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 16px #ff0055, 0 0 28px #ff0055; animation-delay: 0s; }
-        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 16px #00e5ff, 0 0 28px #00e5ff; animation-delay: 0.3s; }
-        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 16px #ffea00, 0 0 28px #ffea00; animation-delay: 0.6s; }
-        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 16px #00ff66, 0 0 28px #00ff66; animation-delay: 0.9s; }
-        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 16px #b000ff, 0 0 28px #b000ff; animation-delay: 1.2s; }
+        /* FOCO AMARILLO EN LA UNIÓN DE LOS ARCOS */
+        .luz-amarilla-union {
+            left: -7.5px;
+            top: 5px;
+            background: #ffea00 !important;
+            box-shadow: 0 0 18px #ffea00, 0 0 32px #ffea00 !important;
+            z-index: 5;
+        }
+
+        .luz:nth-child(5n+2) { background: #ff0055; box-shadow: 0 0 16px #ff0055, 0 0 28px #ff0055; animation-delay: 0s; }
+        .luz:nth-child(5n+3) { background: #00e5ff; box-shadow: 0 0 16px #00e5ff, 0 0 28px #00e5ff; animation-delay: 0.3s; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 16px #00ff66, 0 0 28px #00ff66; animation-delay: 0.6s; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 16px #b000ff, 0 0 28px #b000ff; animation-delay: 0.9s; }
 
         @keyframes parpadeoLuz {
             0% { opacity: 0.35; filter: brightness(0.6); transform: scale(0.85); }
             100% { opacity: 1; filter: brightness(1.5); transform: scale(1.18); }
         }
 
+        /* POLAROID ALINEADA A LA MITAD EXACTA DEL ARCO DE LA CUERDA (165px) */
         .polaroid {
             position: absolute;
             top: 52px;
+            left: 147px; /* 165px centro - 18px pinza = 147px */
             background: #ffffff; padding: 12px 12px 18px 12px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             border-radius: 6px; width: 220px;
@@ -409,7 +416,7 @@
 
 <div class="galeria-caja">
     <div class="riel-desplazamiento" id="riel-fotos">
-        <!-- Fotos dinámicas con sus tramos de cuerda y luces integrados -->
+        <!-- Fotos dinámicas -->
     </div>
 </div>
 
@@ -559,11 +566,11 @@ function inicializarGaleria(fotos) {
                     <path d="M 0,15 Q 165,85 330,15" fill="none" stroke="#d2a679" stroke-width="6" />
                 </svg>
                 <div class="luces-tramo">
-                    <div class="luz" style="left: calc(12% - 7.5px); top: 25px;"></div>
-                    <div class="luz" style="left: calc(31% - 7.5px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(50% - 7.5px); top: 62px;"></div>
-                    <div class="luz" style="left: calc(69% - 7.5px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(88% - 7.5px); top: 25px;"></div>
+                    <div class="luz luz-amarilla-union"></div>
+                    <div class="luz" style="left: calc(23% - 7.5px); top: 38px;"></div>
+                    <div class="luz" style="left: calc(41% - 7.5px); top: 58px;"></div>
+                    <div class="luz" style="left: calc(59% - 7.5px); top: 58px;"></div>
+                    <div class="luz" style="left: calc(77% - 7.5px); top: 38px;"></div>
                 </div>
                 <div class="polaroid" onclick="abrirZoom('${foto.cdn}', '${frase}')">
                     <div class="contenedor-foto">
