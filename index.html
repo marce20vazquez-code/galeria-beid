@@ -185,33 +185,48 @@
             width: 100%;
             overflow: hidden;
             position: relative;
-            padding: 20px 0 110px 0;
+            padding: 20px 0 30px 0;
             background: rgba(255, 255, 255, 0.025);
             backdrop-filter: blur(12px);
             z-index: 2;
         }
 
-        /* CUERDA SVG MODERNA */
-        .svg-cuerda {
-            position: absolute;
-            top: 5px;
-            left: 0;
-            width: 100%;
-            height: 95px;
-            pointer-events: none;
-            z-index: 1;
-            filter: drop-shadow(0px 7px 9px rgba(0, 0, 0, 0.75));
+        .riel-desplazamiento {
+            display: flex; 
+            width: max-content;
+            position: relative;
+            z-index: 3;
+            animation: desplazar 120s linear infinite;
         }
 
-        /* CONTENEDOR DE LUCES MÁS GRANDES Y BRILLANTES */
-        .contenedor-luces {
+        @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ESTRUCTURA ONDULADA POR TRAMOS (330px de ancho cada arco) */
+        .item-cuerda { 
+            position: relative;
+            width: 330px;
+            flex: 0 0 330px;
+            height: 390px;
+        }
+
+        .cuerda-segmento {
             position: absolute;
-            top: 5px;
+            top: 0;
             left: 0;
             width: 100%;
             height: 95px;
-            pointer-events: none;
+            z-index: 1;
+            filter: drop-shadow(0px 5px 6px rgba(0,0,0,0.7));
+        }
+
+        .luces-tramo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 95px;
             z-index: 2;
+            pointer-events: none;
         }
 
         .luz {
@@ -233,40 +248,30 @@
             border-radius: 1px;
         }
 
-        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 18px #ff0055, 0 0 30px #ff0055; animation-delay: 0s; }
-        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 18px #00e5ff, 0 0 30px #00e5ff; animation-delay: 0.3s; }
-        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 18px #ffea00, 0 0 30px #ffea00; animation-delay: 0.6s; }
-        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 18px #00ff66, 0 0 30px #00ff66; animation-delay: 0.9s; }
-        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 18px #b000ff, 0 0 30px #b000ff; animation-delay: 1.2s; }
+        /* FOCO AMARILLO BRILLANTE EN LA UNIÓN DE LOS ARCOS DE LA CUERDA */
+        .luz-amarilla-union {
+            left: -8px;
+            top: 5px;
+            background: #ffea00 !important;
+            box-shadow: 0 0 18px #ffea00, 0 0 32px #ffea00 !important;
+            z-index: 5;
+        }
+
+        .luz:nth-child(5n+2) { background: #ff0055; box-shadow: 0 0 18px #ff0055, 0 0 30px #ff0055; animation-delay: 0s; }
+        .luz:nth-child(5n+3) { background: #00e5ff; box-shadow: 0 0 18px #00e5ff, 0 0 30px #00e5ff; animation-delay: 0.3s; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 18px #00ff66, 0 0 30px #00ff66; animation-delay: 0.6s; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 18px #b000ff, 0 0 30px #b000ff; animation-delay: 0.9s; }
 
         @keyframes parpadeoLuz {
             0% { opacity: 0.38; filter: brightness(0.65); transform: scale(0.85); }
             100% { opacity: 1; filter: brightness(1.55); transform: scale(1.18); }
         }
 
-        .riel-desplazamiento {
-            display: flex; 
-            width: max-content;
-            position: relative;
-            z-index: 3;
-            animation: desplazar 120s linear infinite;
-        }
-
-        @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        .item-cuerda { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            margin: 0 55px; 
-            position: relative; 
-            will-change: transform;
-            transform-origin: 23px 0;
-        }
-
-        /* FOTO POLAROID: Con Cinta Washi, Fecha Retro y Brillo Dinámico */
+        /* POLAROID ALINEADA A LA MITAD EXACTA DEL ARCO DE LA CUERDA */
         .polaroid {
-            position: relative;
+            position: absolute;
+            top: 52px;
+            left: 147px; /* Centro exacto del arco (165px - 18px del gancho) */
             background: #ffffff; padding: 12px 12px 18px 12px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             border-radius: 6px; width: 220px;
@@ -274,9 +279,10 @@
             animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
             cursor: pointer;
             transition: transform 0.35s ease;
+            z-index: 3;
         }
 
-        /* CINTA DECORATIVA (Washi Tape) semi-transparente */
+        /* CINTA DECORATIVA (Washi Tape) */
         .polaroid::before {
             content: '';
             position: absolute;
@@ -284,7 +290,7 @@
             left: 20px;
             width: 70px;
             height: 20px;
-            background: rgba(255, 128, 192, 0.35); /* Rosa semi-transparente */
+            background: rgba(255, 128, 192, 0.35);
             backdrop-filter: blur(2px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 2px;
@@ -319,7 +325,6 @@
 
         @keyframes balanceoFoto { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
 
-        /* Brillo Neón que cambia sutilmente de color */
         @keyframes resplandorNeónDinámico {
             0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 2px #fff inset; }
             50% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.5), 0 0 2px #fff inset; }
@@ -348,13 +353,13 @@
 
         .polaroid img.cargada { opacity: 1; }
 
-        /* ESTAMPA DE FECHA RETRO (Cámara Analógica) */
+        /* ESTAMPA DE FECHA RETRO */
         .retro-date {
             position: absolute;
             bottom: 5px; right: 8px;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.7rem;
-            color: #ff9900; /* Naranja LED */
+            color: #ff9900;
             text-shadow: 0 0 5px #ff9900;
             z-index: 10;
         }
@@ -369,7 +374,7 @@
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2; padding: 0 10px;
         }
 
-        /* BOTÓN DE CARTA FLOTANTE: MÁS GRANDE Y ANIMADO (SOBRE 3D) */
+        /* BOTÓN DE CARTA FLOTANTE ANIMADO */
         .btn-carta-envelope {
             position: fixed;
             bottom: 30px;
@@ -439,7 +444,6 @@
         .contenido-carta h3 { font-family: 'Caveat', cursive; font-size: 2.5rem; color: #d10068; margin-bottom: 10px; }
         .contenido-carta p { font-family: 'Caveat', cursive; font-size: 1.4rem; line-height: 1.65; color: #333; text-align: justify; white-space: pre-line; }
 
-        /* Rastro mágico tactil */
         .destello-magico {
             position: fixed; pointer-events: none; z-index: 9999;
             font-size: 1.3rem; animation: desvanecerTrail 0.9s ease-out forwards;
@@ -480,7 +484,6 @@
     </div>
 </div>
 
-<!-- Botón carta flotante (Envelope SVG) -->
 <div class="btn-carta-envelope" onclick="abrirCarta()" title="Carta Secreta">
     <svg class="envelope-svg" viewBox="0 0 100 70" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 5h90v60H5V5z" fill="#f1f1f1" stroke="#ff007f" stroke-width="4"/>
@@ -493,16 +496,8 @@
 <div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
-    <!-- Cuerda en SVG curvada EXACTA POR DETRÁS -->
-    <svg class="svg-cuerda" viewBox="0 0 1000 120" preserveAspectRatio="none">
-        <path id="pathCuerda" d="M 0,15 Q 500,115 1000,15" fill="none" stroke="#d2a679" stroke-width="6" />
-    </svg>
-    
-    <!-- Contenedor donde se insertan las luces calculadas sobre la cuerda -->
-    <div class="contenedor-luces" id="contenedorLuces"></div>
-
     <div class="riel-desplazamiento" id="riel-fotos">
-        <!-- Fotos dinámicas -->
+        <!-- Fotos dinámicas con sus arcos de cuerda y luces integrados -->
     </div>
 </div>
 
@@ -550,55 +545,6 @@ const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
-
-// Alinear las luces automáticamente sobre la curva de la cuerda
-function generarLucesSobreCuerda() {
-    const path = document.getElementById('pathCuerda');
-    const container = document.getElementById('contenedorLuces');
-    if (!path || !container) return;
-    
-    container.innerHTML = '';
-    const pathLength = path.getTotalLength();
-    const numLuces = 22;
-
-    for (let i = 0; i < numLuces; i++) {
-        const punto = path.getPointAtLength((i + 0.5) / numLuces * pathLength);
-        const xPct = (punto.x / 1000) * 100;
-        const yPx = (punto.y / 120) * 95;
-
-        const luz = document.createElement('div');
-        luz.className = 'luz';
-        luz.style.left = `calc(${xPct}% - 7.5px)`;
-        luz.style.top = `${yPx - 3}px`;
-        container.appendChild(luz);
-    }
-}
-
-// SIMULACIÓN DE DESLIZAMIENTO EN TIEMPO REAL (Posición Y e Inclinación por tangente de la curva)
-function actualizarPosicionFotosCuerda() {
-    const items = document.querySelectorAll('.item-cuerda');
-    const W = window.innerWidth;
-    if (W > 0) {
-        items.forEach(item => {
-            const rect = item.getBoundingClientRect();
-            // Posición X de la pinza (x=23px es donde está la pinza en la polaroid)
-            const x = rect.left + 23; 
-            const u = x / W; // Posición de 0 a 1 en el ancho de la pantalla
-            
-            // Altura (sagPx) calculada desde la curva de la cuerda
-            const factorCurva = 4 * u * (1 - u);
-            const sagPx = factorCurva * 78; 
-            
-            // Pendiente/Inclinación (dy/dx) de la curva
-            const slope = 0.2 * (1 - 2 * u);
-            const angleDeg = Math.atan(slope) * (180 / Math.PI);
-            
-            // Aplicar traslación e inclinación dinámica
-            item.style.transform = `translateY(${sagPx}px) rotate(${angleDeg}deg)`;
-        });
-    }
-    requestAnimationFrame(actualizarPosicionFotosCuerda);
-}
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -685,11 +631,10 @@ function reproducirSiguienteCancion() {
 
 audio.addEventListener('ended', reproducirSiguienteCancion);
 
-// GENERAR FECHAS RETRO ALEATORIAS (ej. OCT '23)
 const mesesRetro = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 function generarFechaRetro() {
     const mes = mesesRetro[Math.floor(Math.random() * mesesRetro.length)];
-    const anio = Math.floor(Math.random() * 4) + 21; // '21 al '24
+    const anio = Math.floor(Math.random() * 4) + 21;
     return `${mes} '${anio}`;
 }
 
@@ -707,6 +652,16 @@ function inicializarGaleria(fotos) {
             const fechaRetro = generarFechaRetro();
             htmlFotos += `
             <div class="item-cuerda">
+                <svg class="cuerda-segmento" viewBox="0 0 330 95" preserveAspectRatio="none">
+                    <path d="M 0,15 Q 165,85 330,15" fill="none" stroke="#d2a679" stroke-width="6" />
+                </svg>
+                <div class="luces-tramo">
+                    <div class="luz luz-amarilla-union"></div>
+                    <div class="luz" style="left: calc(23% - 8px); top: 38px;"></div>
+                    <div class="luz" style="left: calc(41% - 8px); top: 58px;"></div>
+                    <div class="luz" style="left: calc(59% - 8px); top: 58px;"></div>
+                    <div class="luz" style="left: calc(77% - 8px); top: 38px;"></div>
+                </div>
                 <div class="polaroid" onclick="abrirZoom('${foto.cdn}', '${frase}')">
                     <div class="gancho-madera"></div>
                     <div class="contenedor-foto">
@@ -774,7 +729,6 @@ function manejarRastro(e) {
 }
 window.addEventListener('mousemove', manejarRastro);
 window.addEventListener('touchmove', manejarRastro);
-window.addEventListener('resize', generarLucesSobreCuerda);
 
 function activarPantallaCompleta() {
     const el = document.documentElement;
@@ -830,26 +784,22 @@ function toggleFullscreen() {
     }
 }
 
-// FONTO DETALLADO (Polvo de Estrellas y Nieve Oro)
 function crearParticulaDeFondo() {
     const contenedor = document.getElementById('contenedor-particulas');
-    
-    // Crear polvo de estrellas (pequeños puntos brillantes)
     for(let i=0; i<3; i++) {
         const estrella = document.createElement('div');
         estrella.className = 'particula-brillo';
         estrella.style.width = (Math.random() * 3 + 1) + 'px';
         estrella.style.height = estrella.style.width;
-        estrella.style.background = `rgba(255, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 50)}, ${Math.random() * 0.7 + 0.3})`; // Dorado
+        estrella.style.background = `rgba(255, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 50)}, ${Math.random() * 0.7 + 0.3})`;
         estrella.style.borderRadius = '50%';
         estrella.style.left = Math.random() * 100 + 'vw';
-        estrella.style.animationDuration = (Math.random() * 6 + 7) + 's'; // Lentitud
+        estrella.style.animationDuration = (Math.random() * 6 + 7) + 's';
         estrella.style.boxShadow = `0 0 5px ${estrella.style.background}`;
         contenedor.appendChild(estrella);
         setTimeout(() => estrella.remove(), 13000);
     }
 
-    // Crear corazones dorados flotantes sutiles
     if(Math.random() < 0.4) {
         const corazon = document.createElement('div');
         corazon.className = 'corazon-fondo';
@@ -861,10 +811,8 @@ function crearParticulaDeFondo() {
         setTimeout(() => corazon.remove(), 8500);
     }
 }
-setInterval(crearParticulaDeFondo, 600); // Frecuencia sutil
+setInterval(crearParticulaDeFondo, 600);
 
-generarLucesSobreCuerda();
-requestAnimationFrame(actualizarPosicionFotosCuerda);
 iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
 </script>
