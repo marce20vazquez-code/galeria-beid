@@ -172,7 +172,7 @@
             z-index: 2;
         }
 
-        /* CUERDA CURVADA/COLGADA EN EL CENTRO */
+        /* CUERDA POR DETRÁS DE LAS FOTOS */
         .cuerda {
             position: absolute;
             top: 10px;
@@ -183,10 +183,10 @@
             border-radius: 50%;
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
             pointer-events: none;
-            z-index: 4;
+            z-index: 1; /* Cuerda ajustada por detrás */
         }
 
-        /* LUCES NAVIDEÑAS ADAPTADAS A LA PARÁBOLA DE LA CUERDA */
+        /* LUCES NAVIDEÑAS POR DETRÁS DE LAS FOTOS */
         .luces-navidad {
             position: absolute;
             top: 25px;
@@ -198,7 +198,7 @@
             margin: 0;
             list-style: none;
             pointer-events: none;
-            z-index: 5;
+            z-index: 1;
         }
 
         .luz {
@@ -220,7 +220,6 @@
             border-radius: 1px;
         }
 
-        /* Desfase vertical por foco para acomodarlos sobre la curva */
         .luz:nth-child(1), .luz:nth-child(20) { transform: translateY(0px); }
         .luz:nth-child(2), .luz:nth-child(19) { transform: translateY(14px); }
         .luz:nth-child(3), .luz:nth-child(18) { transform: translateY(26px); }
@@ -244,7 +243,10 @@
         }
 
         .riel-desplazamiento {
-            display: flex; width: max-content;
+            display: flex; 
+            width: max-content;
+            position: relative;
+            z-index: 3; /* Fotos por enfrente de la cuerda */
             animation: desplazar 120s linear infinite;
         }
 
@@ -268,7 +270,7 @@
             position: absolute;
             top: -14px;
             left: 18px;
-            width: 10px;
+            width: 100px;
             height: 24px;
             background: linear-gradient(135deg, #d2a679, #8c5a2b);
             border-radius: 2px;
