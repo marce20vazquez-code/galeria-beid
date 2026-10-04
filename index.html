@@ -175,6 +175,52 @@
         .cuerda {
             position: absolute; top: 65px; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, #8a5a36, #d2b48c, #8a5a36);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* SERIE DE LUCES NAVIDEÑAS EN LA CUERDA */
+        .luces-navidad {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .luz {
+            position: relative;
+            width: 10px;
+            height: 14px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: parpadeoLuz 1.2s infinite alternate;
+        }
+
+        .luz::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 3px;
+            width: 4px;
+            height: 3px;
+            background: #222;
+            border-radius: 1px;
+        }
+
+        .luz:nth-child(5n+1) { background: #ff0055; box-shadow: 0 0 12px #ff0055; animation-delay: 0s; }
+        .luz:nth-child(5n+2) { background: #00e5ff; box-shadow: 0 0 12px #00e5ff; animation-delay: 0.3s; }
+        .luz:nth-child(5n+3) { background: #ffea00; box-shadow: 0 0 12px #ffea00; animation-delay: 0.6s; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 12px #00ff66; animation-delay: 0.9s; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 12px #b000ff; animation-delay: 1.2s; }
+
+        @keyframes parpadeoLuz {
+            0% { opacity: 0.3; filter: brightness(0.5); transform: scale(0.85); }
+            100% { opacity: 1; filter: brightness(1.4); transform: scale(1.15); }
         }
 
         .riel-desplazamiento {
@@ -311,7 +357,6 @@
 </div>
 
 <div id="contenedor-corazones"></div>
-<!-- Se quitó el atributo 'loop' para que no repita la misma canción -->
 <audio id="musicaFondo"></audio>
 
 <div class="top-controls">
@@ -325,6 +370,15 @@
 
 <div class="galeria-caja">
     <div class="cuerda"></div>
+    
+    <!-- Serie de focos de navidad sobre la cuerda -->
+    <ul class="luces-navidad">
+        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
+        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
+        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
+        <li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li><li class="luz"></li>
+    </ul>
+
     <div class="riel-desplazamiento" id="riel-fotos">
         <!-- Fotos dinámicas -->
     </div>
@@ -445,7 +499,6 @@ function reproducirSiguienteCancion() {
     if (listaCancionesGlobal.length === 1) {
         nuevaCancion = listaCancionesGlobal[0];
     } else {
-        // Selecciona una canción al azar asegurando que no se repita la actual
         do {
             const indice = Math.floor(Math.random() * listaCancionesGlobal.length);
             nuevaCancion = listaCancionesGlobal[indice];
@@ -458,7 +511,6 @@ function reproducirSiguienteCancion() {
     }).catch(err => console.log(err));
 }
 
-// Evento: Al terminar la canción actual, reproduce la siguiente de forma aleatoria
 audio.addEventListener('ended', reproducirSiguienteCancion);
 
 function inicializarGaleria(fotos) {
