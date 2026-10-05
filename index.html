@@ -60,19 +60,20 @@
             pointer-events: none; z-index: 0; overflow: hidden;
         }
 
-        .particula-brillo, .corazon-fondo {
-            position: absolute; bottom: -50px;
+        .particula-clima {
+            position: absolute;
+            top: -40px;
             pointer-events: none;
-            opacity: 0.8;
-            animation: flotarHaciaArriba linear forwards;
+            z-index: 1;
+            user-select: none;
+            animation: caerBailando linear forwards;
         }
 
-        .corazon-fondo { font-size: 16px; animation-duration: 9s; }
-
-        @keyframes flotarHaciaArriba {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.9; }
-            100% { transform: translateY(-135vh) rotate(420deg); opacity: 0; }
+        @keyframes caerBailando {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.95; }
+            85% { opacity: 0.85; }
+            100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(var(--rot, 360deg)); opacity: 0; }
         }
 
         .top-controls {
@@ -571,6 +572,7 @@
 <audio id="musicaFondo"></audio>
 
 <div class="top-controls">
+    <button id="btnClima" class="btn-control" onclick="cambiarClima()">💖 Clima: Corazones</button>
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
     <button id="btnAmbiente" class="btn-control" onclick="cambiarAmbiente()">🌌 Fondo: Noche</button>
     <button class="btn-control" onclick="lanzarFuegosPétalos()">🪄 Magia ✨</button>
@@ -641,6 +643,14 @@ const NOTAS_REVERSO = [
     "Amor, complicidad y muchas risas guardadas aquí. 📸❤️"
 ];
 
+const MODOS_CLIMA = [
+    { nombre: 'Corazones', iconoBtn: '💖', simbolos: ['💖', '💕', '💗', '🌹', '💓', '💘'] },
+    { nombre: 'Pétalos', iconoBtn: '🌸', simbolos: ['🌸', '🌺', '🍃', '🌸', '🌾'] },
+    { nombre: 'Estrellas', iconoBtn: '✨', simbolos: ['✨', '⭐', '💫', '🌟', '✦'] },
+    { nombre: 'Nieve', iconoBtn: '❄️', simbolos: ['❄️', '❄', '⚪', '✨', '❄️'] }
+];
+let indiceClima = 0;
+
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('viniloMusica');
@@ -662,6 +672,38 @@ function cambiarAmbiente() {
     document.body.style.background = amb.bg;
     document.getElementById('btnAmbiente').innerText = `🌌 Fondo: ${amb.nombre}`;
 }
+
+function cambiarClima() {
+    indiceClima = (indiceClima + 1) % MODOS_CLIMA.length;
+    const climaActual = MODOS_CLIMA[indiceClima];
+    document.getElementById('btnClima').innerText = `${climaActual.iconoBtn} Clima: ${climaActual.nombre}`;
+}
+
+function generarParticulaClima() {
+    const contenedor = document.getElementById('contenedor-particulas');
+    const clima = MODOS_CLIMA[indiceClima];
+    
+    const p = document.createElement('div');
+    p.className = 'particula-clima';
+    p.innerHTML = clima.simbolos[Math.floor(Math.random() * clima.simbolos.length)];
+    
+    p.style.left = Math.random() * 100 + 'vw';
+    
+    const tamanio = Math.random() * 12 + 14; 
+    p.style.fontSize = tamanio + 'px';
+    
+    const drift = (Math.random() - 0.5) * 160 + 'px';
+    const rot = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 360 + 180) + 'deg';
+    p.style.setProperty('--drift', drift);
+    p.style.setProperty('--rot', rot);
+    
+    const duracion = Math.random() * 5 + 6;
+    p.style.animationDuration = duracion + 's';
+    
+    contenedor.appendChild(p);
+    setTimeout(() => p.remove(), duracion * 1000);
+}
+setInterval(generarParticulaClima, 450);
 
 function lanzarFuegosPétalos() {
     const iconos = ['💖', '🌸', '🌹', '✨', '⭐', '💫', '💕', '🎆'];
@@ -975,35 +1017,6 @@ function toggleFullscreen() {
         }
     }
 }
-
-function crearParticulaDeFondo() {
-    const contenedor = document.getElementById('contenedor-particulas');
-    for(let i=0; i<3; i++) {
-        const estrella = document.createElement('div');
-        estrella.className = 'particula-brillo';
-        estrella.style.width = (Math.random() * 3 + 1) + 'px';
-        estrella.style.height = estrella.style.width;
-        estrella.style.background = `rgba(255, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 50)}, ${Math.random() * 0.7 + 0.3})`;
-        estrella.style.borderRadius = '50%';
-        estrella.style.left = Math.random() * 100 + 'vw';
-        estrella.style.animationDuration = (Math.random() * 6 + 7) + 's';
-        estrella.style.boxShadow = `0 0 5px ${estrella.style.background}`;
-        contenedor.appendChild(estrella);
-        setTimeout(() => estrella.remove(), 13000);
-    }
-
-    if(Math.random() < 0.4) {
-        const corazon = document.createElement('div');
-        corazon.className = 'corazon-fondo';
-        const tonosDorado = ['🧡', '🌕', '✨', '💖'];
-        corazon.innerHTML = tonosDorado[Math.floor(Math.random() * tonosDorado.length)];
-        corazon.style.left = Math.random() * 100 + 'vw';
-        corazon.style.opacity = Math.random() * 0.5 + 0.2;
-        contenedor.appendChild(corazon);
-        setTimeout(() => corazon.remove(), 8500);
-    }
-}
-setInterval(crearParticulaDeFondo, 600);
 
 iniciarAnimacionTitulo();
 cargarArchivosAutomaticos();
