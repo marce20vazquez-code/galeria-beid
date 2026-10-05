@@ -855,7 +855,8 @@ function generarFechaRetro() {
     return `${mes} '${anio}`;
 }
 
-function voltearTarjeta(cardElement) {
+function voltearTarjeta(cardElement, e) {
+    if (e) e.stopPropagation();
     cardElement.classList.toggle('flipped');
 }
 
@@ -897,10 +898,10 @@ function inicializarGaleria(fotos) {
                             </div>
                             <div class="pie-card">
                                 <p class="texto-polaroid" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">${frase}</p>
-                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">🔄 Nota</button>
+                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">🔄 Nota</button>
                             </div>
                         </div>
-                        <div class="polaroid-face polaroid-back" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">
+                        <div class="polaroid-face polaroid-back" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">
                             <div class="gancho-madera"></div>
                             <h4 class="titulo-back">Nota Secreta 💌</h4>
                             <p class="texto-reverso">${notaReverso}</p>
