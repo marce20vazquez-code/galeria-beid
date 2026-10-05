@@ -187,7 +187,8 @@
             width: 100%;
             overflow: hidden;
             position: relative;
-            padding: 25px 0 35px 0;
+            /* Aumentado el padding inferior para dar más espacio general */
+            padding: 25px 0 50px 0;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(15px);
             z-index: 2;
@@ -203,12 +204,13 @@
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* ESTRUCTURA ONDULADA POR TRAMOS (Más ancha para fotos grandes) */
+        /* ESTRUCTURA ONDULADA POR TRAMOS (Aumentado tamaño para fotos grandes) */
         .item-cuerda { 
             position: relative;
             width: 480px;
             flex: 0 0 480px;
-            height: 550px;
+            /* Aumentada la altura total de 550px a 600px para acomodar todo sin cortes */
+            height: 600px;
         }
 
         .cuerda-segmento {
@@ -250,7 +252,7 @@
             border-radius: 1px;
         }
 
-        /* FOCO AMARILLO BRILLANTE EN LA UNIÓN DE LOS ARCOS (Ajustado) */
+        /* FOCO AMARILLO BRILLANTE EN LA UNIÓN DE LOS ARCOS */
         .luz-amarilla-union {
             left: -9px;
             top: 6px;
@@ -367,7 +369,7 @@
         .contenedor-foto {
             position: relative;
             width: 284px; /* Aumentado proporcionalmente (320 - 36 padding) */
-            height: 326px; /* Aumentado proporcionalmente ( relación original ~1.15) */
+            height: 326px;
             background: #231238;
             border-radius: 4px;
             overflow: hidden;
@@ -407,7 +409,7 @@
         }
 
         .texto-polaroid {
-            font-family: 'Caveat', cursive; font-size: 1.8rem; /* Caveat manuscrito más grande */
+            font-family: 'Caveat', cursive; font-size: 1.8rem; /* Manuscrito más grande */
             color: #1a1a1a;
             text-align: left; font-weight: 600; line-height: 1.1; 
             cursor: pointer; /* Clic para zoom */
@@ -421,7 +423,7 @@
             color: #ff007f;
             border-radius: 14px;
             padding: 5px 10px; /* Aumentado proporcionalmente */
-            font-size: 1.1rem; /* Aumentado proporcionalmente */
+            font-size: 1.1rem;
             font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
