@@ -73,13 +73,14 @@
             100% { transform: translateY(-135vh) rotate(420deg); opacity: 0; }
         }
 
+        /* BOTONES SUPERIORES EN ESQUINA CÓMODA */
         .top-controls {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 12px;
+            right: 12px;
             z-index: 1000;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
             flex-wrap: wrap;
             justify-content: flex-end;
@@ -90,24 +91,24 @@
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            padding: 10px 18px;
+            padding: 8px 14px;
             border-radius: 35px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
             transition: all 0.35s ease;
         }
 
         .btn-control:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.5); }
 
         #viniloMusica {
-            width: 55px; height: 55px;
+            width: 48px; height: 48px;
             border-radius: 50%;
             background: #000;
             border: 2px solid #333;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 4px #ccc inset;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 3px #ccc inset;
             position: relative;
             cursor: pointer;
             transition: transform 0.4s ease;
@@ -118,7 +119,7 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #f1f1f1;
             z-index: 1;
         }
@@ -134,11 +135,11 @@
 
         #labelMusica {
             position: absolute;
-            top: -24px; right: -6px;
+            top: -22px; right: -4px;
             background: rgba(8, 0, 20, 0.9);
-            padding: 5px 12px;
-            border-radius: 14px;
-            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
             font-weight: 800;
             color: #ffd700;
             opacity: 0;
@@ -148,11 +149,12 @@
 
         #viniloMusica:hover #labelMusica { opacity: 1; }
 
+        /* TÍTULO "RECUERDOS": TAMAÑO GRANDE CON MARGEN INFERIOR PARA EVITAR OVERLAP */
         .titulo-3d-container {
-            margin-top: 60px;
+            margin-top: 85px; /* Espacio suficiente debajo de los botones superiores */
             z-index: 2;
             text-align: center;
-            padding: 0 20px;
+            padding: 0 10px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -162,7 +164,7 @@
 
         .letra-3d {
             display: inline-block;
-            font-size: 2.5rem;
+            font-size: 2.5rem; /* Tamaño grande conservado */
             font-weight: 900;
             color: #ffffff;
             text-shadow: 
@@ -179,14 +181,14 @@
 
         @keyframes flotarLatir {
             0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-9px) scale(1.06); }
+            100% { transform: translateY(-8px) scale(1.06); }
         }
 
         .galeria-caja {
             width: 100%;
             overflow: hidden;
             position: relative;
-            padding: 15px 0 25px 0;
+            padding: 10px 0 20px 0;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(15px);
             z-index: 2;
@@ -197,8 +199,7 @@
             width: max-content;
             position: relative;
             z-index: 3;
-            /* VELOCIDAD AJUSTADA: De 120s a 180s para un movimiento más lento */
-            animation: desplazar 180s linear infinite;
+            animation: desplazar 180s linear infinite; /* Movimiento lento */
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -365,7 +366,7 @@
             position: relative;
             width: 232px;
             height: 250px;
-            background: #231238;
+            background: #110820;
             border-radius: 3px;
             overflow: hidden;
             display: flex;
@@ -376,13 +377,19 @@
 
         .loader-corazon { font-size: 1.8rem; animation: latirPulsar 1s infinite alternate; opacity: 0.7; }
 
-        .polaroid img { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: contain !important; border-radius: 3px; display: block; opacity: 0; 
+        /* MUESTRA LA FOTO ENTERA SIN RECORTAR */
+        .contenedor-foto img { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            object-fit: contain !important; 
+            border-radius: 3px; 
+            display: block; 
+            opacity: 0; 
             transition: opacity 0.6s ease-in-out;
         }
 
-        .polaroid img.cargada { opacity: 1; }
+        .contenedor-foto img.cargada { opacity: 1; }
 
         .retro-date {
             position: absolute;
@@ -543,12 +550,13 @@
             100% { transform: translate(-50%, -85px) scale(0.2) rotate(45deg); opacity: 0; }
         }
 
+        /* TAMAÑO EXTRA GRANDE PARA PANTALLAS DE COMPUTADORA */
         @media (min-width: 768px) {
-            .titulo-3d-container { margin-top: 65px; gap: 6px; }
-            .letra-3d { font-size: 3.5rem; }
-            .btn-control { font-size: 0.88rem; padding: 11px 22px; }
-            .top-controls { top: 22px; right: 28px; gap: 12px; }
-            .viniloMusica { width: 60px; height: 60px; }
+            .titulo-3d-container { margin-top: 80px; gap: 6px; }
+            .letra-3d { font-size: 3.8rem; }
+            .btn-control { font-size: 0.88rem; padding: 10px 20px; }
+            .top-controls { top: 20px; right: 25px; gap: 12px; }
+            .viniloMusica { width: 55px; height: 55px; }
             .envelope-svg { width: 80px; height: 58px; }
             .btn-carta-envelope { bottom: 30px; right: 30px; }
             .frase-bottom { font-size: 1.5rem; margin-bottom: 25px; }
