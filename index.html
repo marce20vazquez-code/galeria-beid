@@ -46,10 +46,12 @@
             padding: 0 30px;
         }
 
-        #overlay-inicio p {
+        #texto-progreso {
             font-size: 1.2rem;
             color: #00ffff;
             animation: latirPulsar 1.8s infinite alternate;
+            text-align: center;
+            padding: 0 20px;
         }
 
         #contenedor-particulas {
@@ -73,7 +75,6 @@
             100% { transform: translateY(-135vh) rotate(420deg); opacity: 0; }
         }
 
-        /* BOTONES SUPERIORES EN ESQUINA CÓMODA */
         .top-controls {
             position: fixed;
             top: 12px;
@@ -149,9 +150,8 @@
 
         #viniloMusica:hover #labelMusica { opacity: 1; }
 
-        /* TÍTULO "RECUERDOS": TAMAÑO GRANDE CON MARGEN INFERIOR PARA EVITAR OVERLAP */
         .titulo-3d-container {
-            margin-top: 85px; /* Espacio suficiente debajo de los botones superiores */
+            margin-top: 85px;
             z-index: 2;
             text-align: center;
             padding: 0 10px;
@@ -164,7 +164,7 @@
 
         .letra-3d {
             display: inline-block;
-            font-size: 2.5rem; /* Tamaño grande conservado */
+            font-size: 2.5rem;
             font-weight: 900;
             color: #ffffff;
             text-shadow: 
@@ -199,7 +199,7 @@
             width: max-content;
             position: relative;
             z-index: 3;
-            animation: desplazar 180s linear infinite; /* Movimiento lento */
+            animation: desplazar 180s linear infinite;
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -288,9 +288,7 @@
             animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
         }
 
-        .polaroid-card.flipped {
-            transform: rotateY(180deg);
-        }
+        .polaroid-card.flipped { transform: rotateY(180deg); }
 
         .polaroid-face {
             position: absolute;
@@ -375,9 +373,6 @@
             cursor: pointer;
         }
 
-        .loader-corazon { font-size: 1.8rem; animation: latirPulsar 1s infinite alternate; opacity: 0.7; }
-
-        /* MUESTRA LA FOTO ENTERA SIN RECORTAR */
         .contenedor-foto img { 
             position: absolute; 
             top: 0; left: 0; 
@@ -385,11 +380,8 @@
             object-fit: contain !important; 
             border-radius: 3px; 
             display: block; 
-            opacity: 0; 
-            transition: opacity 0.6s ease-in-out;
+            opacity: 1; 
         }
-
-        .contenedor-foto img.cargada { opacity: 1; }
 
         .retro-date {
             position: absolute;
@@ -550,7 +542,6 @@
             100% { transform: translate(-50%, -85px) scale(0.2) rotate(45deg); opacity: 0; }
         }
 
-        /* TAMAÑO EXTRA GRANDE PARA PANTALLAS DE COMPUTADORA */
         @media (min-width: 768px) {
             .titulo-3d-container { margin-top: 80px; gap: 6px; }
             .letra-3d { font-size: 3.8rem; }
@@ -565,9 +556,9 @@
 </head>
 <body>
 
-<div id="overlay-inicio" onclick="iniciarExperiencia()">
+<div id="overlay-inicio" onclick="intentarIniciar()">
     <h2>Nuestra Galería de Recuerdos 💖</h2>
-    <p>✨ Toca la pantalla para entrar ✨</p>
+    <p id="texto-progreso">Cargando fotos... 0%</p>
 </div>
 
 <div id="contenedor-particulas"></div>
@@ -594,9 +585,7 @@
 <div class="titulo-3d-container" id="titulo3D"></div>
 
 <div class="galeria-caja">
-    <div class="riel-desplazamiento" id="riel-fotos">
-        <!-- Fotos dinámicas con sus arcos de cuerda y luces integrados -->
-    </div>
+    <div class="riel-desplazamiento" id="riel-fotos"></div>
 </div>
 
 <div class="frase-bottom">Nuestra historia en imágenes 💖 ✨ 🌙</div>
@@ -652,6 +641,7 @@ const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
+let fotosListas = false;
 
 const ambientes = [
     { nombre: 'Noche', bg: 'radial-gradient(circle at center, #1b003a 0%, #080014 100%)' },
@@ -749,10 +739,43 @@ async function cargarArchivosAutomaticos() {
                 .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
         }
 
-        inicializarGaleria(fotos);
+        if (fotos.length > 0) {
+            precargarFotos(fotos);
+        } else {
+            document.getElementById('texto-progreso').innerText = "✨ Toca la pantalla para entrar ✨";
+            fotosListas = true;
+        }
+
     } catch (e) {
         console.error("Error cargando archivos de GitHub", e);
+        document.getElementById('texto-progreso').innerText = "✨ Toca la pantalla para entrar ✨";
+        fotosListas = true;
     }
+}
+
+function precargarFotos(fotos) {
+    let cargadas = 0;
+    const total = fotos.length;
+    const textoProgreso = document.getElementById('texto-progreso');
+
+    fotos.forEach(foto => {
+        const img = new Image();
+        const alCargarOError = () => {
+            cargadas++;
+            const porcentaje = Math.round((cargadas / total) * 100);
+            textoProgreso.innerText = `Cargando fotos... ${porcentaje}%`;
+
+            if (cargadas === total) {
+                textoProgreso.innerText = "✨ ¡Todo listo! Toca la pantalla para entrar ✨";
+                fotosListas = true;
+                inicializarGaleria(fotos);
+            }
+        };
+
+        img.onload = alCargarOError;
+        img.onerror = alCargarOError;
+        img.src = foto.cdn;
+    });
 }
 
 function reproducirSiguienteCancion() {
@@ -815,16 +838,12 @@ function inicializarGaleria(fotos) {
                 </div>
                 <div class="polaroid-wrapper">
                     <div class="polaroid-card">
-                        <!-- FRENTE POLAROID -->
                         <div class="polaroid-face polaroid-front">
                             <div class="gancho-madera"></div>
                             <div class="contenedor-foto" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">
-                                <div class="loader-corazon">💖</div>
                                 <img src="${foto.cdn}" 
                                      alt="Recuerdo" 
-                                     loading="lazy"
                                      referrerpolicy="no-referrer"
-                                     onload="this.classList.add('cargada'); if(this.previousElementSibling) this.previousElementSibling.remove();"
                                      onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
                                 <span class="retro-date">${fechaRetro}</span>
                             </div>
@@ -833,7 +852,6 @@ function inicializarGaleria(fotos) {
                                 <button class="btn-flip-icon" title="Ver nota secreta" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">🔄 Nota</button>
                             </div>
                         </div>
-                        <!-- REVERSO POLAROID -->
                         <div class="polaroid-face polaroid-back" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">
                             <div class="gancho-madera"></div>
                             <h4 class="titulo-back">Nota Secreta 💌</h4>
@@ -907,7 +925,9 @@ function activarPantallaCompleta() {
     }
 }
 
-function iniciarExperiencia() {
+function intentarIniciar() {
+    if (!fotosListas) return;
+
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
     setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1200);
