@@ -268,7 +268,7 @@
             100% { opacity: 1; filter: brightness(1.55); transform: scale(1.18); }
         }
 
-        /* CONTENEDOR CONTENEDOR 3D FLIP */
+        /* TAMAÑO EXACTO POLAROID (220px) CON EFECTO 3D */
         .polaroid-wrapper {
             position: absolute;
             top: 52px;
@@ -287,7 +287,6 @@
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-origin: 23px 0;
             animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
-            cursor: pointer;
         }
 
         .polaroid-card.flipped {
@@ -296,11 +295,12 @@
 
         .polaroid-face {
             position: absolute;
-            width: 100%;
+            top: 0; left: 0;
+            width: 220px;
             height: 100%;
             backface-visibility: hidden;
             background: #ffffff;
-            padding: 12px 12px 18px 12px;
+            padding: 12px 12px 14px 12px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             border-radius: 6px;
             display: flex;
@@ -315,6 +315,7 @@
             color: #222;
             text-align: center;
             padding: 20px 15px;
+            cursor: pointer;
         }
 
         .polaroid-face::before {
@@ -372,6 +373,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
         .loader-corazon { font-size: 1.8rem; animation: latirPulsar 1s infinite alternate; opacity: 0.7; }
@@ -394,42 +396,58 @@
             z-index: 10;
         }
 
-        .texto-polaroid {
-            font-family: 'Caveat', cursive; font-size: 1.3rem; color: #1a1a1a;
-            text-align: center; margin: 10px 0 0 0; font-weight: 600;
+        .pie-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            gap: 4px;
         }
+
+        .texto-polaroid {
+            font-family: 'Caveat', cursive; font-size: 1.25rem; color: #1a1a1a;
+            text-align: left; font-weight: 600; line-height: 1.1; cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-flip-icon {
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid rgba(255, 0, 127, 0.4);
+            color: #ff007f;
+            border-radius: 12px;
+            padding: 3px 7px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-flip-icon:hover { transform: scale(1.1); background: rgba(255, 0, 127, 0.25); }
 
         /* REVERSO DE FOTO */
         .titulo-back {
             font-family: 'Caveat', cursive;
             font-size: 1.5rem;
             color: #ff007f;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .texto-reverso {
             font-family: 'Caveat', cursive;
             font-size: 1.25rem;
             color: #333;
-            line-height: 1.4;
+            line-height: 1.35;
             margin: 10px 0;
             text-align: justify;
         }
 
-        .btn-zoom-back {
-            background: #ff007f;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
+        .pista-voltear {
+            font-size: 0.75rem;
+            color: #ff007f;
             font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
-            transition: transform 0.2s ease;
+            margin-top: auto;
         }
-
-        .btn-zoom-back:hover { transform: scale(1.1); }
 
         .frase-bottom {
             text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800;
@@ -509,7 +527,6 @@
             font-size: 1.3rem; animation: desvanecerTrail 0.9s ease-out forwards;
         }
 
-        /* PARTÍCULAS FUEGOS ARTIFICIALES */
         .particula-fuego {
             position: fixed;
             pointer-events: none;
@@ -534,8 +551,8 @@
             .btn-control { font-size: 0.85rem; padding: 11px 22px; }
             .top-controls { top: 20px; right: 25px; gap: 12px; }
             .viniloMusica { width: 60px; height: 60px; }
-            .polaroid-wrapper { width: 240px; }
-            .contenedor-foto { width: 216px; height: 245px; }
+            .polaroid-wrapper { width: 220px; }
+            .contenedor-foto { width: 196px; height: 225px; }
             .envelope-svg { width: 78px; height: 58px; }
             .btn-carta-envelope { bottom: 30px; right: 30px; }
             .frase-bottom { font-size: 1.5rem; margin-bottom: 25px; }
@@ -633,7 +650,6 @@ const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
 
-// SELECTOR DE AMBIENTES
 const ambientes = [
     { nombre: 'Noche', bg: 'radial-gradient(circle at center, #1b003a 0%, #080014 100%)' },
     { nombre: 'Atardecer', bg: 'radial-gradient(circle at center, #4a1235 0%, #150022 100%)' },
@@ -648,7 +664,6 @@ function cambiarAmbiente() {
     document.getElementById('btnAmbiente').innerText = `🌌 Fondo: ${amb.nombre}`;
 }
 
-// FUEGOS ARTIFICIALES Y PÉTALOS
 function lanzarFuegosPétalos() {
     const iconos = ['💖', '🌸', '🌹', '✨', '⭐', '💫', '💕', '🎆'];
     const centerX = window.innerWidth / 2;
@@ -796,11 +811,11 @@ function inicializarGaleria(fotos) {
                     <div class="luz" style="left: calc(77% - 8px); top: 38px;"></div>
                 </div>
                 <div class="polaroid-wrapper">
-                    <div class="polaroid-card" onclick="voltearTarjeta(this)">
+                    <div class="polaroid-card">
                         <!-- FRENTE POLAROID -->
                         <div class="polaroid-face polaroid-front">
                             <div class="gancho-madera"></div>
-                            <div class="contenedor-foto">
+                            <div class="contenedor-foto" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">
                                 <div class="loader-corazon">💖</div>
                                 <img src="${foto.cdn}" 
                                      alt="Recuerdo" 
@@ -810,14 +825,17 @@ function inicializarGaleria(fotos) {
                                      onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
                                 <span class="retro-date">${fechaRetro}</span>
                             </div>
-                            <p class="texto-polaroid">${frase}</p>
+                            <div class="pie-card">
+                                <p class="texto-polaroid" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">${frase}</p>
+                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">🔄 Nota</button>
+                            </div>
                         </div>
                         <!-- REVERSO POLAROID -->
-                        <div class="polaroid-face polaroid-back">
+                        <div class="polaroid-face polaroid-back" onclick="event.stopPropagation(); voltearTarjeta(this.closest('.polaroid-card'))">
                             <div class="gancho-madera"></div>
                             <h4 class="titulo-back">Nota Secreta 💌</h4>
                             <p class="texto-reverso">${notaReverso}</p>
-                            <button class="btn-zoom-back" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">🔍 Ver Zoom</button>
+                            <span class="pista-voltear">✨ Toca para regresar</span>
                         </div>
                     </div>
                 </div>
