@@ -20,6 +20,7 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            transition: background 1s ease;
         }
 
         #overlay-inicio {
@@ -51,7 +52,6 @@
             animation: latirPulsar 1.8s infinite alternate;
         }
 
-        /* FONDO DETALLADO: Polvo de Estrellas y Nieve de Oro */
         #contenedor-particulas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -79,8 +79,10 @@
             right: 15px;
             z-index: 1000;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .btn-control {
@@ -88,10 +90,10 @@
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            padding: 10px 18px;
+            padding: 9px 15px;
             border-radius: 30px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
@@ -102,7 +104,7 @@
 
         /* VINILO MUSICAL GIRATORIO */
         #viniloMusica {
-            width: 55px; height: 55px;
+            width: 50px; height: 50px;
             border-radius: 50%;
             background: #000;
             border: 2px solid #333;
@@ -117,7 +119,7 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #f1f1f1;
             z-index: 1;
         }
@@ -137,16 +139,16 @@
             background: rgba(8, 0, 20, 0.9);
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
             color: #ffd700;
             opacity: 0;
             transition: opacity 0.3s ease;
+            white-space: nowrap;
         }
 
         #viniloMusica:hover #labelMusica { opacity: 1; }
 
-        /* TÍTULO 3D MODERNO Y BRILLANTE */
         .titulo-3d-container {
             margin-top: 65px;
             z-index: 2;
@@ -266,21 +268,56 @@
             100% { opacity: 1; filter: brightness(1.55); transform: scale(1.18); }
         }
 
-        .polaroid {
+        /* CONTENEDOR CONTENEDOR 3D FLIP */
+        .polaroid-wrapper {
             position: absolute;
             top: 52px;
             left: 147px;
-            background: #ffffff; padding: 12px 12px 18px 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-            border-radius: 6px; width: 220px;
-            transform-origin: 23px 0;
-            animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
-            cursor: pointer;
-            transition: transform 0.35s ease;
+            width: 220px;
+            height: 310px;
+            perspective: 1000px;
             z-index: 3;
         }
 
-        .polaroid::before {
+        .polaroid-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: 23px 0;
+            animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
+            cursor: pointer;
+        }
+
+        .polaroid-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .polaroid-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #ffffff;
+            padding: 12px 12px 18px 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .polaroid-back {
+            transform: rotateY(180deg);
+            background: #fffdf0;
+            border: 2px dashed #ff007f;
+            color: #222;
+            text-align: center;
+            padding: 20px 15px;
+        }
+
+        .polaroid-face::before {
             content: '';
             position: absolute;
             top: -12px;
@@ -316,8 +353,6 @@
             color: #ffd700;
             text-shadow: 0 0 5px #ffd700;
         }
-
-        .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; }
 
         @keyframes balanceoFoto { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
 
@@ -364,12 +399,44 @@
             text-align: center; margin: 10px 0 0 0; font-weight: 600;
         }
 
+        /* REVERSO DE FOTO */
+        .titulo-back {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #ff007f;
+            margin-top: 10px;
+        }
+
+        .texto-reverso {
+            font-family: 'Caveat', cursive;
+            font-size: 1.25rem;
+            color: #333;
+            line-height: 1.4;
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        .btn-zoom-back {
+            background: #ff007f;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .btn-zoom-back:hover { transform: scale(1.1); }
+
         .frase-bottom {
             text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800;
             text-shadow: 0 0 15px rgba(0, 255, 255, 0.9); z-index: 2; padding: 0 10px;
         }
 
-        /* BOTÓN DE CARTA FLOTANTE: UBICADO EN LA ESQUINA INFERIOR DERECHA */
+        /* SOBRE EN LA ESQUINA INFERIOR DERECHA */
         .btn-carta-envelope {
             position: fixed;
             bottom: 25px;
@@ -442,6 +509,20 @@
             font-size: 1.3rem; animation: desvanecerTrail 0.9s ease-out forwards;
         }
 
+        /* PARTÍCULAS FUEGOS ARTIFICIALES */
+        .particula-fuego {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            font-size: 1.5rem;
+            animation: explosionMagica 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes explosionMagica {
+            0% { transform: translate(-50%, -50%) scale(0.3) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(360deg); opacity: 0; }
+        }
+
         @keyframes desvanecerTrail {
             0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
             100% { transform: translate(-50%, -80px) scale(0.2) rotate(45deg); opacity: 0; }
@@ -451,9 +532,9 @@
             .titulo-3d-container { margin-top: 65px; gap: 6px; }
             .letra-3d { font-size: 3.5rem; }
             .btn-control { font-size: 0.85rem; padding: 11px 22px; }
-            .top-controls { top: 20px; right: 25px; gap: 15px; }
-            .viniloMusica { width: 65px; height: 65px; }
-            .polaroid { width: 240px; }
+            .top-controls { top: 20px; right: 25px; gap: 12px; }
+            .viniloMusica { width: 60px; height: 60px; }
+            .polaroid-wrapper { width: 240px; }
             .contenedor-foto { width: 216px; height: 245px; }
             .envelope-svg { width: 78px; height: 58px; }
             .btn-carta-envelope { bottom: 30px; right: 30px; }
@@ -473,6 +554,8 @@
 
 <div class="top-controls">
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
+    <button id="btnAmbiente" class="btn-control" onclick="cambiarAmbiente()">🌌 Fondo: Noche</button>
+    <button class="btn-control" onclick="lanzarFuegosPétalos()">🪄 Magia ✨</button>
     <div id="viniloMusica" onclick="toggleMusica()" title="Pausar/Reproducir Música">
         <div id="labelMusica">REPRODUCIENDO</div>
     </div>
@@ -492,7 +575,7 @@
 
 <div class="galeria-caja">
     <div class="riel-desplazamiento" id="riel-fotos">
-        <!-- Fotos dinámicas con sus arcos de cuerda y luces integrados -->
+        <!-- Fotos dinámicas -->
     </div>
 </div>
 
@@ -534,12 +617,62 @@ const LISTA_DE_FRASES = [
     "Amor del bueno, del que hace bien al alma. 💘"
 ];
 
+const NOTAS_REVERSO = [
+    "Recuerdo exactamente lo feliz que estaba en este momento a tu lado. 🥰✨",
+    "Si pudiera repetir un día, sin duda sería uno como este. 💖",
+    "Tu sonrisa en esta foto es de mis cosas favoritas en todo el universo. 🌙",
+    "Gracias por crear recuerdos tan mágicos conmigo. 🌹",
+    "Cada segundo contigo vale más que mil palabras. 💫",
+    "Amor, complicidad y muchas risas guardadas aquí. 📸❤️"
+];
+
 const REPO_USUARIO = "marce20vazquez-code/galeria-beid";
 const audio = document.getElementById('musicaFondo');
 const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
+
+// SELECTOR DE AMBIENTES
+const ambientes = [
+    { nombre: 'Noche', bg: 'radial-gradient(circle at center, #1b003a 0%, #080014 100%)' },
+    { nombre: 'Atardecer', bg: 'radial-gradient(circle at center, #4a1235 0%, #150022 100%)' },
+    { nombre: 'Aurora', bg: 'radial-gradient(circle at center, #002b36 0%, #000c18 100%)' }
+];
+let indiceAmbiente = 0;
+
+function cambiarAmbiente() {
+    indiceAmbiente = (indiceAmbiente + 1) % ambientes.length;
+    const amb = ambientes[indiceAmbiente];
+    document.body.style.background = amb.bg;
+    document.getElementById('btnAmbiente').innerText = `🌌 Fondo: ${amb.nombre}`;
+}
+
+// FUEGOS ARTIFICIALES Y PÉTALOS
+function lanzarFuegosPétalos() {
+    const iconos = ['💖', '🌸', '🌹', '✨', '⭐', '💫', '💕', '🎆'];
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 45; i++) {
+        const p = document.createElement('div');
+        p.className = 'particula-fuego';
+        p.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
+        p.style.left = centerX + 'px';
+        p.style.top = centerY + 'px';
+
+        const angulo = Math.random() * Math.PI * 2;
+        const distancia = Math.random() * 320 + 80;
+        const tx = Math.cos(angulo) * distancia + 'px';
+        const ty = Math.sin(angulo) * distancia + 'px';
+
+        p.style.setProperty('--tx', tx);
+        p.style.setProperty('--ty', ty);
+
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1800);
+    }
+}
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -633,6 +766,10 @@ function generarFechaRetro() {
     return `${mes} '${anio}`;
 }
 
+function voltearTarjeta(cardElement) {
+    cardElement.classList.toggle('flipped');
+}
+
 function inicializarGaleria(fotos) {
     if (listaCancionesGlobal.length > 0) {
         const indiceAleatorio = Math.floor(Math.random() * listaCancionesGlobal.length);
@@ -644,6 +781,7 @@ function inicializarGaleria(fotos) {
         let htmlFotos = "";
         fotosTotales.forEach((foto, idx) => {
             const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
+            const notaReverso = NOTAS_REVERSO[idx % NOTAS_REVERSO.length];
             const fechaRetro = generarFechaRetro();
             htmlFotos += `
             <div class="item-cuerda">
@@ -657,19 +795,31 @@ function inicializarGaleria(fotos) {
                     <div class="luz" style="left: calc(59% - 8px); top: 58px;"></div>
                     <div class="luz" style="left: calc(77% - 8px); top: 38px;"></div>
                 </div>
-                <div class="polaroid" onclick="abrirZoom('${foto.cdn}', '${frase}')">
-                    <div class="gancho-madera"></div>
-                    <div class="contenedor-foto">
-                        <div class="loader-corazon">💖</div>
-                        <img src="${foto.cdn}" 
-                             alt="Recuerdo" 
-                             loading="lazy"
-                             referrerpolicy="no-referrer"
-                             onload="this.classList.add('cargada'); if(this.previousElementSibling) this.previousElementSibling.remove();"
-                             onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
-                        <span class="retro-date">${fechaRetro}</span>
+                <div class="polaroid-wrapper">
+                    <div class="polaroid-card" onclick="voltearTarjeta(this)">
+                        <!-- FRENTE POLAROID -->
+                        <div class="polaroid-face polaroid-front">
+                            <div class="gancho-madera"></div>
+                            <div class="contenedor-foto">
+                                <div class="loader-corazon">💖</div>
+                                <img src="${foto.cdn}" 
+                                     alt="Recuerdo" 
+                                     loading="lazy"
+                                     referrerpolicy="no-referrer"
+                                     onload="this.classList.add('cargada'); if(this.previousElementSibling) this.previousElementSibling.remove();"
+                                     onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
+                                <span class="retro-date">${fechaRetro}</span>
+                            </div>
+                            <p class="texto-polaroid">${frase}</p>
+                        </div>
+                        <!-- REVERSO POLAROID -->
+                        <div class="polaroid-face polaroid-back">
+                            <div class="gancho-madera"></div>
+                            <h4 class="titulo-back">Nota Secreta 💌</h4>
+                            <p class="texto-reverso">${notaReverso}</p>
+                            <button class="btn-zoom-back" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">🔍 Ver Zoom</button>
+                        </div>
                     </div>
-                    <p class="texto-polaroid">${frase}</p>
                 </div>
             </div>`;
         });
