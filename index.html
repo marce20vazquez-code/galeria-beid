@@ -514,7 +514,7 @@
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
     <button id="btnAmbiente" class="btn-control" onclick="cambiarAmbiente()">🌌 Fondo: Noche</button>
     <div id="viniloMusica" onclick="toggleMusica()" title="Pausar/Reproducir Música">
-        <div id="labelMusica">REPRODUCIENDO</div>
+        <div id="labelMusica">PAUSADO</div>
     </div>
 </div>
 
@@ -606,6 +606,7 @@ const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
+let usuarioInteractuo = false;
 
 const ambientes = [
     { nombre: 'Noche', bg: '#080014' },
@@ -722,6 +723,10 @@ async function cargarArchivosAutomaticos() {
             }
         }
     } catch (errMusica) {}
+
+    if (listaCancionesGlobal.length > 0 && usuarioInteractuo && (!audio.src || audio.paused)) {
+        reproducirSiguienteCancion();
+    }
 }
 
 function reproducirSiguienteCancion() {
@@ -741,7 +746,9 @@ function reproducirSiguienteCancion() {
     audio.play().then(() => {
         btnMusica.classList.add('playing');
         document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        console.log("Esperando interacción para audio:", err);
+    });
 }
 
 audio.addEventListener('ended', reproducirSiguienteCancion);
@@ -762,11 +769,6 @@ function voltearTarjeta(cardElement, event) {
 }
 
 function inicializarGaleria(fotos) {
-    if (listaCancionesGlobal.length > 0) {
-        const indiceAleatorio = Math.floor(Math.random() * listaCancionesGlobal.length);
-        audio.src = listaCancionesGlobal[indiceAleatorio];
-    }
-
     if (fotos.length > 0) {
         const fotosTotales = [...fotos, ...fotos];
         let htmlFotos = "";
@@ -912,26 +914,30 @@ function activarPantallaCompleta() {
 }
 
 function intentarIniciar() {
+    usuarioInteractuo = true;
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
     setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1000);
 
     activarPantallaCompleta();
 
-    if (audio.src) {
-        audio.play().then(() => {
-            btnMusica.classList.add('playing');
-            document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
-        }).catch(err => {});
+    if (listaCancionesGlobal.length > 0) {
+        reproducirSiguienteCancion();
     }
 }
 
 function toggleMusica() {
+    usuarioInteractuo = true;
     const label = document.getElementById('labelMusica');
     if (audio.paused) {
-        audio.play();
-        btnMusica.classList.add('playing');
-        label.innerText = 'REPRODUCIENDO';
+        if (!audio.src && listaCancionesGlobal.length > 0) {
+            reproducirSiguienteCancion();
+        } else {
+            audio.play().then(() => {
+                btnMusica.classList.add('playing');
+                label.innerText = 'REPRODUCIENDO';
+            }).catch(err => console.log(err));
+        }
     } else {
         audio.pause();
         btnMusica.classList.remove('playing');
