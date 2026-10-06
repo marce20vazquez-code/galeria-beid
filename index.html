@@ -12,7 +12,7 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: radial-gradient(circle at center, #1b003a 0%, #080014 100%);
+            background: #080014;
             font-family: 'Montserrat', sans-serif;
             color: white;
             display: flex;
@@ -20,27 +20,25 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            transition: background 1s ease;
         }
 
         #overlay-inicio {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(8, 0, 20, 0.97);
+            background: rgba(8, 0, 20, 0.98);
             z-index: 99999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            backdrop-filter: blur(20px);
-            transition: opacity 1.2s ease, visibility 1.2s ease;
+            transition: opacity 1s ease, visibility 1s ease;
         }
 
         #overlay-inicio h2 {
             font-size: 2.2rem;
             color: #fff;
-            text-shadow: 0 0 25px #ff007f;
+            text-shadow: 0 0 20px #ff007f;
             margin-bottom: 25px;
             text-align: center;
             padding: 0 30px;
@@ -49,7 +47,6 @@
         #texto-progreso {
             font-size: 1.2rem;
             color: #00ffff;
-            animation: latirPulsar 1.8s infinite alternate;
             text-align: center;
             padding: 0 20px;
         }
@@ -67,14 +64,14 @@
             z-index: 1;
             user-select: none;
             animation: caerBailando linear forwards;
-            will-change: transform, opacity;
+            will-change: transform;
         }
 
         @keyframes caerBailando {
-            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-            15% { opacity: 0.95; }
-            85% { opacity: 0.85; }
-            100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(var(--rot, 360deg)); opacity: 0; }
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(105vh) rotate(180deg); opacity: 0; }
         }
 
         .top-controls {
@@ -90,9 +87,8 @@
         }
 
         .btn-control {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: #ffffff;
             padding: 8px 14px;
             border-radius: 35px;
@@ -100,21 +96,19 @@
             font-size: 0.75rem;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
-            transition: all 0.35s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+            transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        .btn-control:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.5); }
+        .btn-control:hover { transform: scale(1.05); background: rgba(255, 0, 127, 0.6); }
 
         #viniloMusica {
-            width: 48px; height: 48px;
+            width: 46px; height: 46px;
             border-radius: 50%;
             background: #000;
-            border: 2px solid #333;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), 0 0 3px #ccc inset;
+            border: 2px solid #ff007f;
             position: relative;
             cursor: pointer;
-            transition: transform 0.4s ease;
         }
 
         #viniloMusica::before {
@@ -122,13 +116,12 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.2rem;
-            color: #f1f1f1;
-            z-index: 1;
+            font-size: 1.1rem;
+            color: #fff;
         }
 
         #viniloMusica.playing {
-            animation: girarVinilo 2.5s linear infinite;
+            animation: girarVinilo 4s linear infinite;
         }
 
         @keyframes girarVinilo {
@@ -169,30 +162,21 @@
             font-size: 2.5rem;
             font-weight: 900;
             color: #ffffff;
-            text-shadow: 
-                2.5px 2.5px 0 #ff007f, 
-                5px 5px 18px rgba(0, 255, 255, 0.9);
+            text-shadow: 2px 2px 0 #ff007f, 0 0 15px rgba(0, 255, 255, 0.8);
             opacity: 0;
-            transform: translateY(-28px) scale(0.6);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            animation: flotarLatir 3.8s ease-in-out infinite alternate;
+            transform: translateY(-20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .letra-3d.visible { opacity: 1; transform: translateY(0) scale(1); }
-        .letra-3d.desaparecer { opacity: 0; transform: translateY(28px) scale(0.8); transition: opacity 0.8s ease, transform 0.8s ease; }
-
-        @keyframes flotarLatir {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-8px) scale(1.06); }
-        }
+        .letra-3d.visible { opacity: 1; transform: translateY(0); }
+        .letra-3d.desaparecer { opacity: 0; transform: translateY(20px); }
 
         .galeria-caja {
             width: 100%;
             overflow: hidden;
             position: relative;
             padding: 10px 0 20px 0;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.02);
             z-index: 2;
         }
 
@@ -201,12 +185,15 @@
             width: max-content;
             position: relative;
             z-index: 3;
-            animation: desplazar 180s linear infinite; /* AJUSTA AQUÍ LA VELOCIDAD: 180s es más rápido que 1200s */
+            animation: desplazar 1200s linear infinite; /* Movimiento súper pausado */
             will-change: transform;
-            transform: translate3d(0,0,0);
+            transform: translate3d(0, 0, 0);
         }
 
-        @keyframes desplazar { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+        @keyframes desplazar { 
+            0% { transform: translate3d(0, 0, 0); } 
+            100% { transform: translate3d(-50%, 0, 0); } 
+        }
 
         .item-cuerda { 
             position: relative;
@@ -222,7 +209,6 @@
             width: 100%;
             height: 90px;
             z-index: 1;
-            filter: drop-shadow(0px 5px 6px rgba(0,0,0,0.7));
         }
 
         .luces-tramo {
@@ -237,40 +223,17 @@
 
         .luz {
             position: absolute;
-            width: 16px;
-            height: 22px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: parpadeoLuz 1.3s infinite alternate;
+            width: 14px;
+            height: 20px;
+            border-radius: 50%;
+            opacity: 0.8;
         }
 
-        .luz::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: 4px;
-            width: 8px;
-            height: 4px;
-            background: #222;
-            border-radius: 1px;
-        }
-
-        .luz-amarilla-union {
-            left: -8px;
-            top: 5px;
-            background: #ffea00 !important;
-            box-shadow: 0 0 18px #ffea00, 0 0 30px #ffea00 !important;
-            z-index: 5;
-        }
-
-        .luz:nth-child(5n+2) { background: #ff0055; box-shadow: 0 0 18px #ff0055, 0 0 30px #ff0055; animation-delay: 0s; }
-        .luz:nth-child(5n+3) { background: #00e5ff; box-shadow: 0 0 18px #00e5ff, 0 0 30px #00e5ff; animation-delay: 0.3s; }
-        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 18px #00ff66, 0 0 30px #00ff66; animation-delay: 0.6s; }
-        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 18px #b000ff, 0 0 30px #b000ff; animation-delay: 0.9s; }
-
-        @keyframes parpadeoLuz {
-            0% { opacity: 0.4; filter: brightness(0.7); transform: scale(0.85); }
-            100% { opacity: 1; filter: brightness(1.6); transform: scale(1.18); }
-        }
+        .luz-amarilla-union { left: -7px; top: 5px; background: #ffea00; box-shadow: 0 0 8px #ffea00; }
+        .luz:nth-child(5n+2) { background: #ff0055; box-shadow: 0 0 8px #ff0055; }
+        .luz:nth-child(5n+3) { background: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
+        .luz:nth-child(5n+4) { background: #00ff66; box-shadow: 0 0 8px #00ff66; }
+        .luz:nth-child(5n+5) { background: #b000ff; box-shadow: 0 0 8px #b000ff; }
 
         .polaroid-wrapper {
             position: absolute;
@@ -288,9 +251,8 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-origin: 20px 0;
-            animation: balanceoFoto 3.5s ease-in-out infinite alternate;
             will-change: transform;
+            transform: translate3d(0, 0, 0);
         }
 
         .polaroid-card.flipped { transform: rotateY(180deg); }
@@ -303,8 +265,8 @@
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             background: #ffffff;
-            padding: 14px 14px 16px 14px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75);
+            padding: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
             border-radius: 6px;
             display: flex;
             flex-direction: column;
@@ -317,20 +279,18 @@
             border: 3px dashed #ff007f;
             color: #222;
             text-align: center;
-            padding: 22px 18px;
+            padding: 20px 15px;
             cursor: pointer;
         }
 
         .polaroid-face::before {
             content: '';
             position: absolute;
-            top: -12px;
+            top: -10px;
             left: 18px;
             width: 65px;
-            height: 18px;
-            background: rgba(255, 128, 192, 0.35);
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 16px;
+            background: rgba(255, 128, 192, 0.4);
             border-radius: 2px;
             z-index: 10;
             transform: rotate(-10deg);
@@ -342,23 +302,10 @@
             left: 16px;
             width: 10px;
             height: 22px;
-            background: linear-gradient(135deg, #d2a679, #8c5a2b);
+            background: #8c5a2b;
             border-radius: 2px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.6);
             z-index: 11;
         }
-
-        .gancho-madera::after {
-            content: '⭐';
-            position: absolute;
-            bottom: -7px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 7px;
-            color: #ffd700;
-            text-shadow: 0 0 4px #ffd700;
-        }
-
-        @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
         .contenedor-foto {
             position: relative;
@@ -374,13 +321,11 @@
         }
 
         .contenedor-foto img { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
+            width: 100%; 
+            height: 100%; 
             object-fit: contain !important; 
             border-radius: 3px; 
             display: block; 
-            opacity: 1; 
         }
 
         .retro-date {
@@ -389,7 +334,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 0.85rem;
             color: #ff9900;
-            text-shadow: 0 0 5px #ff9900;
+            text-shadow: 0 0 4px #ff9900;
             z-index: 10;
         }
 
@@ -402,28 +347,28 @@
         }
 
         .texto-polaroid {
-            font-family: 'Caveat', cursive; font-size: 1.4rem;
+            font-family: 'Caveat', cursive; 
+            font-size: 1.35rem;
             color: #1a1a1a;
-            text-align: left; font-weight: 600; line-height: 1.15; 
+            text-align: left; 
+            font-weight: 600; 
+            line-height: 1.15; 
             cursor: pointer;
             flex: 1;
         }
 
         .btn-flip-icon {
             background: rgba(255, 0, 127, 0.15);
-            border: 1px solid rgba(255, 0, 127, 0.5);
+            border: 1px solid rgba(255, 0, 127, 0.6);
             color: #ff007f;
             border-radius: 12px;
-            padding: 4px 8px;
+            padding: 5px 9px;
             font-size: 0.85rem;
             font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
-            transition: transform 0.2s ease, background 0.2s ease;
             z-index: 20;
         }
-
-        .btn-flip-icon:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.3); }
 
         .titulo-back {
             font-family: 'Caveat', cursive;
@@ -453,7 +398,6 @@
             margin-bottom: 15px;
             font-size: 1.1rem;
             font-weight: 800;
-            text-shadow: 0 0 18px rgba(0, 255, 255, 0.9);
             z-index: 2;
             padding: 0 65px 0 15px;
             width: 100%;
@@ -465,99 +409,64 @@
             right: 12px;
             z-index: 1000;
             cursor: pointer;
-            transition: transform 0.3s ease;
         }
-
-        .btn-carta-envelope:hover { transform: scale(1.1); }
 
         .envelope-svg {
-            width: 50px;
-            height: 38px;
-            filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.7));
-            animation: envelopeFlotarPulsar 2.5s infinite;
-        }
-
-        @keyframes envelopeFlotarPulsar {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
-            50% { transform: translateY(-6px) rotate(-3deg); opacity: 1; }
+            width: 48px;
+            height: 36px;
         }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(18px);
+            background: rgba(0, 0, 0, 0.92);
             z-index: 100000; display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s ease;
-            padding: 25px;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
         }
 
         .modal-overlay.activo { opacity: 1; visibility: visible; }
 
         .btn-cerrar-modal {
-            position: absolute; top: 20px; right: 25px;
+            position: absolute; top: 15px; right: 20px;
             background: none; border: none; font-size: 2.2rem; color: #ff007f;
             cursor: pointer; font-weight: bold; z-index: 100001;
         }
 
         .contenido-zoom {
-            background: rgba(20, 5, 35, 0.97);
-            border: 2px solid rgba(255, 0, 127, 0.6);
-            border-radius: 22px; padding: 30px; max-width: 90vw; max-height: 85vh;
+            background: #140523;
+            border: 2px solid #ff007f;
+            border-radius: 18px; padding: 25px; max-width: 90vw; max-height: 85vh;
             display: flex; flex-direction: column; align-items: center; position: relative;
-            box-shadow: 0 0 45px rgba(255, 0, 127, 0.5);
         }
 
         .contenido-zoom img {
             max-width: 80vw; max-height: 60vh; object-fit: contain;
-            border-radius: 12px; border: 3px solid #fff;
+            border-radius: 8px; border: 2px solid #fff;
         }
 
         .contenido-zoom p {
             font-family: 'Caveat', cursive; font-size: 1.8rem; color: #ffd700;
-            margin-top: 20px; margin-bottom: 0; text-align: center;
+            margin-top: 15px; text-align: center;
         }
 
         .contenido-carta {
-            background: #fff; color: #2b1020; max-width: 550px; width: 100%;
-            max-height: 78vh; overflow-y: auto; border-radius: 20px; padding: 40px 35px;
-            position: relative; box-shadow: 0 0 45px rgba(255, 0, 127, 0.7);
-            border: 3px solid #ff007f; text-align: center;
+            background: #fff; color: #2b1020; max-width: 520px; width: 100%;
+            max-height: 78vh; overflow-y: auto; border-radius: 18px; padding: 30px 25px;
+            position: relative; border: 3px solid #ff007f; text-align: center;
         }
 
-        .contenido-carta h3 { font-family: 'Caveat', cursive; font-size: 2.8rem; color: #d10068; margin-bottom: 12px; }
-        .contenido-carta p { font-family: 'Caveat', cursive; font-size: 1.5rem; line-height: 1.7; color: #333; text-align: justify; white-space: pre-line; }
-
-        .destello-magico {
-            position: fixed; pointer-events: none; z-index: 9999;
-            font-size: 1.4rem; animation: desvanecerTrail 0.9s ease-out forwards;
-        }
-
-        .particula-fuego {
-            position: fixed;
-            pointer-events: none;
-            z-index: 99999;
-            font-size: 1.6rem;
-            animation: explosionMagica 1.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-        }
-
-        @keyframes explosionMagica {
-            0% { transform: translate(-50%, -50%) scale(0.3) rotate(0deg); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.4) rotate(360deg); opacity: 0; }
-        }
-
-        @keyframes desvanecerTrail {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-            100% { transform: translate(-50%, -85px) scale(0.2) rotate(45deg); opacity: 0; }
-        }
+        .contenido-carta h3 { font-family: 'Caveat', cursive; font-size: 2.6rem; color: #d10068; margin-bottom: 10px; }
+        .contenido-carta p { font-family: 'Caveat', cursive; font-size: 1.45rem; line-height: 1.6; color: #333; text-align: justify; white-space: pre-line; }
 
         @media (min-width: 768px) {
             .titulo-3d-container { margin-top: 80px; gap: 6px; }
             .letra-3d { font-size: 3.8rem; }
             .btn-control { font-size: 0.88rem; padding: 10px 20px; }
             .top-controls { top: 20px; right: 25px; gap: 12px; }
-            .viniloMusica { width: 55px; height: 55px; }
-            .envelope-svg { width: 70px; height: 52px; }
+            .viniloMusica { width: 52px; height: 52px; }
+            .envelope-svg { width: 60px; height: 45px; }
             .btn-carta-envelope { bottom: 25px; right: 25px; }
-            .frase-bottom { font-size: 1.5rem; margin-bottom: 25px; padding: 0 80px 0 20px; }
+            .frase-bottom { font-size: 1.4rem; margin-bottom: 25px; padding: 0 80px 0 20px; }
         }
     </style>
 </head>
@@ -575,7 +484,6 @@
     <button id="btnClima" class="btn-control" onclick="cambiarClima()">💖 Clima: Corazones</button>
     <button id="btnFullscreen" class="btn-control" onclick="toggleFullscreen()">⛶ Pantalla Completa</button>
     <button id="btnAmbiente" class="btn-control" onclick="cambiarAmbiente()">🌌 Fondo: Noche</button>
-    <button class="btn-control" onclick="lanzarFuegosPétalos()">🪄 Magia ✨</button>
     <div id="viniloMusica" onclick="toggleMusica()" title="Pausar/Reproducir Música">
         <div id="labelMusica">REPRODUCIENDO</div>
     </div>
@@ -644,10 +552,10 @@ const NOTAS_REVERSO = [
 ];
 
 const MODOS_CLIMA = [
-    { nombre: 'Corazones', iconoBtn: '💖', simbolos: ['💖', '💕', '💗', '🌹', '💓', '💘'] },
-    { nombre: 'Pétalos', iconoBtn: '🌸', simbolos: ['🌸', '🌺', '🍃', '🌸', '🌾'] },
-    { nombre: 'Estrellas', iconoBtn: '✨', simbolos: ['✨', '⭐', '💫', '🌟', '✦'] },
-    { nombre: 'Nieve', iconoBtn: '❄️', simbolos: ['❄️', '❄', '⚪', '✨', '❄️'] }
+    { nombre: 'Corazones', iconoBtn: '💖', simbolos: ['💖', '💕'] },
+    { nombre: 'Pétalos', iconoBtn: '🌸', simbolos: ['🌸', '🍃'] },
+    { nombre: 'Estrellas', iconoBtn: '✨', simbolos: ['✨', '⭐'] },
+    { nombre: 'Nieve', iconoBtn: '❄️', simbolos: ['❄️'] }
 ];
 let indiceClima = 0;
 
@@ -660,9 +568,9 @@ let listaCancionesGlobal = [];
 let fotosListas = false;
 
 const ambientes = [
-    { nombre: 'Noche', bg: 'radial-gradient(circle at center, #1b003a 0%, #080014 100%)' },
-    { nombre: 'Atardecer', bg: 'radial-gradient(circle at center, #4a1235 0%, #150022 100%)' },
-    { nombre: 'Aurora', bg: 'radial-gradient(circle at center, #002b36 0%, #000c18 100%)' }
+    { nombre: 'Noche', bg: '#080014' },
+    { nombre: 'Atardecer', bg: '#230018' },
+    { nombre: 'Aurora', bg: '#001418' }
 ];
 let indiceAmbiente = 0;
 
@@ -681,54 +589,22 @@ function cambiarClima() {
 
 function generarParticulaClima() {
     const contenedor = document.getElementById('contenedor-particulas');
-    if (contenedor.children.length > 15) return;
+    if (contenedor.children.length > 8) return; 
 
     const clima = MODOS_CLIMA[indiceClima];
     const p = document.createElement('div');
     p.className = 'particula-clima';
     p.innerHTML = clima.simbolos[Math.floor(Math.random() * clima.simbolos.length)];
     p.style.left = Math.random() * 100 + 'vw';
+    p.style.fontSize = (Math.random() * 6 + 14) + 'px';
     
-    const tamanio = Math.random() * 10 + 14; 
-    p.style.fontSize = tamanio + 'px';
-    
-    const drift = (Math.random() - 0.5) * 120 + 'px';
-    const rot = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 360 + 180) + 'deg';
-    p.style.setProperty('--drift', drift);
-    p.style.setProperty('--rot', rot);
-    
-    const duracion = Math.random() * 4 + 7;
+    const duracion = Math.random() * 2 + 7;
     p.style.animationDuration = duracion + 's';
     
     contenedor.appendChild(p);
     setTimeout(() => p.remove(), duracion * 1000);
 }
-setInterval(generarParticulaClima, 800);
-
-function lanzarFuegosPétalos() {
-    const iconos = ['💖', '🌸', '🌹', '✨', '⭐', '💫', '💕', '🎆'];
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-
-    for (let i = 0; i < 25; i++) {
-        const p = document.createElement('div');
-        p.className = 'particula-fuego';
-        p.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
-        p.style.left = centerX + 'px';
-        p.style.top = centerY + 'px';
-
-        const angulo = Math.random() * Math.PI * 2;
-        const distancia = Math.random() * 250 + 60;
-        const tx = Math.cos(angulo) * distancia + 'px';
-        const ty = Math.sin(angulo) * distancia + 'px';
-
-        p.style.setProperty('--tx', tx);
-        p.style.setProperty('--ty', ty);
-
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1600);
-    }
-}
+setInterval(generarParticulaClima, 1500);
 
 function iniciarAnimacionTitulo() {
     const container = document.getElementById('titulo3D');
@@ -747,7 +623,7 @@ function iniciarAnimacionTitulo() {
     function ejecutarCiclo() {
         spans.forEach(span => span.classList.remove('visible', 'desaparecer'));
         spans.forEach((span, index) => {
-            setTimeout(() => span.classList.add('visible'), index * 180);
+            setTimeout(() => span.classList.add('visible'), index * 150);
         });
 
         setTimeout(() => {
@@ -755,11 +631,11 @@ function iniciarAnimacionTitulo() {
                 span.classList.remove('visible');
                 span.classList.add('desaparecer');
             });
-        }, 25000);
+        }, 20000);
     }
 
     ejecutarCiclo();
-    setInterval(ejecutarCiclo, 30000);
+    setInterval(ejecutarCiclo, 25000);
 }
 
 async function cargarArchivosAutomaticos() {
@@ -820,7 +696,7 @@ function precargarFotos(fotos) {
             fotosListas = true;
             inicializarGaleria(fotos);
         }
-    }, 15000);
+    }, 15000); // 15 segundos para dar tiempo suficiente sin importar la conexión
 
     fotos.forEach(foto => {
         const img = new Image();
@@ -896,14 +772,14 @@ function inicializarGaleria(fotos) {
             htmlFotos += `
             <div class="item-cuerda">
                 <svg class="cuerda-segmento" viewBox="0 0 380 90" preserveAspectRatio="none">
-                    <path d="M 0,13 Q 190,78 380,13" fill="none" stroke="#d2a679" stroke-width="5" />
+                    <path d="M 0,13 Q 190,78 380,13" fill="none" stroke="#d2a679" stroke-width="4" />
                 </svg>
                 <div class="luces-tramo">
                     <div class="luz luz-amarilla-union"></div>
-                    <div class="luz" style="left: calc(23% - 8px); top: 34px;"></div>
-                    <div class="luz" style="left: calc(41% - 8px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(59% - 8px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(77% - 8px); top: 34px;"></div>
+                    <div class="luz" style="left: calc(23% - 7px); top: 34px;"></div>
+                    <div class="luz" style="left: calc(41% - 7px); top: 52px;"></div>
+                    <div class="luz" style="left: calc(59% - 7px); top: 52px;"></div>
+                    <div class="luz" style="left: calc(77% - 7px); top: 34px;"></div>
                 </div>
                 <div class="polaroid-wrapper">
                     <div class="polaroid-card">
@@ -957,36 +833,10 @@ function cerrarCarta() {
     riel.style.animationPlayState = 'running';
 }
 
-let ultimoDestello = 0;
-function crearDestello(x, y) {
-    const destello = document.createElement('div');
-    destello.className = 'destello-magico';
-    const iconos = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
-    destello.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
-    destello.style.left = x + 'px';
-    destello.style.top = y + 'px';
-    document.body.appendChild(destello);
-    setTimeout(() => destello.remove(), 700);
-}
-
-function manejarRastro(e) {
-    const ahora = Date.now();
-    if (ahora - ultimoDestello > 100) {
-        const x = e.clientX || (e.touches && e.touches[0].clientX);
-        const y = e.clientY || (e.touches && e.touches[0].clientY);
-        if (x && y) {
-            crearDestello(x, y);
-            ultimoDestello = ahora;
-        }
-    }
-}
-window.addEventListener('mousemove', manejarRastro);
-window.addEventListener('touchmove', manejarRastro);
-
 function activarPantallaCompleta() {
     const el = document.documentElement;
     if (el.requestFullscreen) {
-        el.requestFullscreen().catch(err => console.log(err));
+        el.requestFullscreen().catch(err => {});
     } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
     } else if (el.msRequestFullscreen) {
@@ -999,7 +849,7 @@ function intentarIniciar() {
 
     const overlay = document.getElementById('overlay-inicio');
     overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1200);
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1000);
 
     activarPantallaCompleta();
 
@@ -1007,7 +857,7 @@ function intentarIniciar() {
         audio.play().then(() => {
             btnMusica.classList.add('playing');
             document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
-        }).catch(err => console.log("Autoplay prevenido", err));
+        }).catch(err => {});
     }
 }
 
