@@ -67,6 +67,7 @@
             z-index: 1;
             user-select: none;
             animation: caerBailando linear forwards;
+            will-change: transform, opacity;
         }
 
         @keyframes caerBailando {
@@ -200,7 +201,8 @@
             width: max-content;
             position: relative;
             z-index: 3;
-            animation: desplazar 180s linear infinite;
+            animation: desplazar 320s linear infinite;
+            will-change: transform;
         }
 
         @keyframes desplazar { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -286,7 +288,7 @@
             transform-style: preserve-3d;
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-origin: 20px 0;
-            animation: balanceoFoto 3.5s ease-in-out infinite alternate, resplandorNeónDinámico 6s ease infinite alternate;
+            animation: balanceoFoto 3.5s ease-in-out infinite alternate;
         }
 
         .polaroid-card.flipped { transform: rotateY(180deg); }
@@ -297,6 +299,7 @@
             width: 260px;
             height: 100%;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             background: #ffffff;
             padding: 14px 14px 16px 14px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75);
@@ -354,12 +357,6 @@
         }
 
         @keyframes balanceoFoto { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
-
-        @keyframes resplandorNeónDinámico {
-            0% { box-shadow: 0 0 22px rgba(0, 255, 255, 0.5), 0 0 2px #fff inset; }
-            50% { box-shadow: 0 0 22px rgba(255, 0, 127, 0.5), 0 0 2px #fff inset; }
-            100% { box-shadow: 0 0 22px rgba(0, 255, 255, 0.5), 0 0 2px #fff inset; }
-        }
 
         .contenedor-foto {
             position: relative;
@@ -421,6 +418,7 @@
             cursor: pointer;
             white-space: nowrap;
             transition: transform 0.2s ease, background 0.2s ease;
+            z-index: 20;
         }
 
         .btn-flip-icon:hover { transform: scale(1.08); background: rgba(255, 0, 127, 0.3); }
@@ -681,36 +679,36 @@ function cambiarClima() {
 
 function generarParticulaClima() {
     const contenedor = document.getElementById('contenedor-particulas');
+    if (contenedor.children.length > 20) return;
+
     const clima = MODOS_CLIMA[indiceClima];
-    
     const p = document.createElement('div');
     p.className = 'particula-clima';
     p.innerHTML = clima.simbolos[Math.floor(Math.random() * clima.simbolos.length)];
-    
     p.style.left = Math.random() * 100 + 'vw';
     
-    const tamanio = Math.random() * 12 + 14; 
+    const tamanio = Math.random() * 10 + 14; 
     p.style.fontSize = tamanio + 'px';
     
-    const drift = (Math.random() - 0.5) * 160 + 'px';
+    const drift = (Math.random() - 0.5) * 120 + 'px';
     const rot = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 360 + 180) + 'deg';
     p.style.setProperty('--drift', drift);
     p.style.setProperty('--rot', rot);
     
-    const duracion = Math.random() * 5 + 6;
+    const duracion = Math.random() * 4 + 7;
     p.style.animationDuration = duracion + 's';
     
     contenedor.appendChild(p);
     setTimeout(() => p.remove(), duracion * 1000);
 }
-setInterval(generarParticulaClima, 450);
+setInterval(generarParticulaClima, 800);
 
 function lanzarFuegosPétalos() {
     const iconos = ['💖', '🌸', '🌹', '✨', '⭐', '💫', '💕', '🎆'];
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    for (let i = 0; i < 45; i++) {
+    for (let i = 0; i < 25; i++) {
         const p = document.createElement('div');
         p.className = 'particula-fuego';
         p.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
@@ -718,7 +716,7 @@ function lanzarFuegosPétalos() {
         p.style.top = centerY + 'px';
 
         const angulo = Math.random() * Math.PI * 2;
-        const distancia = Math.random() * 320 + 80;
+        const distancia = Math.random() * 250 + 60;
         const tx = Math.cos(angulo) * distancia + 'px';
         const ty = Math.sin(angulo) * distancia + 'px';
 
@@ -726,7 +724,7 @@ function lanzarFuegosPétalos() {
         p.style.setProperty('--ty', ty);
 
         document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1800);
+        setTimeout(() => p.remove(), 1600);
     }
 }
 
@@ -855,172 +853,14 @@ function generarFechaRetro() {
     return `${mes} '${anio}`;
 }
 
-function voltearTarjeta(cardElement, e) {
-    if (e) e.stopPropagation();
+function voltearTarjeta(cardElement, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     cardElement.classList.toggle('flipped');
 }
 
 function inicializarGaleria(fotos) {
     if (listaCancionesGlobal.length > 0) {
-        const indiceAleatorio = Math.floor(Math.random() * listaCancionesGlobal.length);
-        audio.src = listaCancionesGlobal[indiceAleatorio];
-    }
-
-    if (fotos.length > 0) {
-        const fotosTotales = [...fotos, ...fotos];
-        let htmlFotos = "";
-        fotosTotales.forEach((foto, idx) => {
-            const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
-            const notaReverso = NOTAS_REVERSO[idx % NOTAS_REVERSO.length];
-            const fechaRetro = generarFechaRetro();
-            htmlFotos += `
-            <div class="item-cuerda">
-                <svg class="cuerda-segmento" viewBox="0 0 380 90" preserveAspectRatio="none">
-                    <path d="M 0,13 Q 190,78 380,13" fill="none" stroke="#d2a679" stroke-width="5" />
-                </svg>
-                <div class="luces-tramo">
-                    <div class="luz luz-amarilla-union"></div>
-                    <div class="luz" style="left: calc(23% - 8px); top: 34px;"></div>
-                    <div class="luz" style="left: calc(41% - 8px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(59% - 8px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(77% - 8px); top: 34px;"></div>
-                </div>
-                <div class="polaroid-wrapper">
-                    <div class="polaroid-card">
-                        <div class="polaroid-face polaroid-front">
-                            <div class="gancho-madera"></div>
-                            <div class="contenedor-foto" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">
-                                <img src="${foto.cdn}" 
-                                     alt="Recuerdo" 
-                                     referrerpolicy="no-referrer"
-                                     onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
-                                <span class="retro-date">${fechaRetro}</span>
-                            </div>
-                            <div class="pie-card">
-                                <p class="texto-polaroid" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">${frase}</p>
-                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">🔄 Nota</button>
-                            </div>
-                        </div>
-                        <div class="polaroid-face polaroid-back" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">
-                            <div class="gancho-madera"></div>
-                            <h4 class="titulo-back">Nota Secreta 💌</h4>
-                            <p class="texto-reverso">${notaReverso}</p>
-                            <span class="pista-voltear">✨ Toca para regresar</span>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        });
-        riel.innerHTML = htmlFotos;
-    }
-}
-
-function abrirZoom(urlSrc, fraseTexto) {
-    riel.style.animationPlayState = 'paused';
-    document.getElementById('imgZoom').src = urlSrc;
-    document.getElementById('textoZoom').innerText = fraseTexto;
-    document.getElementById('modalZoom').classList.add('activo');
-}
-
-function cerrarZoom() {
-    document.getElementById('modalZoom').classList.remove('activo');
-    riel.style.animationPlayState = 'running';
-}
-
-function abrirCarta() {
-    riel.style.animationPlayState = 'paused';
-    document.getElementById('modalCarta').classList.add('activo');
-}
-
-function cerrarCarta() {
-    document.getElementById('modalCarta').classList.remove('activo');
-    riel.style.animationPlayState = 'running';
-}
-
-let ultimoDestello = 0;
-function crearDestello(x, y) {
-    const destello = document.createElement('div');
-    destello.className = 'destello-magico';
-    const iconos = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
-    destello.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
-    destello.style.left = x + 'px';
-    destello.style.top = y + 'px';
-    document.body.appendChild(destello);
-    setTimeout(() => destello.remove(), 900);
-}
-
-function manejarRastro(e) {
-    const ahora = Date.now();
-    if (ahora - ultimoDestello > 50) {
-        const x = e.clientX || (e.touches && e.touches[0].clientX);
-        const y = e.clientY || (e.touches && e.touches[0].clientY);
-        if (x && y) {
-            crearDestello(x, y);
-            ultimoDestello = ahora;
-        }
-    }
-}
-window.addEventListener('mousemove', manejarRastro);
-window.addEventListener('touchmove', manejarRastro);
-
-function activarPantallaCompleta() {
-    const el = document.documentElement;
-    if (el.requestFullscreen) {
-        el.requestFullscreen().catch(err => console.log(err));
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-    } else if (el.msRequestFullscreen) {
-        el.msRequestFullscreen();
-    }
-}
-
-function intentarIniciar() {
-    if (!fotosListas) return;
-
-    const overlay = document.getElementById('overlay-inicio');
-    overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1200);
-
-    activarPantallaCompleta();
-
-    if (audio.src) {
-        audio.play().then(() => {
-            btnMusica.classList.add('playing');
-            document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
-        }).catch(err => console.log("Autoplay prevenido", err));
-    }
-}
-
-function toggleMusica() {
-    const label = document.getElementById('labelMusica');
-    if (audio.paused) {
-        audio.play();
-        btnMusica.classList.add('playing');
-        label.innerText = 'REPRODUCIENDO';
-    } else {
-        audio.pause();
-        btnMusica.classList.remove('playing');
-        label.innerText = 'PAUSADO';
-    }
-}
-
-function toggleFullscreen() {
-    const esFull = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-    if (!esFull) {
-        activarPantallaCompleta();
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-    }
-}
-
-iniciarAnimacionTitulo();
-cargarArchivosAutomaticos();
-</script>
-</body>
-</html>
+        const indiceAleatorio = Math.floor(Math.random() * listaCanc
