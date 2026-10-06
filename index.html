@@ -458,7 +458,6 @@
         .contenido-carta h3 { font-family: 'Caveat', cursive; font-size: 2.6rem; color: #d10068; margin-bottom: 10px; }
         .contenido-carta p { font-family: 'Caveat', cursive; font-size: 1.45rem; line-height: 1.6; color: #333; text-align: justify; white-space: pre-line; }
 
-        /* Estilos para el Modal de Deseos 🌠 */
         .contenido-deseos {
             background: #12002b;
             color: #fff;
@@ -581,7 +580,7 @@
 
 <div id="overlay-inicio" onclick="intentarIniciar()">
     <h2>Nuestra Galería de Recuerdos 💖</h2>
-    <p id="texto-progreso">Cargando fotos... 0%</p>
+    <p id="texto-progreso">✨ Toca la pantalla para entrar ✨</p>
 </div>
 
 <div id="contenedor-particulas"></div>
@@ -638,7 +637,6 @@ Con todo mi amor, siempre. 💖✨
     </div>
 </div>
 
-<!-- Modal Pide un Deseo 🌠 -->
 <div class="modal-overlay" id="modalDeseos" onclick="cerrarDeseos()">
     <div class="contenido-deseos" onclick="event.stopPropagation()">
         <button class="btn-cerrar-modal" onclick="cerrarDeseos()">✕</button>
@@ -686,7 +684,6 @@ const btnMusica = document.getElementById('viniloMusica');
 const riel = document.getElementById('riel-fotos');
 
 let listaCancionesGlobal = [];
-let fotosListas = false;
 
 const ambientes = [
     { nombre: 'Noche', bg: '#080014' },
@@ -761,48 +758,42 @@ function iniciarAnimacionTitulo() {
 
 async function cargarArchivosAutomaticos() {
     const textoProgreso = document.getElementById('texto-progreso');
+    
+    // Timeout de seguridad: Si la API de GitHub tarda más de 4 segundos, omite la espera
+    const timeoutApi = setTimeout(() => {
+        textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
+    }, 4000);
+
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
-        
-        if (!resFotos.ok) {
-            throw new Error(`Error en API fotos: ${resFotos.status}`);
-        }
+        clearTimeout(timeoutApi);
 
-        const dataFotos = await resFotos.json();
-        
-        let fotos = [];
-        if (Array.isArray(dataFotos)) {
-            fotos = dataFotos
-                .filter(f => f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
-                .map(f => ({
-                    nombre: f.name,
-                    cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
-                    github: f.download_url
-                }));
-        }
-
-        try {
-            const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
-            if (resMusica.ok) {
-                const dataMusica = await resMusica.json();
-                if (Array.isArray(dataMusica)) {
-                    listaCancionesGlobal = dataMusica
-                        .filter(f => f.name && f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
-                        .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
-                }
+        if (resFotos.ok) {
+            const dataFotos = await resFotos.json();
+            if (Array.isArray(dataFotos)) {
+                const fotos = dataFotos
+                    .filter(f => f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
+                    .map(f => ({
+                        nombre: f.name,
+                        cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
+                        github: f.download_url
+                    }));
+                if (fotos.length > 0) precargarFotos(fotos);
             }
-        } catch (errMusica) {}
-
-        if (fotos.length > 0) {
-            precargarFotos(fotos);
-        } else {
-            textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
-            fotosListas = true;
         }
 
+        const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
+        if (resMusica.ok) {
+            const dataMusica = await resMusica.json();
+            if (Array.isArray(dataMusica)) {
+                listaCancionesGlobal = dataMusica
+                    .filter(f => f.name && f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
+                    .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
+            }
+        }
     } catch (e) {
+        clearTimeout(timeoutApi);
         textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
-        fotosListas = true;
     }
 }
 
@@ -810,14 +801,6 @@ function precargarFotos(fotos) {
     let cargadas = 0;
     const total = fotos.length;
     const textoProgreso = document.getElementById('texto-progreso');
-
-    const timeoutSeguridad = setTimeout(() => {
-        if (!fotosListas) {
-            textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
-            fotosListas = true;
-            inicializarGaleria(fotos);
-        }
-    }, 15000);
 
     fotos.forEach(foto => {
         const img = new Image();
@@ -827,13 +810,10 @@ function precargarFotos(fotos) {
             textoProgreso.innerText = `Cargando fotos... ${porcentaje}%`;
 
             if (cargadas === total) {
-                clearTimeout(timeoutSeguridad);
                 textoProgreso.innerText = "✨ ¡Todo listo! Toca la pantalla para entrar ✨";
-                fotosListas = true;
                 inicializarGaleria(fotos);
             }
         };
-
         img.onload = alCargarOError;
         img.onerror = alCargarOError;
         img.src = foto.cdn;
@@ -896,28 +876,4 @@ function inicializarGaleria(fotos) {
                     <path d="M 0,13 Q 190,78 380,13" fill="none" stroke="#d2a679" stroke-width="4" />
                 </svg>
                 <div class="luces-tramo">
-                    <div class="luz luz-amarilla-union"></div>
-                    <div class="luz" style="left: calc(23% - 7px); top: 34px;"></div>
-                    <div class="luz" style="left: calc(41% - 7px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(59% - 7px); top: 52px;"></div>
-                    <div class="luz" style="left: calc(77% - 7px); top: 34px;"></div>
-                </div>
-                <div class="polaroid-wrapper">
-                    <div class="polaroid-card">
-                        <div class="polaroid-face polaroid-front">
-                            <div class="gancho-madera"></div>
-                            <div class="contenedor-foto" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">
-                                <img src="${foto.cdn}" 
-                                     alt="Recuerdo" 
-                                     referrerpolicy="no-referrer"
-                                     onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
-                                <span class="retro-date">${fechaRetro}</span>
-                            </div>
-                            <div class="pie-card">
-                                <p class="texto-polaroid" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">${frase}</p>
-                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">🔄 Nota</button>
-                            </div>
-                        </div>
-                        <div class="polaroid-face polaroid-back" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">
-                            <div class="gancho-madera"></div>
-                            <h4 class="
+                    <div class="luz luz
