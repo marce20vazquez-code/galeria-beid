@@ -761,14 +761,20 @@ function iniciarAnimacionTitulo() {
 }
 
 async function cargarArchivosAutomaticos() {
+    const textoProgreso = document.getElementById('texto-progreso');
     try {
         const resFotos = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/fotos`);
+        
+        if (!resFotos.ok) {
+            throw new Error(`Error en API fotos: ${resFotos.status}`);
+        }
+
         const dataFotos = await resFotos.json();
         
         let fotos = [];
         if (Array.isArray(dataFotos)) {
             fotos = dataFotos
-                .filter(f => f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
+                .filter(f => f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i))
                 .map(f => ({
                     nombre: f.name,
                     cdn: `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/fotos/${encodeURIComponent(f.name)}`,
@@ -776,25 +782,30 @@ async function cargarArchivosAutomaticos() {
                 }));
         }
 
-        const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
-        const dataMusica = await resMusica.json();
-        
-        if (Array.isArray(dataMusica)) {
-            listaCancionesGlobal = dataMusica
-                .filter(f => f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
-                .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
+        try {
+            const resMusica = await fetch(`https://api.github.com/repos/${REPO_USUARIO}/contents/musica`);
+            if (resMusica.ok) {
+                const dataMusica = await resMusica.json();
+                if (Array.isArray(dataMusica)) {
+                    listaCancionesGlobal = dataMusica
+                        .filter(f => f.name && f.name.match(/\.(mp3|wav|ogg|m4a)$/i))
+                        .map(f => `https://cdn.jsdelivr.net/gh/${REPO_USUARIO}@main/musica/${encodeURIComponent(f.name)}`);
+                }
+            }
+        } catch (errMusica) {
+            console.log("No se pudo obtener la carpeta musica:", errMusica);
         }
 
         if (fotos.length > 0) {
             precargarFotos(fotos);
         } else {
-            document.getElementById('texto-progreso').innerText = "✨ Toca la pantalla para entrar ✨";
+            textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
             fotosListas = true;
         }
 
     } catch (e) {
-        console.error("Error cargando archivos de GitHub", e);
-        document.getElementById('texto-progreso').innerText = "✨ Toca la pantalla para entrar ✨";
+        console.error("Error cargando archivos de GitHub:", e);
+        textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
         fotosListas = true;
     }
 }
@@ -804,6 +815,14 @@ function precargarFotos(fotos) {
     const total = fotos.length;
     const textoProgreso = document.getElementById('texto-progreso');
 
+    const timeoutSeguridad = setTimeout(() => {
+        if (!fotosListas) {
+            textoProgreso.innerText = "✨ Toca la pantalla para entrar ✨";
+            fotosListas = true;
+            inicializarGaleria(fotos);
+        }
+    }, 6000);
+
     fotos.forEach(foto => {
         const img = new Image();
         const alCargarOError = () => {
@@ -812,6 +831,7 @@ function precargarFotos(fotos) {
             textoProgreso.innerText = `Cargando fotos... ${porcentaje}%`;
 
             if (cargadas === total) {
+                clearTimeout(timeoutSeguridad);
                 textoProgreso.innerText = "✨ ¡Todo listo! Toca la pantalla para entrar ✨";
                 fotosListas = true;
                 inicializarGaleria(fotos);
@@ -863,4 +883,165 @@ function voltearTarjeta(cardElement, event) {
 
 function inicializarGaleria(fotos) {
     if (listaCancionesGlobal.length > 0) {
-        const indiceAleatorio = Math.floor(Math.random() * listaCanc
+        const indiceAleatorio = Math.floor(Math.random() * listaCancionesGlobal.length);
+        audio.src = listaCancionesGlobal[indiceAleatorio];
+    }
+
+    if (fotos.length > 0) {
+        const fotosTotales = [...fotos, ...fotos];
+        let htmlFotos = "";
+        fotosTotales.forEach((foto, idx) => {
+            const frase = LISTA_DE_FRASES[idx % LISTA_DE_FRASES.length];
+            const notaReverso = NOTAS_REVERSO[idx % NOTAS_REVERSO.length];
+            const fechaRetro = generarFechaRetro();
+            htmlFotos += `
+            <div class="item-cuerda">
+                <svg class="cuerda-segmento" viewBox="0 0 380 90" preserveAspectRatio="none">
+                    <path d="M 0,13 Q 190,78 380,13" fill="none" stroke="#d2a679" stroke-width="5" />
+                </svg>
+                <div class="luces-tramo">
+                    <div class="luz luz-amarilla-union"></div>
+                    <div class="luz" style="left: calc(23% - 8px); top: 34px;"></div>
+                    <div class="luz" style="left: calc(41% - 8px); top: 52px;"></div>
+                    <div class="luz" style="left: calc(59% - 8px); top: 52px;"></div>
+                    <div class="luz" style="left: calc(77% - 8px); top: 34px;"></div>
+                </div>
+                <div class="polaroid-wrapper">
+                    <div class="polaroid-card">
+                        <div class="polaroid-face polaroid-front">
+                            <div class="gancho-madera"></div>
+                            <div class="contenedor-foto" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">
+                                <img src="${foto.cdn}" 
+                                     alt="Recuerdo" 
+                                     referrerpolicy="no-referrer"
+                                     onerror="if(!this.dataset.fallback){this.dataset.fallback='1'; this.src='${foto.github}';}" />
+                                <span class="retro-date">${fechaRetro}</span>
+                            </div>
+                            <div class="pie-card">
+                                <p class="texto-polaroid" onclick="event.stopPropagation(); abrirZoom('${foto.cdn}', '${frase}')">${frase}</p>
+                                <button class="btn-flip-icon" title="Ver nota secreta" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">🔄 Nota</button>
+                            </div>
+                        </div>
+                        <div class="polaroid-face polaroid-back" onclick="voltearTarjeta(this.closest('.polaroid-card'), event)">
+                            <div class="gancho-madera"></div>
+                            <h4 class="titulo-back">Nota Secreta 💌</h4>
+                            <p class="texto-reverso">${notaReverso}</p>
+                            <span class="pista-voltear">✨ Toca para regresar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        riel.innerHTML = htmlFotos;
+    }
+}
+
+function abrirZoom(urlSrc, fraseTexto) {
+    riel.style.animationPlayState = 'paused';
+    document.getElementById('imgZoom').src = urlSrc;
+    document.getElementById('textoZoom').innerText = fraseTexto;
+    document.getElementById('modalZoom').classList.add('activo');
+}
+
+function cerrarZoom() {
+    document.getElementById('modalZoom').classList.remove('activo');
+    riel.style.animationPlayState = 'running';
+}
+
+function abrirCarta() {
+    riel.style.animationPlayState = 'paused';
+    document.getElementById('modalCarta').classList.add('activo');
+}
+
+function cerrarCarta() {
+    document.getElementById('modalCarta').classList.remove('activo');
+    riel.style.animationPlayState = 'running';
+}
+
+let ultimoDestello = 0;
+function crearDestello(x, y) {
+    const destello = document.createElement('div');
+    destello.className = 'destello-magico';
+    const iconos = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
+    destello.innerHTML = iconos[Math.floor(Math.random() * iconos.length)];
+    destello.style.left = x + 'px';
+    destello.style.top = y + 'px';
+    document.body.appendChild(destello);
+    setTimeout(() => destello.remove(), 700);
+}
+
+function manejarRastro(e) {
+    const ahora = Date.now();
+    if (ahora - ultimoDestello > 100) {
+        const x = e.clientX || (e.touches && e.touches[0].clientX);
+        const y = e.clientY || (e.touches && e.touches[0].clientY);
+        if (x && y) {
+            crearDestello(x, y);
+            ultimoDestello = ahora;
+        }
+    }
+}
+window.addEventListener('mousemove', manejarRastro);
+window.addEventListener('touchmove', manejarRastro);
+
+function activarPantallaCompleta() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(err => console.log(err));
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+    }
+}
+
+function intentarIniciar() {
+    if (!fotosListas) return;
+
+    const overlay = document.getElementById('overlay-inicio');
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.visibility = 'hidden'; }, 1200);
+
+    activarPantallaCompleta();
+
+    if (audio.src) {
+        audio.play().then(() => {
+            btnMusica.classList.add('playing');
+            document.getElementById('labelMusica').innerText = 'REPRODUCIENDO';
+        }).catch(err => console.log("Autoplay prevenido", err));
+    }
+}
+
+function toggleMusica() {
+    const label = document.getElementById('labelMusica');
+    if (audio.paused) {
+        audio.play();
+        btnMusica.classList.add('playing');
+        label.innerText = 'REPRODUCIENDO';
+    } else {
+        audio.pause();
+        btnMusica.classList.remove('playing');
+        label.innerText = 'PAUSADO';
+    }
+}
+
+function toggleFullscreen() {
+    const esFull = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+    if (!esFull) {
+        activarPantallaCompleta();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+
+iniciarAnimacionTitulo();
+cargarArchivosAutomaticos();
+</script>
+</body>
+</html>
